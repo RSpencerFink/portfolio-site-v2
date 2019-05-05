@@ -9,6 +9,8 @@ import {
     scroller,
 } from 'react-scroll'
 
+import Background from './background'
+
 const HomeContainer = styled.div`
     height: 100vh;
     width: 100%;
@@ -16,18 +18,25 @@ const HomeContainer = styled.div`
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background-color: #191919;
     color: #fff;
     a {
         margin-top: 6em;
     }
+    .canvas {
+        z-index: -1;
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: #191919;
+    }
 `
 
 const HomeLogo = styled.h1`
-    font-size: 32px;
+    font-size: 6em;
 `
 
 const ContinueButton = styled.button`
+    z-index: 10;
     width: 240px;
     height: 64px;
     background: #191919;
@@ -48,6 +57,7 @@ export default class Home extends React.Component {
                     <Link to="about" spy={true} smooth={true} duration={500}>
                         <ContinueButton>Continue</ContinueButton>
                     </Link>
+                    <Background />
                 </HomeContainer>
             </Element>
         )
