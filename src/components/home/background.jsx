@@ -11,7 +11,7 @@ export default class Background extends React.Component {
     }
 
     componentDidMount() {
-        this.generateStars(175)
+        this.generateStars(100)
         setInterval(this.animateStars, 16)
     }
 
@@ -51,7 +51,7 @@ export default class Background extends React.Component {
             }
             if (
                 el.props.velocity[1] + el.props.y + radius >= yBound ||
-                el.props.velocity[1] + el.props.x - radius <= 0
+                el.props.velocity[1] + el.props.y - radius <= 0
             ) {
                 newVel[1] = -newVel[1]
             }
