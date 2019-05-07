@@ -11,8 +11,9 @@ export default class Background extends React.Component {
     }
 
     componentDidMount() {
-        this.generateStars(100)
+        this.generateStars(200)
         setInterval(this.animateStars, 16)
+        document.addEventListener('resize', () => this.generateStars(200))
     }
 
     generateStars = numStars => {
@@ -24,7 +25,10 @@ export default class Background extends React.Component {
                     x={Math.floor(Math.random() * window.innerWidth + 1)}
                     y={Math.floor(Math.random() * window.innerHeight + 1)}
                     radius={Math.random() * 2}
-                    velocity={[Math.random() - 0.5, Math.random() - 0.5]}
+                    velocity={[
+                        Math.random() * 0.5 - 0.25,
+                        Math.random() * 0.5 - 0.25,
+                    ]}
                     fill="white"
                     blurRadius={10}
                 />
@@ -38,7 +42,7 @@ export default class Background extends React.Component {
         const newStars = []
         const xBound = window.innerWidth
         const yBound = window.innerHeight
-        stars.forEach((el, idx) => {
+        stars.forEach(el => {
             let newX = el.props.x
             let newY = el.props.y
             let newVel = el.props.velocity
@@ -92,23 +96,59 @@ export default class Background extends React.Component {
                 inBoundStars.push(stars[idx])
             }
         }
-        for (let idx = 0; idx < inBoundStars.length - 1; idx++) {
+        for (let idx = 0; idx < inBoundStars.length; idx++) {
             const StarOne = inBoundStars[idx]
-            const StarTwo = inBoundStars[idx + 1]
-            lines.push(
-                <Line
-                    points={[
-                        StarOne.props.x,
-                        StarOne.props.y,
-                        StarTwo.props.x,
-                        StarTwo.props.y,
-                    ]}
-                    stroke="white"
-                    strokeWidth={0.25}
-                />
-            )
+            let deltas = []
+            for (let idx2 = 0; idx2 < inBoundStars.length; idx2++) {
+                if (idx !== idx2) {
+                    const StarTwo = inBoundStars[idx2]
+                    deltas.push({
+                        delta: this.starDelta(
+                            StarOne.props.x,
+                            StarOne.props.y,
+                            StarTwo.props.x,
+                            StarTwo.props.y
+                        ),
+                        StarOne,
+                        StarTwo,
+                    })
+                }
+            }
+            deltas = deltas.sort((x, y) => {
+                return x.delta - y.delta
+            })
+            for (let idx = 0; idx < 4; idx++) {
+                lines.push(
+                    <Line
+                        points={[
+                            deltas[idx].StarOne.props.x,
+                            deltas[idx].StarOne.props.y,
+                            deltas[idx].StarTwo.props.x,
+                            deltas[idx].StarTwo.props.y,
+                        ]}
+                        stroke="white"
+                        strokeWidth={0.25}
+                    />
+                )
+            }
         }
         this.setState({ lines })
+    }
+
+    starDelta = (x1, y1, x2, y2) => {
+        let netX
+        let netY
+        if (x1 >= x2) {
+            netX = x1 - x2
+        } else {
+            netX = x2 - x1
+        }
+        if (y1 >= y2) {
+            netY = y1 - y2
+        } else {
+            netY = y2 - y1
+        }
+        return Math.sqrt(netX * netX + netY * netY)
     }
 
     render() {
