@@ -1,5 +1,11 @@
 import React, { Component } from 'react'
+
 import { Home, About, Navigation, Contact } from './components/_module'
+import {
+    RootStyles,
+    ContainerStyles,
+    TypographyStyles,
+} from './styles/global/_module'
 import {
     Link,
     Element,
@@ -12,12 +18,17 @@ import {
 class App extends Component {
     render() {
         return (
-            <div className="App">
-                <Navigation />
-                <Home />
-                <About />
-                <Contact />
-            </div>
+            <>
+                <RootStyles />
+                <ContainerStyles />
+                <TypographyStyles />
+                <div className="App">
+                    <Navigation />
+                    <Home />
+                    <About />
+                    <Contact />
+                </div>
+            </>
         )
     }
 }
