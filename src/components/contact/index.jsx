@@ -17,9 +17,12 @@ const ContactContainer = styled.div`
 const ContactForm = styled.form`
   display: flex;
   flex-direction: column;
+  justify-content: center;
   width: 25%;
+  height: 100%;
   input,
-  textarea {
+  textarea,
+  button {
     margin-bottom: 16px;
     padding: 8px;
     color: #fff;
@@ -29,8 +32,15 @@ const ContactForm = styled.form`
     &::placeholder {
       color: #fff;
     }
-    textarea {
-      resize: none;
+  }
+  textarea {
+    resize: none;
+    height: 25%;
+  }
+  button {
+    cursor: pointer;
+    &:hover {
+      background: #ffffff15;
     }
   }
 `;
@@ -49,13 +59,36 @@ const Contact = () => {
     }));
   };
 
+  const handleSubmit = e => {
+    e.preventDefault();
+  };
+
   return (
     <Element name="contact">
       <ContactContainer>
-        <ContactForm>
-          <input name="name" type="text" placeholder="Name" />
-          <input name="email" type="email" placeholder="Email" />
-          <textarea name="message" type="textarea" placeholder="Message" />
+        <ContactForm onSubmit={handleSubmit}>
+          <input
+            name="name"
+            type="text"
+            placeholder="Name"
+            value={formData.name}
+            onChange={handleChange}
+          />
+          <input
+            name="email"
+            type="email"
+            placeholder="Email"
+            value={formData.email}
+            onChange={handleChange}
+          />
+          <textarea
+            name="message"
+            type="textarea"
+            placeholder="Message"
+            value={formData.message}
+            onChange={handleChange}
+          />
+          <button>Submit</button>
         </ContactForm>
       </ContactContainer>
     </Element>
