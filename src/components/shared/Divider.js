@@ -9,6 +9,7 @@ const DividerContainer = styled.div`
   width: calc(100% - 6em);
   height: 1px;
   border-top: 1px solid #ffffff70;
+  box-shadow: 0px 0px 5px 1px #ffffff40;
 `;
 
 const Divider = () => {

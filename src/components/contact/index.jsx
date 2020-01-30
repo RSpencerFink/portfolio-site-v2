@@ -23,6 +23,9 @@ const ContactForm = styled.form`
   ${mediaMin.tabletLandscape`
     width: 25%;
   `}
+  h2 {
+    text-align: center;
+  }
   input,
   textarea,
   button {
@@ -34,6 +37,7 @@ const ContactForm = styled.form`
     font-size: 1.25em;
     &::placeholder {
       color: #fff;
+      text-shadow: 0px 0px 5px #ffffff40;
     }
   }
   textarea {
@@ -44,13 +48,15 @@ const ContactForm = styled.form`
   textarea {
     &:focus {
       outline: none;
-      border: 1px solid #ffffff90;
+      border: 1px solid #ffffff70;
+      box-shadow: 0px 0px 5px 1px #ffffff40;
     }
   }
   button {
     cursor: pointer;
     &:hover {
       background: ${variables.colors.hoverGrey};
+      box-shadow: 0px 0px 5px 1px #ffffff40;
     }
   }
 `;

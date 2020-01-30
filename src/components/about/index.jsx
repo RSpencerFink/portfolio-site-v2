@@ -10,9 +10,11 @@ import { mediaMin } from '../../styles/mediaQueries';
 const AboutContainer = styled.div`
   background-color: ${variables.colors.darkGrey};
   flex-direction: column;
-  ${mediaMin.tabletLandscape`
-    flex-direction: row;
-  `}
+`;
+
+const MainRow = styled.div`
+  display: flex;
+  width: 100%;
 `;
 
 const Column = styled.div`
@@ -46,21 +48,23 @@ const About = () => {
     <Element name="about">
       <AboutContainer className="container">
         <Divider />
-        <Column>
-          <DynamicImage
-            srcProp="/images/photos/about/rsf-headshot/"
-            altProp="photograph of spencer fink"
-          />
-        </Column>
-        <Column>
-          <p>
-            I’m Spencer. I’m a New York based software developer with strong
-            skills in React / Redux, Ruby on Rails, Javascript, and PostgreSQL.
-            I also have an extensive background in visual arts with an emphasis
-            on photography, filmmaking, and painting. Let’s make something
-            beautiful together.
-          </p>
-        </Column>
+        <MainRow>
+          <Column>
+            <DynamicImage
+              srcProp="/images/photos/about/rsf-headshot/"
+              altProp="photograph of spencer fink"
+            />
+          </Column>
+          <Column>
+            <p>
+              I’m Spencer. I’m a New York based software developer with strong
+              skills in React / Redux, Ruby on Rails, Javascript, and
+              PostgreSQL. I also have an extensive background in visual arts
+              with an emphasis on photography, filmmaking, and painting. Let’s
+              make something beautiful together.
+            </p>
+          </Column>
+        </MainRow>
       </AboutContainer>
     </Element>
   );

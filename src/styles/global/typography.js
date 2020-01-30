@@ -7,6 +7,7 @@ const Typographystyles = createGlobalStyle`
     font-style: normal;
     letter-spacing: .1rem;
     color: #fff;
+    text-shadow: 0px 0px 5px #ffffff40;
   }
   
   p {
@@ -34,7 +35,7 @@ const Typographystyles = createGlobalStyle`
     text-transform: uppercase;
     text-decoration: none;
     padding-bottom: 8px;
-  
+    text-shadow: 0px 0px 5px #ffffff40;
      &:before,
       &:after {
           content: '';
@@ -42,8 +43,10 @@ const Typographystyles = createGlobalStyle`
           bottom: 2px;
           left: 0; 
           right: 0;
-          height: 2px;
-          background-color: #fff;
+          height: 1px;
+          background-color: #ffffff70;
+          box-shadow: 0px 0px 5px 1px #ffffff40;
+
       }
       &:before {
           opacity: 0;
@@ -57,6 +60,7 @@ const Typographystyles = createGlobalStyle`
       }
       &:hover,
       &:focus {
+
           &:before,
           &:after {
               opacity: 1;

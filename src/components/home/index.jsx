@@ -51,8 +51,10 @@ const ContinueButton = styled.button`
     color: #fff;
     cursor: pointer;
     font-size: 1em;
+    font-weight: 600;
     &:hover{
-        background-color: ${variables.colors.hoverGrey}b0;
+        background-color: ${variables.colors.hoverGrey};
+        box-shadow: 0px 0px 5px 1px #ffffff40;
     }
 
 `;
