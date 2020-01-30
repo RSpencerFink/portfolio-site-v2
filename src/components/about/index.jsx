@@ -3,12 +3,12 @@ import styled from 'styled-components';
 import DynamicImage from 'react-dynamic-image';
 import { Element } from 'react-scroll';
 
-import { Gradient } from '../shared';
+import { Divider } from '../shared';
 import { variables } from '../../styles/variables';
 import { mediaMin } from '../../styles/mediaQueries';
 
 const AboutContainer = styled.div`
-  background-color: ${variables.colors.darkerGrey};
+  background-color: ${variables.colors.darkGrey};
   flex-direction: column;
   ${mediaMin.tabletLandscape`
     flex-direction: row;
@@ -45,10 +45,7 @@ const About = () => {
   return (
     <Element name="about">
       <AboutContainer className="container">
-        <Gradient
-          to={variables.colors.darkerGrey}
-          from={variables.colors.darkGrey}
-        />
+        <Divider />
         <Column>
           <DynamicImage
             srcProp="/images/photos/about/rsf-headshot/"

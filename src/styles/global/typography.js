@@ -2,7 +2,7 @@ import { createGlobalStyle } from 'styled-components';
 // import { mediaMin } from '../mediaQueries'
 
 const Typographystyles = createGlobalStyle`
-  h1, h2, h3, h4, h5, h6, li {
+  h1, h2, h3, h4, h5, h6, li, button {
     font-family: 'Roboto', sans-serif;
     font-style: normal;
     letter-spacing: .1rem;
@@ -29,7 +29,6 @@ const Typographystyles = createGlobalStyle`
   }
 
   a.underline {
-    font-size: 20px;
     color: #fff;
     position: relative;
     text-transform: uppercase;

@@ -4,12 +4,14 @@ import { Element } from 'react-scroll';
 
 import { variables } from '../../styles/variables';
 import { mediaMin } from '../../styles/mediaQueries';
+import { Divider } from '../shared';
 
 const ContactContainer = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background-color: ${variables.colors.darkerGrey};
+  background-color: ${variables.colors.darkGrey};
+  position: relative;
 `;
 
 const ContactForm = styled.form`
@@ -74,7 +76,9 @@ const Contact = () => {
   return (
     <Element name="contact">
       <ContactContainer className="container">
+        <Divider />
         <ContactForm onSubmit={handleSubmit}>
+          <h2>CONTACT</h2>
           <input
             name="name"
             type="text"

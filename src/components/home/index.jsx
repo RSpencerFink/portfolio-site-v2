@@ -50,6 +50,7 @@ const ContinueButton = styled.button`
     border 1px solid #fff;
     color: #fff;
     cursor: pointer;
+    font-size: 1em;
     &:hover{
         background-color: ${variables.colors.hoverGrey}b0;
     }
@@ -62,7 +63,7 @@ const Home = () => {
       <HomeContainer className="container">
         <HomeLogo src={Logo} alt="rsf logo" />
         <Link to="about" spy={true} smooth={true} duration={500}>
-          <ContinueButton>Continue</ContinueButton>
+          <ContinueButton>CONTINUE</ContinueButton>
         </Link>
         <Background />
       </HomeContainer>

@@ -3,8 +3,9 @@ import styled from 'styled-components';
 
 import logo from '../../assets/images/icons/rsf-white.png';
 
-import { Gradient } from '../shared';
+import { Divider } from '../shared';
 import { variables } from '../../styles/variables';
+import { mediaMin } from '../../styles/mediaQueries';
 
 const FooterContainer = styled.footer`
   display: flex;
@@ -12,26 +13,34 @@ const FooterContainer = styled.footer`
   align-items: center;
   justify-content: center;
   width: 100%;
-  height: calc(6em + 30vh);
-  background-color: #0e0e0e;
+  height: calc(30vh);
+  background-color: ${variables.colors.darkGrey};
   position: relative;
 `;
 
 const Logo = styled.img`
-  margin-top: 6em;
-  width: 5%;
+  width: 25%;
+  ${mediaMin.tabletLandscape`
+    width: 5%;
+  `}
 `;
 
 const SocialMediaRow = styled.ul`
   margin-top: 3em;
   display: flex;
   list-style: none;
-  width: 30%;
   justify-content: center;
+  font-size: 1em;
+  ${mediaMin.tabletLandscape`
   font-size: 1.25em;
+    width: 30%;
+  `}
   padding: 0;
   li {
+    margin: 0 0.5em;
+    ${mediaMin.tabletLandscape`
     margin: 0 2em;
+    `}
     &:first-child {
       margin-left: 0;
     }
@@ -44,7 +53,7 @@ const SocialMediaRow = styled.ul`
 const Footer = () => {
   return (
     <FooterContainer>
-      <Gradient to="#0e0e0e" from={variables.colors.darkerGrey} />
+      <Divider />
       <Logo src={logo} alt="RSF" />
       <SocialMediaRow>
         <li>

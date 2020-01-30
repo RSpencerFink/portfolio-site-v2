@@ -1,3 +1,3 @@
-import Gradient from './Gradient';
+import Divider from './Divider';
 
-export { Gradient };
+export { Divider };
