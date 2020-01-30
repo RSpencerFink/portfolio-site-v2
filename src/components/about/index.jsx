@@ -15,6 +15,10 @@ const AboutContainer = styled.div`
 const MainRow = styled.div`
   display: flex;
   width: 100%;
+  flex-direction: column;
+  ${mediaMin.tabletLandscape`
+    flex-direction: row;
+  `}
 `;
 
 const Column = styled.div`

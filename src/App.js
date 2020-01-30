@@ -1,6 +1,13 @@
 import React, { Component } from 'react';
 
-import { Home, About, Navigation, Contact, Footer } from './components';
+import {
+  Home,
+  About,
+  Navigation,
+  Contact,
+  Portfolio,
+  Footer
+} from './components';
 import { RootStyles, ContainerStyles, TypographyStyles } from './styles/global';
 
 class App extends Component {
@@ -14,6 +21,7 @@ class App extends Component {
           <Navigation />
           <Home />
           <About />
+          <Portfolio />
           <Contact />
           <Footer />
         </div>

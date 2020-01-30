@@ -77,7 +77,7 @@ export default class Background extends React.Component {
 
   drawLines = () => {
     const xBounds = [window.innerWidth * 0.25, window.innerWidth * 0.75];
-    const yBounds = [window.innerHeight * 0.25, window.innerHeight * 0.75];
+    const yBounds = [window.innerHeight * 0.2, window.innerHeight * 0.8];
     const { stars } = this.state;
     const lines = [];
     let inBoundStars = [];

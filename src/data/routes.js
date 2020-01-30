@@ -1,3 +1,3 @@
-const routes = ['about', 'contact'];
+const routes = ['about', 'portfolio', 'contact'];
 
 export { routes };

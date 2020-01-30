@@ -1,13 +1,14 @@
 import { createGlobalStyle } from 'styled-components';
-// import { mediaMin } from '../mediaQueries'
+import { variables } from '../variables';
 
 const Container = createGlobalStyle`
 .container{
     display: flex;
-    height: 100vh;
+    min-height: 100vh;
     width: 100%;
     padding: 6em 3em;
-    position: relative;  
+    position: relative;
+    background-color: ${variables.colors.darkGrey};
 }
 `;
 
