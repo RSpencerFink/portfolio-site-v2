@@ -24,13 +24,12 @@ const RootStyles = createGlobalStyle`
   
   /* Track */
   ::-webkit-scrollbar-track {
-    background: ${variables.colors.darkGrey};
+    background: #fff;
   }
   
   /* Handle */
   ::-webkit-scrollbar-thumb {
-    background: #fff;
-    box-shadow: 0px 0px 5px 1px #ffffff40;
+    background: ${variables.colors.darkGrey};
 
   }
   
