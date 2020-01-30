@@ -2,7 +2,11 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-scroll';
 
+import logo from '../../assets/images/icons/rsf-white.png';
+
 import { variables } from '../../styles/variables';
+
+import DesktopNavigation from './DesktopNavigation';
 
 const NavigationContainer = styled.nav`
   box-sizing: border-box;
@@ -70,30 +74,11 @@ const Navigation = () => {
           duration={500}
           onSetActive={e => onSetActive(e)}
         >
-          <img src="/images/icons/rsf-white.png" alt="rsf logo" />
+          <img src={logo} alt="rsf logo" />
         </Link>
       </Left>
       <Right>
-        <Link
-          to="about"
-          spy
-          hashSpy
-          smooth
-          duration={500}
-          onSetActive={e => onSetActive(e)}
-        >
-          <li>About</li>
-        </Link>
-        <Link
-          to="contact"
-          spy
-          hashSpy
-          smooth
-          duration={500}
-          onSetActive={e => onSetActive(e)}
-        >
-          <li>Contact</li>
-        </Link>
+        <DesktopNavigation onSetActive={onSetActive} />
       </Right>
     </NavigationContainer>
   );

@@ -2,24 +2,25 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { Element } from 'react-scroll';
 
+import { variables } from '../../styles/variables';
+import { mediaMin } from '../../styles/mediaQueries';
+
 const ContactContainer = styled.div`
-  display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 100vh;
-  width: 100%;
-  background-color: #191919;
-  padding: 3em 0 0 0;
-  box-sizing: border-box;
+  background-color: ${variables.colors.darkerGrey};
 `;
 
 const ContactForm = styled.form`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  width: 25%;
   height: 100%;
+  width: 100%;
+  ${mediaMin.tabletLandscape`
+    width: 25%;
+  `}
   input,
   textarea,
   button {
@@ -37,10 +38,17 @@ const ContactForm = styled.form`
     resize: none;
     height: 25%;
   }
+  input,
+  textarea {
+    &:focus {
+      outline: none;
+      border: 1px solid #ffffff90;
+    }
+  }
   button {
     cursor: pointer;
     &:hover {
-      background: #ffffff15;
+      background: ${variables.colors.hoverGrey};
     }
   }
 `;
@@ -65,7 +73,7 @@ const Contact = () => {
 
   return (
     <Element name="contact">
-      <ContactContainer>
+      <ContactContainer className="container">
         <ContactForm onSubmit={handleSubmit}>
           <input
             name="name"

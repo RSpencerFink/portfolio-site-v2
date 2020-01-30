@@ -1,21 +1,27 @@
 import React from 'react';
 import styled from 'styled-components';
-import { variables } from '../../styles/variables';
 import { Link, Element } from 'react-scroll';
 
+import { variables } from '../../styles/variables';
+import { mediaMin } from '../../styles/mediaQueries';
+
 import Background from './background';
+import Logo from '../../assets/images/icons/rsf-white.png';
 
 const HomeContainer = styled.div`
-  height: 100vh;
-  width: 100%;
-  display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   color: #fff;
   a {
     z-index: 10;
-    margin-top: 6em;
+    position: absolute;
+    bottom: 10%;
+    ${mediaMin.tabletLandscape`
+      bottom: initial;
+        margin-top: 6em;
+        position: relative;
+    `}
   }
   .canvas {
     max-width: 100%;
@@ -30,7 +36,10 @@ const HomeContainer = styled.div`
 
 const HomeLogo = styled.img`
   z-index: 10;
+  width: 80%;
+  ${mediaMin.tabletLandscape`
   width: 25%;
+  `}
 `;
 
 const ContinueButton = styled.button`
@@ -44,13 +53,14 @@ const ContinueButton = styled.button`
     &:hover{
         background-color: ${variables.colors.hoverGrey}b0;
     }
+
 `;
 
 const Home = () => {
   return (
     <Element name="home">
-      <HomeContainer>
-        <HomeLogo src="/images/icons/rsf-white.png" alt="rsf logo" />
+      <HomeContainer className="container">
+        <HomeLogo src={Logo} alt="rsf logo" />
         <Link to="about" spy={true} smooth={true} duration={500}>
           <ContinueButton>Continue</ContinueButton>
         </Link>

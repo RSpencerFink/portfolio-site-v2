@@ -1,15 +1,7 @@
 import React, { Component } from 'react';
 
-import { Home, About, Navigation, Contact } from './components';
+import { Home, About, Navigation, Contact, Footer } from './components';
 import { RootStyles, ContainerStyles, TypographyStyles } from './styles/global';
-import {
-  Link,
-  Element,
-  Events,
-  animateScroll as scroll,
-  scrollSpy,
-  scroller
-} from 'react-scroll';
 
 class App extends Component {
   render() {
@@ -23,6 +15,7 @@ class App extends Component {
           <Home />
           <About />
           <Contact />
+          <Footer />
         </div>
       </>
     );
