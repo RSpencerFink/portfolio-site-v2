@@ -6,7 +6,7 @@ import { variables } from '../../styles/variables';
 import { mediaMin } from '../../styles/mediaQueries';
 
 import Background from './background';
-import Logo from '../../assets/images/icons/rsf-white.png';
+import { Logo } from '../shared';
 
 const HomeContainer = styled.div`
   flex-direction: column;
@@ -34,14 +34,6 @@ const HomeContainer = styled.div`
   }
 `;
 
-const HomeLogo = styled.img`
-  z-index: 10;
-  width: 80%;
-  ${mediaMin.tabletLandscape`
-  width: 25%;
-  `}
-`;
-
 const ContinueButton = styled.button`
     z-index: 10;
     width: 240px;
@@ -63,7 +55,8 @@ const Home = () => {
   return (
     <Element name="home">
       <HomeContainer className="container">
-        <HomeLogo src={Logo} alt="rsf logo" />
+        {/* <HomeLogo src={Logo} alt="rsf logo" className="glitch" /> */}
+        <Logo />
         <Link to="about" spy={true} smooth={true} duration={500}>
           <ContinueButton>CONTINUE</ContinueButton>
         </Link>

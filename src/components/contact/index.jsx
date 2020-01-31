@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { Element } from 'react-scroll';
+import emailjs from 'emailjs-com';
 
 import { variables } from '../../styles/variables';
 import { mediaMin } from '../../styles/mediaQueries';
@@ -62,10 +63,14 @@ const ContactForm = styled.form`
 `;
 
 const Contact = () => {
+  useEffect(() => {
+    emailjs.init(process.env.REACT_APP_EMAILJS_USER_ID);
+  }, []);
+
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    message: ''
+    from_name: '',
+    reply_to: '',
+    message_html: ''
   });
 
   const handleChange = e => {
@@ -77,6 +82,11 @@ const Contact = () => {
 
   const handleSubmit = e => {
     e.preventDefault();
+    emailjs.send(
+      process.env.REACT_APP_SERVICE_ID,
+      process.env.REACT_APP_TEMPLATE_ID,
+      formData
+    );
   };
 
   return (
@@ -86,24 +96,24 @@ const Contact = () => {
         <ContactForm onSubmit={handleSubmit}>
           <h2>CONTACT</h2>
           <input
-            name="name"
+            name="from_name"
             type="text"
             placeholder="Name"
-            value={formData.name}
+            value={formData.from_name}
             onChange={handleChange}
           />
           <input
-            name="email"
+            name="reply_to"
             type="email"
             placeholder="Email"
-            value={formData.email}
+            value={formData.reply_to}
             onChange={handleChange}
           />
           <textarea
-            name="message"
+            name="message_html"
             type="textarea"
             placeholder="Message"
-            value={formData.message}
+            value={formData.message_html}
             onChange={handleChange}
           />
           <button>Submit</button>

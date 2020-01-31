@@ -3,6 +3,8 @@
     "version": "0.1.0",
     "private": true,
     "dependencies": {
+        "axios": "^0.19.2",
+        "emailjs-com": "^2.4.1",
         "konva": "^3.2.5",
         "node-sass": "^4.11.0",
         "react": "^16.8.2",
