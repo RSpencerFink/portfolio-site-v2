@@ -7,6 +7,7 @@ const reveal = keyframes`
     }
     100%{
         fill: #fff;
+
     }
 `;
 
@@ -20,6 +21,7 @@ const LogoContainer = styled.svg`
   z-index: 100;
   width: 25%;
   fill: transparent;
+  filter: drop-shadow(0px 0px 5px rgba(250, 250, 250, 0.4));
   .logo-path {
     stroke: #fff;
     stroke-width: 2px;
@@ -34,6 +36,7 @@ const Logo = () => {
     path.style.strokeDasharray = length + ' ' + length;
     path.style.strokeDashoffset = length;
   }, []);
+
   return (
     <LogoContainer
       version="1.1"
