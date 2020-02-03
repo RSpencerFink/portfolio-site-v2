@@ -1,13 +1,7 @@
 import React, { Component } from 'react';
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 
-import {
-  Home,
-  About,
-  Navigation,
-  Contact,
-  Portfolio,
-  Footer
-} from './components';
+import { Home, Analog, Digital } from './components';
 import { RootStyles, ContainerStyles, TypographyStyles } from './styles/global';
 
 class App extends Component {
@@ -17,14 +11,13 @@ class App extends Component {
         <RootStyles />
         <ContainerStyles />
         <TypographyStyles />
-        <div className="App">
-          <Navigation />
-          <Home />
-          <About />
-          <Portfolio />
-          <Contact />
-          <Footer />
-        </div>
+        <Router>
+          <Switch>
+            <Route path="/" exact component={Home} />
+            <Route path="/analog" component={Analog} />
+            <Route path="/digital" component={Digital} />
+          </Switch>
+        </Router>
       </>
     );
   }

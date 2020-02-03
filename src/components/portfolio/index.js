@@ -2,12 +2,13 @@ import React, { useState } from 'react';
 import styled, { css } from 'styled-components';
 import { Element } from 'react-scroll';
 import { Waypoint } from 'react-waypoint';
+import { Link } from 'react-router-dom';
 
 import { variables } from '../../styles/variables';
-// import { mediaMin } from '../../styles/mediaQueries';
+import { mediaMin } from '../../styles/mediaQueries';
 import { Divider } from '../shared';
 
-import { sections, development } from '../../data/portfolio';
+import { development } from '../../data/portfolio';
 
 const animateChildren = ({ numItems, mounted }) => {
   let childStyles = ``;
@@ -29,38 +30,18 @@ const animateChildren = ({ numItems, mounted }) => {
 const PortfolioContainer = styled.div`
   flex-direction: column;
   align-items: center;
-`;
-
-const SectionSelector = styled.div`
-  display: flex;
-`;
-
-const SectionButton = styled.button`
-  background: transparent;
-  border: none;
-  text-transform: uppercase;
-  text-shadow: 0px 0px 5px #ffffff40;
-  position: relative;
-  padding: 0 0 8px 0;
-  margin: 0 2em;
-  cursor: pointer;
-  font-size: 1em;
-  font-weight: 600;
-  &:focus {
-    outline: none;
-  }
-  &:before,
-  &:after {
-    content: '';
-    position: absolute;
-    bottom: 2px;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background-color: #ffffff70;
-    box-shadow: 0px 0px 5px 1px #ffffff40;
-    transition: opacity 0.5s ease;
-    opacity: ${props => (props.active ? '1' : '0')};
+  a {
+    margin: auto 0 0 0;
+    color: #fff;
+    border: 1px solid #fff;
+    padding: 16px;
+    &:visited {
+      color: #fff;
+    }
+    &:hover {
+      text-decoration: none;
+      background-color: ${variables.colors.hoverGrey};
+    }
   }
 `;
 
@@ -82,9 +63,13 @@ const Project = styled.li`
   justify-content: space-between;
   color: #fff;
   border: 1px solid #fff;
-  width: calc(50% - 32px);
   padding: 16px;
+  width: 100%;
+  margin: 0 0 16px 0;
+  ${mediaMin.tabletLandscape`
+  width: calc(50% - 32px);
   margin: 16px;
+  `}
   h3 {
     font-size: 1.25em;
     margin: 0 0 16px 0;
@@ -117,22 +102,7 @@ const Project = styled.li`
 `;
 
 const Portfolio = () => {
-  const [activeSection, setActiveSection] = useState('Development');
-
   const [visible, setVisible] = useState(false);
-
-  const generateSectionSelector = () => {
-    return sections.map(section => {
-      return (
-        <SectionButton
-          active={activeSection === section}
-          onClick={() => setActiveSection(section)}
-        >
-          {section}
-        </SectionButton>
-      );
-    });
-  };
 
   const renderProjects = () => {
     return development.map(project => {
@@ -162,12 +132,18 @@ const Portfolio = () => {
     <Element name="portfolio">
       <PortfolioContainer className="container">
         <Divider />
-        <SectionSelector>{generateSectionSelector()}</SectionSelector>
-        <Waypoint onEnter={() => setVisible(true)}>
+        <h3>PROJECTS</h3>
+        <Waypoint
+          onEnter={() => {
+            console.log('here');
+            setVisible(true);
+          }}
+        >
           <ProjectList numItems={development.length} mounted={visible}>
             {renderProjects()}
           </ProjectList>
         </Waypoint>
+        <Link to="/analog">VISUAL ARTS PORTFOLIO</Link>
       </PortfolioContainer>
     </Element>
   );
