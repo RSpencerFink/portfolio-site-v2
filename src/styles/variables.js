@@ -2,7 +2,8 @@ const variables = {
   colors: {
     darkGrey: '#191919',
     darkerGrey: '#151515',
-    hoverGrey: '#2b2b2b90'
+    hoverGrey: '#2b2b2b90',
+    navGrey: '#2b2b2b'
   }
 };
 

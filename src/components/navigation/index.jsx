@@ -19,8 +19,8 @@ const NavigationContainer = styled.nav`
   width: 100%;
   position: fixed;
   top: 0;
-  background-color: ${variables.colors.hoverGrey};
-  z-index: 100;
+  background-color: ${variables.colors.navGrey};
+  z-index: 1000;
   transition: transform 0.25s ease-in-out;
   ${props => (props.hidden ? 'transform: translateY(-100%);' : '')}
 `;
