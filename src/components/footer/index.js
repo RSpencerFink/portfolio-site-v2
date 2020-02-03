@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import logo from '../../assets/images/icons/rsf-white.png';
+import logo from '../../assets/images/icons/rsf-white.svg';
 
 import { Divider } from '../shared';
 import { variables } from '../../styles/variables';

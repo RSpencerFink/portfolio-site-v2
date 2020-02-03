@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-scroll';
 
-import logo from '../../assets/images/icons/rsf-white.png';
+import logo from '../../assets/images/icons/rsf-white.svg';
 
 import { variables } from '../../styles/variables';
 
@@ -35,6 +35,7 @@ const Left = styled.div`
     height: 100%;
     img {
       max-height: 100%;
+      height: 100%;
     }
   }
 `;
