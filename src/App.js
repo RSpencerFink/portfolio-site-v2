@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 
-import { Home, Analog, Digital } from './components';
+import { Home, Analog, Digital } from './components/pages';
 import { RootStyles, ContainerStyles, TypographyStyles } from './styles/global';
 
 class App extends Component {

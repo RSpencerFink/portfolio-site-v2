@@ -1,14 +1,11 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import {
-  Landing,
-  About,
-  Navigation,
-  Contact,
-  Portfolio,
-  Footer
-} from '../../components';
+import Landing from './landing';
+import About from './about';
+import Portfolio from './portfolio';
+import Contact from './contact';
+import { Navigation, Footer } from '../../';
 
 const Home = () => {
   return (

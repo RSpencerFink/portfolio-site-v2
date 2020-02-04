@@ -3,9 +3,9 @@ import styled from 'styled-components';
 import DynamicImage from 'react-dynamic-image';
 import { Element } from 'react-scroll';
 
-import { Divider } from '../shared';
-import { variables } from '../../styles/variables';
-import { mediaMin } from '../../styles/mediaQueries';
+import { Divider } from '../../../shared';
+import { variables } from '../../../../styles/variables';
+import { mediaMin } from '../../../../styles/mediaQueries';
 
 const AboutContainer = styled.div`
   background-color: ${variables.colors.darkGrey};

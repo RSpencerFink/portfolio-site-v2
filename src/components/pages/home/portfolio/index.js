@@ -3,22 +3,28 @@ import styled, { css } from 'styled-components';
 import { Element } from 'react-scroll';
 import { Waypoint } from 'react-waypoint';
 import { Link } from 'react-router-dom';
+import Masonry from 'react-masonry-component';
 
-import { variables } from '../../styles/variables';
-import { mediaMin } from '../../styles/mediaQueries';
-import { Divider } from '../shared';
+import { variables } from '../../../../styles/variables';
+import { mediaMin } from '../../../../styles/mediaQueries';
+import { Divider } from '../../../shared';
 
-import { development } from '../../data/portfolio';
+import { development } from '../../../../data/portfolio';
+
+const masonryOptions = {
+  transitionDuration: '0.1s'
+};
 
 const animateChildren = ({ numItems, mounted }) => {
   let childStyles = ``;
+  console.log(numItems);
   for (let idx = 1; idx <= numItems; idx += 1) {
     childStyles += `
       &:nth-child(${idx}) {
         opacity: ${mounted ? '1' : '0'};
-        // transform: ${mounted ? 'translateY(0)' : 'translateY(-8px)'};
-        transition: opacity 0.25s ease-in-out ${idx *
-          0.125}s, transform 0.25s ease-in-out ${idx * 0.125}s;
+        background-color: ${mounted ? 'transparent' : '#ffffff50'};
+        transition: opacity 0.5s ease ${idx *
+          0.25}s, background-color 0.5s ease ${idx * 0.25}s;
       }
     `;
   }
@@ -45,11 +51,7 @@ const PortfolioContainer = styled.div`
   }
 `;
 
-const ProjectList = styled.ul`
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: space-between;
+const ProjectList = styled(Masonry)`
   padding: 0;
   width: 100%;
   & > * {
@@ -130,21 +132,25 @@ const Portfolio = () => {
 
   return (
     <Element name="portfolio">
-      <PortfolioContainer className="container">
-        <Divider />
-        <h3>PROJECTS</h3>
-        <Waypoint
-          onEnter={() => {
-            console.log('here');
-            setVisible(true);
-          }}
-        >
-          <ProjectList numItems={development.length} mounted={visible}>
+      <Waypoint
+        onEnter={() => {
+          setVisible(true);
+        }}
+      >
+        <PortfolioContainer className="container">
+          <Divider />
+          <h2>PROJECTS</h2>
+          <ProjectList
+            options={masonryOptions}
+            className="masonry"
+            numItems={development.length}
+            mounted={visible}
+          >
             {renderProjects()}
           </ProjectList>
-        </Waypoint>
-        <Link to="/analog">VISUAL ARTS PORTFOLIO</Link>
-      </PortfolioContainer>
+          <Link to="/analog">VISUAL ARTS PORTFOLIO</Link>
+        </PortfolioContainer>
+      </Waypoint>
     </Element>
   );
 };

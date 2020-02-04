@@ -2,11 +2,11 @@ import React from 'react';
 import styled from 'styled-components';
 import { Link, Element } from 'react-scroll';
 
-import { variables } from '../../styles/variables';
-import { mediaMin } from '../../styles/mediaQueries';
+import { variables } from '../../../../styles/variables';
+import { mediaMin } from '../../../../styles/mediaQueries';
 
 import Background from './background';
-import { Logo } from '../shared';
+import { Logo } from '../../../shared';
 
 const HomeContainer = styled.div`
   flex-direction: column;

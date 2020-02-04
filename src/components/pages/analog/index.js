@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import { VAContainer } from '../shared';
+import { VAContainer } from '../../shared';
 
 const Analog = () => {
   return (

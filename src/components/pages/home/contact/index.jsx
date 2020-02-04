@@ -3,9 +3,9 @@ import styled from 'styled-components';
 import { Element } from 'react-scroll';
 import emailjs from 'emailjs-com';
 
-import { variables } from '../../styles/variables';
-import { mediaMin } from '../../styles/mediaQueries';
-import { Divider } from '../shared';
+import { variables } from '../../../../styles/variables';
+import { mediaMin } from '../../../../styles/mediaQueries';
+import { Divider } from '../../../shared';
 
 const ContactContainer = styled.div`
   flex-direction: column;
