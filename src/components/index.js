@@ -1,4 +1,5 @@
-import { ScrollNavigation, LinkNavigation, Navigation } from './navigation';
+import { Navigation } from './navigation';
 import Footer from './footer';
+import { ScrollToTop } from './shared';
 
-export { ScrollNavigation, LinkNavigation, Navigation, Footer };
+export { Navigation, Footer, ScrollToTop };

@@ -9,7 +9,7 @@ import { variables } from '../../../../styles/variables';
 import { mediaMin } from '../../../../styles/mediaQueries';
 import { Divider } from '../../../shared';
 
-import { development } from '../../../../data/portfolio';
+import { development } from '../../../../data/development';
 
 const masonryOptions = {
   transitionDuration: '0.1s'

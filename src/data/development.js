@@ -1,5 +1,3 @@
-const sections = ['Development', 'Digital', 'Analog'];
-
 const development = [
   {
     title: 'react-dynamic-image',
@@ -33,4 +31,4 @@ const development = [
   }
 ];
 
-export { sections, development };
+export { development };
