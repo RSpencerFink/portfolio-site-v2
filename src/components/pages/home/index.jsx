@@ -5,12 +5,11 @@ import Landing from './landing';
 import About from './about';
 import Portfolio from './portfolio';
 import Contact from './contact';
-import { Navigation, Footer } from '../../';
+import { Footer } from '../../';
 
 const Home = () => {
   return (
     <div className="App">
-      <Navigation />
       <Landing />
       <About />
       <Portfolio />

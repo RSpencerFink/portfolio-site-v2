@@ -1,11 +1,11 @@
 import React from 'react';
 import { Link } from 'react-scroll';
 
-import { routes } from '../../data/routes';
+import { scrollRoutes } from '../../data/routes';
 
-const DesktopNavigation = ({ onSetActive }) => {
+const DesktopHomeNavigation = ({ onSetActive }) => {
   const generateRoutes = () => {
-    return routes.map(route => (
+    return scrollRoutes.map(route => (
       <Link
         to={route}
         spy
@@ -21,4 +21,4 @@ const DesktopNavigation = ({ onSetActive }) => {
   return <>{generateRoutes()}</>;
 };
 
-export default DesktopNavigation;
+export default DesktopHomeNavigation;

@@ -1,29 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-scroll';
 
 import logo from '../../assets/images/icons/rsf-white.svg';
 
-import { variables } from '../../styles/variables';
-
-import DesktopNavigation from './DesktopNavigation';
-
-const NavigationContainer = styled.nav`
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 1.5em;
-  height: 3em;
-  width: 100%;
-  position: fixed;
-  top: 0;
-  background-color: ${variables.colors.navGrey};
-  z-index: 1000;
-  transition: transform 0.25s ease-in-out;
-  ${props => (props.hidden ? 'transform: translateY(-100%);' : '')}
-`;
+import DesktopScrollNavigation from './DesktopScrollNavigation';
 
 const Left = styled.div`
   display: flex;
@@ -39,6 +20,7 @@ const Left = styled.div`
     }
   }
 `;
+
 const Right = styled.ul`
   display: flex;
   flex-direction: row;
@@ -58,15 +40,9 @@ const Right = styled.ul`
   }
 `;
 
-const Navigation = () => {
-  const [activeElement, setActiveElement] = useState('home');
-
-  const onSetActive = activeElement => {
-    setActiveElement(activeElement);
-  };
-
+const ScrollNavigation = ({ onSetActive }) => {
   return (
-    <NavigationContainer hidden={activeElement === 'home'}>
+    <>
       <Left>
         <Link
           to="home"
@@ -79,9 +55,9 @@ const Navigation = () => {
         </Link>
       </Left>
       <Right>
-        <DesktopNavigation onSetActive={onSetActive} />
+        <DesktopScrollNavigation onSetActive={onSetActive} />
       </Right>
-    </NavigationContainer>
+    </>
   );
 };
-export default Navigation;
+export default ScrollNavigation;

@@ -1,4 +1,4 @@
-import Navigation from './navigation';
+import { ScrollNavigation, LinkNavigation, Navigation } from './navigation';
 import Footer from './footer';
 
-export { Navigation, Footer };
+export { ScrollNavigation, LinkNavigation, Navigation, Footer };

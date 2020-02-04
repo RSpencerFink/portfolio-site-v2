@@ -1,3 +1,7 @@
-const routes = ['about', 'portfolio', 'contact'];
+const scrollRoutes = ['about', 'portfolio', 'contact'];
+const linkRoutes = [
+  { url: '/analog', text: 'ANALOG' },
+  { url: '/digital', text: 'DIGITAL' }
+];
 
-export { routes };
+export { scrollRoutes, linkRoutes };
