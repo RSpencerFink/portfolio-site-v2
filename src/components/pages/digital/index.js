@@ -46,6 +46,28 @@ const DigitalItem = styled(Link)`
   width: calc(33% - 32px);
   margin: 16px;
   `}
+  .info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    padding: 8px;
+    background-color: #00000080;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    h4 {
+      color: #fff;
+      text-align: center;
+      margin: 0;
+      text-transform: uppercase;
+    }
+    &:hover {
+      opacity: 1;
+    }
+  }
   .react-player {
     pointer-events: none;
     .react-player__preview {
@@ -64,6 +86,9 @@ const Digital = () => {
     return Array.from(digital, ([key, value]) => value).map(el => {
       return (
         <DigitalItem to={`/digital/${el.id}`}>
+          <div className="info">
+            <h4>{el.title}</h4>
+          </div>
           <ReactPlayer
             light
             url={el.url}
