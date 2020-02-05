@@ -15,7 +15,7 @@ const animateChildren = ({ numItems, mounted }) => {
         opacity: ${mounted ? '1' : '0'};
         background-color: ${mounted ? 'transparent' : '#ffffff50'};
         transition: opacity 0.5s ease ${idx *
-          0.25}s, background-color 0.5s ease ${idx * 0.125}s;
+          0.125}s, background-color 0.5s ease ${idx * 0.0625}s;
       }
     `;
   }

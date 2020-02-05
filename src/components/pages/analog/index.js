@@ -55,9 +55,9 @@ const Analog = () => {
   }, []);
 
   const generateList = () => {
-    return Object.values(analog).map(el => {
+    return Object.entries(analog).map(([key, el]) => {
       return (
-        <AnalogItem to={`/analog/${el.id}`}>
+        <AnalogItem key={key} to={`/analog/${key}`}>
           <div className="info">
             <h4>{el.title}</h4>
           </div>

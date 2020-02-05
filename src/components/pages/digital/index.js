@@ -67,9 +67,9 @@ const Digital = () => {
   }, []);
 
   const generateList = () => {
-    return Object.values(digital).map(el => {
+    return Object.entries(digital).map(([key, el]) => {
       return (
-        <DigitalItem to={`/digital/${el.id}`}>
+        <DigitalItem key={key} to={`/digital/${key}`}>
           <div className="info">
             <h4>{el.title}</h4>
           </div>

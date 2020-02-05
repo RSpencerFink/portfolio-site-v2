@@ -1,118 +1,101 @@
 const analog = {
-  1: {
-    id: 1,
+  aaron_judge: {
     title: 'Aaron Judge',
     medium: '',
     size: '',
     img: 'assets/images/photos/analog/aaron_judge'
   },
-  2: {
-    id: 2,
+  andy_warhol: {
     title: 'Andy Warhol',
     medium: '',
     size: '',
     img: 'assets/images/photos/analog/andy_warhol'
   },
-  3: {
-    id: 3,
+  barack_obama: {
     title: 'Barack Obama',
     medium: '',
     size: '',
     img: 'assets/images/photos/analog/barack_obama'
   },
-  4: {
-    id: 4,
+  chance_the_rapper: {
     title: 'Chance The Rapper',
     medium: '',
     size: '',
     img: 'assets/images/photos/analog/chance_the_rapper'
   },
-  5: {
-    id: 5,
+  dr_manhattan: {
     title: 'Dr. Manhattan',
     medium: '',
     size: '',
     img: 'assets/images/photos/analog/dr_manhattan'
   },
-  6: {
-    id: 6,
+  rorschach: {
     title: 'Rorschach',
     medium: '',
     size: '',
     img: 'assets/images/photos/analog/rorschach'
   },
-  7: {
-    id: 7,
+  ozymandias: {
     title: 'Ozymandias',
     medium: '',
     size: '',
     img: 'assets/images/photos/analog/ozymandias'
   },
-  8: {
-    id: 8,
-    title: 'Andy Warhol',
+  han_solo: {
+    title: 'Han Solo',
     medium: '',
     size: '',
     img: 'assets/images/photos/analog/han_solo'
   },
-  9: {
-    id: 9,
+  james_bond: {
     title: 'James Bond',
     medium: '',
     size: '',
     img: 'assets/images/photos/analog/james_bond'
   },
-  10: {
-    id: 10,
+  jon_snow: {
     title: 'Jon Snow',
     medium: '',
     size: '',
     img: 'assets/images/photos/analog/jon_snow'
   },
-  11: {
-    id: 11,
+  lewis_hamilton: {
     title: 'Lewis Hamilton',
     medium: '',
     size: '',
     img: 'assets/images/photos/analog/lewis_hamilton'
   },
-  12: {
-    id: 12,
+  luke_skywalker: {
     title: 'Luke Skywalker',
     medium: '',
     size: '',
     img: 'assets/images/photos/analog/luke_skywalker'
   },
-  13: {
-    id: 13,
+  marilyn_monroe: {
     title: 'Marilyn Monroe',
     medium: '',
     size: '',
     img: 'assets/images/photos/analog/marilyn_monroe'
   },
-  14: {
-    id: 14,
+  princess_leia: {
     title: 'Princess Leia',
     medium: '',
     size: '',
     img: 'assets/images/photos/analog/princess_leia'
   },
-  15: {
-    id: 15,
+  rick_grimes: {
     title: 'Rick Grimes',
     medium: '',
     size: '',
     img: 'assets/images/photos/analog/rick_grimes'
   },
-  16: {
-    id: 16,
-    title: 'Andy Warhol',
+  tinkerbell: {
+    title: 'Tinkerbell',
     medium: '',
     size: '',
     img: 'assets/images/photos/analog/tinkerbell'
   },
-  17: {
-    id: 17,
+  walter_white: {
     title: 'Walter White',
     medium: '',
     size: '',
