@@ -29,7 +29,7 @@ const LogoContainer = styled.svg`
   `}
   .logo-path {
     stroke: #fff;
-    stroke-width: 2px;
+    stroke-width: 4px;
     animation: ${outline} 5s linear 1s forwards, ${reveal} 5s ease 6s forwards;
   }
 `;

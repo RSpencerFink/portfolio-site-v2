@@ -1,38 +1,12 @@
-import React from 'react';
-import Masonry from 'react-masonry-component';
-import styled, { css } from 'styled-components';
+import React, { useState, useEffect } from 'react';
+import styled from 'styled-components';
 import ReactPlayer from 'react-player';
 import { Link } from 'react-router-dom';
 
-import { VAContainer } from '../../shared';
+import { VAContainer, ProjectList } from '../../shared';
 import { digital } from '../../../data/digital';
 
 import { mediaMin } from '../../../styles/mediaQueries';
-
-const animateChildren = ({ numItems, mounted }) => {
-  let childStyles = ``;
-  for (let idx = 1; idx <= numItems; idx += 1) {
-    childStyles += `
-      &:nth-child(${idx}) {
-        opacity: ${mounted ? '1' : '0'};
-        background-color: ${mounted ? 'transparent' : '#ffffff50'};
-        transition: opacity 0.5s ease ${idx *
-          0.25}s, background-color 0.5s ease ${idx * 0.25}s;
-      }
-    `;
-  }
-  return css`
-    ${childStyles}
-  `;
-};
-
-const DigitalList = styled(Masonry)`
-  padding: 0;
-  width: 100%;
-  & > * {
-    ${animateChildren}
-  }
-`;
 
 const DigitalItem = styled(Link)`
   display: flex;
@@ -42,6 +16,10 @@ const DigitalItem = styled(Link)`
   border: 1px solid #fff;
   width: 100%;
   margin: 0 0 16px 0;
+  ${mediaMin.tablet`
+  width: calc(50% - 32px);
+  margin: 16px;
+  `}
   ${mediaMin.tabletLandscape`
   width: calc(33% - 32px);
   margin: 16px;
@@ -82,8 +60,14 @@ const DigitalItem = styled(Link)`
 `;
 
 const Digital = () => {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const generateList = () => {
-    return Array.from(digital, ([key, value]) => value).map(el => {
+    return Object.values(digital).map(el => {
       return (
         <DigitalItem to={`/digital/${el.id}`}>
           <div className="info">
@@ -103,10 +87,9 @@ const Digital = () => {
 
   return (
     <VAContainer className="container">
-      <h2>DIGITAL</h2>
-      <DigitalList mounted={true} numItems={digital.size}>
+      <ProjectList mounted={mounted} numItems={Object.keys(digital).length}>
         {generateList()}
-      </DigitalList>
+      </ProjectList>
     </VAContainer>
   );
 };
