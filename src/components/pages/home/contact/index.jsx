@@ -43,7 +43,7 @@ const ContactForm = styled.form`
   }
   textarea {
     resize: none;
-    height: 25%;
+    height: 25vh;
   }
   input,
   textarea {
