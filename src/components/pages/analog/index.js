@@ -1,12 +1,77 @@
-import React from 'react';
-// import styled from 'styled-components';
+import React, { useState, useEffect } from 'react';
+import styled from 'styled-components';
+import { Link } from 'react-router-dom';
 
-import { VAContainer } from '../../shared';
+import { VAContainer, ProjectList, DynamicImage } from '../../shared';
+import { analog } from '../../../data';
+
+import { mediaMin } from '../../../styles/mediaQueries';
+
+const AnalogItem = styled(Link)`
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  color: #fff;
+  border: 1px solid #fff;
+  width: 100%;
+  margin: 0 0 16px 0;
+  ${mediaMin.tablet`
+  width: calc(50% - 32px);
+  margin: 16px;
+  `}
+  ${mediaMin.tabletLandscape`
+  width: calc(33% - 32px);
+  margin: 16px;
+  `}
+  .info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    padding: 8px;
+    background-color: #00000080;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    h4 {
+      color: #fff;
+      text-align: center;
+      margin: 0;
+      text-transform: uppercase;
+    }
+    &:hover {
+      opacity: 1;
+    }
+  }
+`;
 
 const Analog = () => {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const generateList = () => {
+    return Object.values(analog).map(el => {
+      return (
+        <AnalogItem to={`/analog/${el.id}`}>
+          <div className="info">
+            <h4>{el.title}</h4>
+          </div>
+          <DynamicImage srcProp={el.img} altProp={el.title} />
+        </AnalogItem>
+      );
+    });
+  };
+
   return (
     <VAContainer className="container">
-      <h2>ANALOG</h2>
+      <ProjectList mounted={mounted} numItems={Object.keys(analog).length}>
+        {generateList()}
+      </ProjectList>
     </VAContainer>
   );
 };
