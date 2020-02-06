@@ -20,8 +20,9 @@ const AnalogItem = styled(Link)`
   margin: 16px;
   `}
   ${mediaMin.tabletLandscape`
-  width: calc(33% - 32px);
-  margin: 16px;
+    width: calc(33% - 32px);
+    margin: 16px;
+    min-height: 40vh;
   `}
   .info {
     display: flex;

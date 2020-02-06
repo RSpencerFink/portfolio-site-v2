@@ -16,7 +16,7 @@ const DigitalShowContainer = styled.div`
     margin-bottom: 1em;
     ${mediaMin.tabletLandscape`
         flex-direction: row;
-        justify-content: flex-start;
+        justify-content: space-between;
         align-items: flex-end;
     `}
     .row-section {
@@ -43,9 +43,14 @@ const DigitalShowContainer = styled.div`
   p {
     white-space: pre-line;
   }
-  img {
-    width: 50%;
-    align-self: center;
+  .image-container {
+    display: flex;
+    max-height: 75vh;
+    img {
+      max-height: 100%;
+      max-width: 100%;
+      object-fit: contain;
+    }
   }
 `;
 
@@ -61,8 +66,16 @@ const DigitalShow = () => {
           </Link>
           <h2>{painting.title}</h2>
         </div>
+        <span>{painting.size}</span>
       </div>
-      <DynamicImage srcProp={painting.img} noStyles />
+      <div className="image-container">
+        <DynamicImage
+          srcProp={painting.img}
+          altProp={painting.title}
+          noStyles
+        />
+      </div>
+      <p>{painting.medium}</p>
     </DigitalShowContainer>
   ) : (
     <Redirect to="/digital" />

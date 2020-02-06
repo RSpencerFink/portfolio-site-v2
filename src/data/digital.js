@@ -44,6 +44,39 @@ const digital = {
     description:
       'Director - R. Spencer Fink\nDirector of Photography - R. Spencer Fink\nEditor - Gregg Dellaroca\nShot on the Canon 7D',
     url: 'https://vimeo.com/95457387'
+  },
+  nightshade: {
+    title: 'Nightshade',
+    roles: 'Director, Cinematographer, Editor',
+    description:
+      'A short horror film exploring the fear of the dark.\n\nDirected, Shot, and Edited by:\nR. Spencer Fink\n\nSecond Camera:\nSteven San Miguel\n\nStarring:\nCat Ross\nSteven San Miguel\n\nSpecial Thanks to Chris Pittsley\n\nShot on the Canon 7D and T2i\nCinestyle Preset\nEdited in Adobe Premiere and After Effects.',
+    url: 'https://vimeo.com/51697985'
+  },
+  likuid_sound_promo: {
+    title: 'Likuid Sound Promo',
+    roles: 'Director, Cinematographer, Editor',
+    description: 'Promotional Video for Likuid Sound.',
+    url: 'https://vimeo.com/95457386'
+  },
+  timeflies_live_freestyle: {
+    title: 'Timeflies Live Freestyle',
+    roles: 'Director, Cinematographer, Editor',
+    description:
+      'Timeflies live freestyle at the Middle East Downstairs in Cambridge, MA, on February 17th, 2011.',
+    url: 'https://vimeo.com/95457385'
+  },
+  tritonal_still_with_me: {
+    title:
+      'Tritonal - Still With Me (Seven Lions Remix) Unofficial Music Video',
+    roles: 'Director, Cinematographer, Editor',
+    description: '',
+    url: 'https://vimeo.com/50326532'
+  },
+  graffiti6_over_you: {
+    title: 'Graffiti6 - Over You (Unofficial Music Video)',
+    roles: 'Director, Cinematographer, Editor',
+    description: '',
+    url: 'https://vimeo.com/54908067'
   }
 };
 export { digital };
