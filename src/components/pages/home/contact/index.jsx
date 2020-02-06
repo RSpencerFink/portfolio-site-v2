@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { Element } from 'react-scroll';
-import emailjs from 'emailjs-com';
+import axios from 'axios';
 
 import { variables } from '../../../../styles/variables';
 import { mediaMin } from '../../../../styles/mediaQueries';
@@ -63,30 +63,40 @@ const ContactForm = styled.form`
 `;
 
 const Contact = () => {
-  useEffect(() => {
-    emailjs.init(process.env.REACT_APP_EMAILJS_USER_ID);
-  }, []);
-
   const [formData, setFormData] = useState({
     from_name: '',
     reply_to: '',
-    message_html: ''
+    message: ''
   });
 
   const handleChange = e => {
+    e.persist();
     setFormData(prev => ({
       ...prev,
       [e.target.name]: e.target.value
     }));
   };
 
+  const clearForm = () => {
+    setFormData({
+      from_name: '',
+      reply_to: '',
+      message: ''
+    });
+  };
+
   const handleSubmit = e => {
     e.preventDefault();
-    emailjs.send(
-      process.env.REACT_APP_SERVICE_ID,
-      process.env.REACT_APP_TEMPLATE_ID,
-      formData
-    );
+    axios({
+      method: 'post',
+      url:
+        'https://t0gf755wm0.execute-api.us-east-1.amazonaws.com/default/sendEmailFromPortfolio',
+      data: JSON.stringify(formData)
+    }).then(res => {
+      if (res.status === 200) {
+        clearForm();
+      }
+    });
   };
 
   return (
@@ -110,10 +120,9 @@ const Contact = () => {
             onChange={handleChange}
           />
           <textarea
-            name="message_html"
-            type="textarea"
+            name="message"
             placeholder="Message"
-            value={formData.message_html}
+            value={formData.message}
             onChange={handleChange}
           />
           <button>Submit</button>
