@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import DynamicImage from 'react-dynamic-image';
 import { Element } from 'react-scroll';
 
+import Resume from './Resume';
 import { Divider } from '../../../shared';
 import { variables } from '../../../../styles/variables';
 import { mediaMin } from '../../../../styles/mediaQueries';
@@ -69,6 +70,7 @@ const About = () => {
             </p>
           </Column>
         </MainRow>
+        <Resume />
       </AboutContainer>
     </Element>
   );
