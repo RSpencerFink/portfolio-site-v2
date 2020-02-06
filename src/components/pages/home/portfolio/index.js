@@ -36,6 +36,9 @@ const animateChildren = ({ numItems, mounted }) => {
 const PortfolioContainer = styled.div`
   flex-direction: column;
   align-items: center;
+  h2 {
+    margin: 0 0 32px 0;
+  }
   a {
     margin: auto 0 0 0;
     color: #fff;
@@ -54,6 +57,7 @@ const PortfolioContainer = styled.div`
 const ProjectList = styled(Masonry)`
   padding: 0;
   width: 100%;
+  margin-bottom: 64px;
   & > * {
     ${animateChildren}
   }

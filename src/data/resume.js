@@ -22,15 +22,16 @@ const education = [
     start: '2018',
     end: '2018',
     heading: 'APP ACADEMY',
-    subHeading: '',
-    body: ''
+    subHeading: 'NEW YORK, NY',
+    body:
+      '1000+ hour software engineering bootcamp with a less than 3% acceptance rate.'
   },
   {
     start: '2009',
     end: '2013',
     heading: 'EMERSON COLLEGE',
-    subHeading: 'BA - FILM PRODUCTION',
-    body: ''
+    subHeading: 'BOSTON, MA',
+    body: 'BA - Film Production'
   }
 ];
 
