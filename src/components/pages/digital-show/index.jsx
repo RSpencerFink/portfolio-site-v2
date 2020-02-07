@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { useParams, Redirect, Link } from 'react-router-dom';
 import ReactPlayer from 'react-player';
+import { Helmet } from 'react-helmet';
 
 import { digital } from '../../../data/digital';
 import { mediaMin } from '../../../styles/mediaQueries';
@@ -65,26 +66,32 @@ const DigitalShow = () => {
   const { id } = useParams();
   const video = digital[id];
   return video ? (
-    <DigitalShowContainer className="container">
-      <div className="row">
-        <div className="row-section">
-          <Link className="back" to="/digital">
-            <img src={Back} alt="back" />
-          </Link>
-          <h2>{video.title}</h2>
+    <>
+      <Helmet>
+        <title>R. Spencer Fink | {video.title}</title>
+        <meta name="description" content="" />
+      </Helmet>
+      <DigitalShowContainer className="container">
+        <div className="row">
+          <div className="row-section">
+            <Link className="back" to="/digital">
+              <img src={Back} alt="back" />
+            </Link>
+            <h2>{video.title}</h2>
+          </div>
+          <span>{video.roles}</span>
         </div>
-        <span>{video.roles}</span>
-      </div>
-      <VideoWrapper>
-        <ReactPlayer
-          className="react-player"
-          url={video.url}
-          width="100%"
-          height="100%"
-        />
-      </VideoWrapper>
-      {video.description && <p>{video.description}</p>}
-    </DigitalShowContainer>
+        <VideoWrapper>
+          <ReactPlayer
+            className="react-player"
+            url={video.url}
+            width="100%"
+            height="100%"
+          />
+        </VideoWrapper>
+        {video.description && <p>{video.description}</p>}
+      </DigitalShowContainer>
+    </>
   ) : (
     <Redirect to="/digital" />
   );

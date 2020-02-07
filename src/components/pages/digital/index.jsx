@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import ReactPlayer from 'react-player';
 import { Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet';
 
 import { VAContainer, ProjectList } from '../../shared';
 import { digital } from '../../../data/digital';
@@ -86,11 +87,17 @@ const Digital = () => {
   };
 
   return (
-    <VAContainer className="container">
-      <ProjectList mounted={mounted} numItems={Object.keys(digital).length}>
-        {generateList()}
-      </ProjectList>
-    </VAContainer>
+    <>
+      <Helmet>
+        <title>R. Spencer Fink | Visual Artist</title>
+        <meta name="description" content="" />
+      </Helmet>
+      <VAContainer className="container">
+        <ProjectList mounted={mounted} numItems={Object.keys(digital).length}>
+          {generateList()}
+        </ProjectList>
+      </VAContainer>
+    </>
   );
 };
 

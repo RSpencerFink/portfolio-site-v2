@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet';
 
 import { VAContainer, ProjectList, DynamicImage } from '../../shared';
 import { analog } from '../../../data';
@@ -69,11 +70,17 @@ const Analog = () => {
   };
 
   return (
-    <VAContainer className="container">
-      <ProjectList mounted={mounted} numItems={Object.keys(analog).length}>
-        {generateList()}
-      </ProjectList>
-    </VAContainer>
+    <>
+      <Helmet>
+        <title>R. Spencer Fink | Visual Artist</title>
+        <meta name="description" content="" />
+      </Helmet>
+      <VAContainer className="container">
+        <ProjectList mounted={mounted} numItems={Object.keys(analog).length}>
+          {generateList()}
+        </ProjectList>
+      </VAContainer>
+    </>
   );
 };
 

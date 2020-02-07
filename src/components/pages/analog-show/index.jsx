@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useParams, Redirect, Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet';
 
 import { DynamicImage } from '../../shared';
 import { analog } from '../../../data';
@@ -58,25 +59,31 @@ const DigitalShow = () => {
   const { id } = useParams();
   const painting = analog[id];
   return painting ? (
-    <DigitalShowContainer className="container">
-      <div className="row">
-        <div className="row-section">
-          <Link className="back" to="/analog">
-            <img src={Back} alt="back" />
-          </Link>
-          <h2>{painting.title}</h2>
+    <>
+      <Helmet>
+        <title>R. Spencer Fink | {painting.title}</title>
+        <meta name="description" content="" />
+      </Helmet>
+      <DigitalShowContainer className="container">
+        <div className="row">
+          <div className="row-section">
+            <Link className="back" to="/analog">
+              <img src={Back} alt="back" />
+            </Link>
+            <h2>{painting.title}</h2>
+          </div>
+          <span>{painting.size}</span>
         </div>
-        <span>{painting.size}</span>
-      </div>
-      <div className="image-container">
-        <DynamicImage
-          srcProp={painting.img}
-          altProp={painting.title}
-          noStyles
-        />
-      </div>
-      <p>{painting.medium}</p>
-    </DigitalShowContainer>
+        <div className="image-container">
+          <DynamicImage
+            srcProp={painting.img}
+            altProp={painting.title}
+            noStyles
+          />
+        </div>
+        <p>{painting.medium}</p>
+      </DigitalShowContainer>
+    </>
   ) : (
     <Redirect to="/digital" />
   );
