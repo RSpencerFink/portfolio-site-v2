@@ -17,7 +17,7 @@ const ResumeRow = styled.div`
   display: flex;
   width: 100%;
   flex-direction: column;
-  ${mediaMin.tabletLandscape`
+  ${mediaMin.tablet`
     flex-direction: row;
   `}
 `;
@@ -25,7 +25,7 @@ const ResumeRow = styled.div`
 const Time = styled.span`
   width: fit-content;
   margin: 32px 0;
-  ${mediaMin.tabletLandscape`
+  ${mediaMin.tablet`
   margin: 16px 0 16px 50%;
   transform: translateX(-50%);
   `}
@@ -33,7 +33,7 @@ const Time = styled.span`
 
 const Left = styled.div`
   width: 100%;
-  ${mediaMin.tabletLandscape`
+  ${mediaMin.tablet`
   width: 50%;
   align-items: flex-end;
   padding-right: 32px;
@@ -53,7 +53,7 @@ const Left = styled.div`
 
 const Right = styled.div`
   width: 100%;
-  ${mediaMin.tabletLandscape`
+  ${mediaMin.tablet`
   width: 50%;
   padding-left: 32px;
   border-left: 1px solid #fff;

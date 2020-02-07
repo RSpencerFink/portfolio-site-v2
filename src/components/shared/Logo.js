@@ -23,7 +23,10 @@ const LogoContainer = styled.svg`
   z-index: 100;
   fill: transparent;
   filter: drop-shadow(0px 0px 5px rgba(250, 250, 250, 0.4));
-  width: 90%;
+  width: 75%;
+  ${mediaMin.tablet`
+    width: 50%;
+  `}
   ${mediaMin.tabletLandscape`
     width: 25%;
   `}

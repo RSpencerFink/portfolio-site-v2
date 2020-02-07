@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
-import DynamicImage from 'react-dynamic-image';
 import { Element } from 'react-scroll';
+import { DynamicImage } from '../../../shared';
 
 import Resume from './Resume';
 import { Divider } from '../../../shared';
@@ -32,10 +32,13 @@ const Column = styled.div`
     width: 50%;
   `}
   img {
+    border: 1px solid #fff;
     max-width: 100%;
     max-height: 100%;
+    margin-bottom: 1em;
     width: 100%;
     ${mediaMin.tabletLandscape`
+      margin-bottom: 0;
       width: 50%;
     `}
   }
@@ -56,7 +59,7 @@ const About = () => {
         <MainRow>
           <Column>
             <DynamicImage
-              srcProp="/images/photos/about/rsf-headshot/"
+              srcProp="assets/images/photos/about/rsf-headshot"
               altProp="photograph of spencer fink"
             />
           </Column>

@@ -28,6 +28,7 @@ const Typographystyles = createGlobalStyle`
   
   a {
     color: #fff;
+    cursor: pointer;
     &:link,
     &:active,
     &:focus,
@@ -36,7 +37,7 @@ const Typographystyles = createGlobalStyle`
     }
     text-decoration: none;
     &:hover {
-      text-decoration: underline;
+      text-decoration: none;
     }
   }
 

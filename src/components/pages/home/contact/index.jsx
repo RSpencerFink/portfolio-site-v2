@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { Element } from 'react-scroll';
 import axios from 'axios';
@@ -21,6 +21,9 @@ const ContactForm = styled.form`
   justify-content: center;
   height: 100%;
   width: 100%;
+  ${mediaMin.tablet`
+    width: 75%;
+  `}
   ${mediaMin.tabletLandscape`
     width: 25%;
   `}

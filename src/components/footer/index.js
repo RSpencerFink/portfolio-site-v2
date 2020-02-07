@@ -20,6 +20,9 @@ const FooterContainer = styled.footer`
 
 const Logo = styled.img`
   width: 25%;
+  ${mediaMin.tablet`
+    width: 10%;
+  `}
   ${mediaMin.tabletLandscape`
     width: 5%;
   `}
@@ -32,7 +35,7 @@ const SocialMediaRow = styled.ul`
   justify-content: center;
   font-size: 1em;
   ${mediaMin.tabletLandscape`
-  font-size: 1.25em;
+    font-size: 1.25em;
     width: 30%;
   `}
   padding: 0;
