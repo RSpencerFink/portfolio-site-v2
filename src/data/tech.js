@@ -46,7 +46,7 @@ const tech = [
     ]
   },
   {
-    heading: 'OTHER EXPERIENCE',
+    heading: 'OTHER FAMILIARITIES',
     body: [
       { icon: <NextDotJs color="#fff" size="2em" />, name: 'Next JS' },
       { icon: <Gulp color="#fff" size="2em" />, name: 'Gulp' },
