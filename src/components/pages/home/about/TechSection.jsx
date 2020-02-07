@@ -36,7 +36,7 @@ const Left = styled.div`
   display: flex;
   flex-direction: column;
   h4 {
-    margin-bottom: 2em;
+    margin: 0 0 2em 0;
   }
 `;
 
