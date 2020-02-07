@@ -2,7 +2,13 @@ import React from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 
 import { Navigation, Footer, ScrollToTop } from './components';
-import { Home, Analog, Digital, DigitalShow } from './components/pages';
+import {
+  Home,
+  Analog,
+  Digital,
+  DigitalShow,
+  AnalogShow
+} from './components/pages';
 import { RootStyles, ContainerStyles, TypographyStyles } from './styles/global';
 
 const App = () => {
@@ -16,7 +22,7 @@ const App = () => {
           <Navigation />
           <Switch>
             <Route path="/" exact component={Home} />
-            <Route path="/analog/:id" component={Analog} />
+            <Route path="/analog/:id" component={AnalogShow} />
             <Route path="/analog" component={Analog} />
             <Route path="/digital/:id" component={DigitalShow} />
             <Route path="/digital" component={Digital} />

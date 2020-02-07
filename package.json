@@ -3,6 +3,7 @@
     "version": "0.1.0",
     "private": true,
     "dependencies": {
+        "@icons-pack/react-simple-icons": "^2.2.0",
         "axios": "^0.19.2",
         "emailjs-com": "^2.4.1",
         "konva": "^3.2.5",
@@ -10,6 +11,7 @@
         "react": "^16.8.2",
         "react-dom": "^16.8.2",
         "react-dynamic-image": "^1.2.2",
+        "react-helmet": "^5.2.1",
         "react-konva": "^16.8.6",
         "react-masonry-component": "^6.2.1",
         "react-player": "^1.15.2",

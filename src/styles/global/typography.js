@@ -2,30 +2,42 @@ import { createGlobalStyle } from 'styled-components';
 // import { mediaMin } from '../mediaQueries'
 
 const Typographystyles = createGlobalStyle`
-  h1, h2, h3, h4, h5, h6, li, button, a {
+  h1, h2, h3, h4, h5, h6, li, button, a, span, p {
     font-family: 'Roboto', sans-serif;
     font-style: normal;
     letter-spacing: .1rem;
     color: #fff;
-    text-shadow: 0px 0px 5px #ffffff40;
   }
-  
-  p {
-    font-family: 'Roboto', sans-serif;
-    font-style: normal;
+  h1{
+    font-size: 2em;
+  }
+  h2{
+    font-size: 1.75em;
+  }
+  h3{
+    font-size: 1.5em;
+  }
+  h4{
+    font-size: 1.25em;
+  }
+  h1, h2, h3, h4, h5, h6, li, button, a {
+    text-shadow: 0px 0px 5px #ffffff40;
+
   }
   
   
   a {
+    color: #fff;
+    cursor: pointer;
     &:link,
     &:active,
     &:focus,
     &:visited {
-      color: #000;
+      color: #fff;
     }
     text-decoration: none;
     &:hover {
-      text-decoration: underline;
+      text-decoration: none;
     }
   }
 
