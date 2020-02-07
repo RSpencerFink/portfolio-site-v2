@@ -16,14 +16,16 @@ const AnalogItem = styled(Link)`
   border: 1px solid #fff;
   width: 100%;
   margin: 0 0 16px 0;
+  min-height: 10vh;
   ${mediaMin.tablet`
   width: calc(50% - 32px);
   margin: 16px;
+  min-height: 20vh;
   `}
   ${mediaMin.tabletLandscape`
-    width: calc(33% - 32px);
-    margin: 16px;
-    min-height: 40vh;
+  width: calc(33% - 32px);
+  margin: 16px;
+  min-height: initial;
   `}
   .info {
     display: flex;

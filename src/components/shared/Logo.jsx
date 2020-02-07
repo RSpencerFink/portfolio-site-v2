@@ -33,7 +33,7 @@ const LogoContainer = styled.svg`
   .logo-path {
     stroke: #fff;
     stroke-width: 4px;
-    animation: ${outline} 5s linear 1s forwards, ${reveal} 5s ease 6s forwards;
+    animation: ${outline} 3s linear 1s forwards, ${reveal} 5s ease 4s forwards;
   }
 `;
 
