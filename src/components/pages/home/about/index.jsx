@@ -4,6 +4,7 @@ import { Element } from 'react-scroll';
 import { DynamicImage } from '../../../shared';
 
 import Resume from './Resume';
+import Tech from './Tech';
 import { Divider } from '../../../shared';
 import { variables } from '../../../../styles/variables';
 import { mediaMin } from '../../../../styles/mediaQueries';
@@ -51,6 +52,7 @@ const Column = styled.div`
     `}
   }
 `;
+
 const About = () => {
   return (
     <Element name="about">
@@ -73,6 +75,7 @@ const About = () => {
             </p>
           </Column>
         </MainRow>
+        <Tech />
         <Resume />
       </AboutContainer>
     </Element>

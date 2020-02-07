@@ -11,7 +11,7 @@ import { variables } from '../../../../styles/variables';
 const ResumeContainer = styled.div`
   display: flex;
   flex-direction: column;
-  margin: 0 auto;
+  margin: 2em auto;
   width: 100%;
   ${mediaMin.tabletLandscape`
     width: 60%;

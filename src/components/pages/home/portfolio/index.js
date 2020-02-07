@@ -44,6 +44,11 @@ const PortfolioContainer = styled.div`
     color: #fff;
     border: 1px solid #fff;
     padding: 16px;
+    text-align: center;
+    width: 100%;
+    ${mediaMin.tabletLandscape`
+      width: initial;
+    `}
     &:visited {
       color: #fff;
     }
@@ -99,6 +104,7 @@ const Project = styled.li`
       color: #fff;
       text-transform: uppercase;
       font-size: 0.75em;
+
       &:hover {
         text-decoration: none;
         background-color: ${variables.colors.hoverGrey};
@@ -152,7 +158,9 @@ const Portfolio = () => {
           >
             {renderProjects()}
           </ProjectList>
-          <Link to="/analog">VISUAL ARTS PORTFOLIO</Link>
+          <Link className="portfolio-link" to="/analog">
+            VISUAL ARTS PORTFOLIO
+          </Link>
         </PortfolioContainer>
       </Waypoint>
     </Element>

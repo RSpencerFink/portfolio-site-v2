@@ -3,6 +3,7 @@ import { development } from './development';
 import { digital } from './digital';
 import { scrollRoutes, linkRoutes } from './routes';
 import { experience, education } from './resume';
+import { tech } from './tech';
 
 export {
   analog,
@@ -11,5 +12,6 @@ export {
   scrollRoutes,
   linkRoutes,
   experience,
-  education
+  education,
+  tech
 };
