@@ -49,11 +49,11 @@ const tech = [
     heading: 'OTHER FAMILIARITIES',
     body: [
       { icon: <NextDotJs color="#fff" size="2em" />, name: 'Next JS' },
-      { icon: <Gulp color="#fff" size="2em" />, name: 'Gulp' },
+      { icon: <Gatsby color="#fff" size="2em" />, name: 'Gatsby JS' },
       { icon: <Ruby color="#fff" size="2em" />, name: 'Ruby' },
       { icon: <Rails color="#fff" size="2em" />, name: 'Rails' },
       { icon: <Postgresql color="#fff" size="2em" />, name: 'PostgresQL' },
-      { icon: <Gatsby color="#fff" size="2em" />, name: 'Gatsby JS' },
+      { icon: <Gulp color="#fff" size="2em" />, name: 'Gulp' },
       { icon: <Invision color="#fff" size="2em" />, name: 'Invision' },
       { icon: <Sketch color="#fff" size="2em" />, name: 'Sketch' },
       { icon: <Postman color="#fff" size="2em" />, name: 'Postman' },
