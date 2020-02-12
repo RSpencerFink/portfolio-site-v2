@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useLocation } from 'react-router-dom';
 
-import { variables } from '../../styles/variables';
+import { variables } from 'styles/variables';
 
 import LinkNavigation from './LinkNavigation';
 import ScrollNavigation from './ScrollNavigation';

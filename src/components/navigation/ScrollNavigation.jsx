@@ -1,9 +1,9 @@
 import React from 'react';
 import { Link } from 'react-scroll';
 
-import logo from '../../assets/images/icons/rsf-white.svg';
-import DesktopScrollNavigation from './DesktopScrollNavigation';
+import logo from 'assets/images/icons/rsf-white.svg';
 
+import DesktopScrollNavigation from './DesktopScrollNavigation';
 import { Left, Right } from './styles';
 
 const ScrollNavigation = ({ onSetActive }) => {

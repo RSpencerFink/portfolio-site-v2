@@ -1,10 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-import logo from '../../assets/images/icons/rsf-white.svg';
+import logo from 'assets/images/icons/rsf-white.svg';
 
 import DesktopLinkNavigation from './DesktopLinkNavigation';
-
 import { Left, Right } from './styles';
 
 const LinkNavigation = () => {

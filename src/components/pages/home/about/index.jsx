@@ -1,13 +1,13 @@
 import React from 'react';
 import styled from 'styled-components';
 import { Element } from 'react-scroll';
-import { DynamicImage } from '../../../shared';
 
 import Resume from './Resume';
 import Tech from './Tech';
-import { Divider } from '../../../shared';
-import { variables } from '../../../../styles/variables';
-import { mediaMin } from '../../../../styles/mediaQueries';
+import { Divider, DynamicImage } from 'components/shared';
+
+import { variables } from 'styles/variables';
+import { mediaMin } from 'styles/mediaQueries';
 
 const AboutContainer = styled.div`
   background-color: ${variables.colors.darkGrey};

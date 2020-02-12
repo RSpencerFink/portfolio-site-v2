@@ -5,11 +5,11 @@ import { Waypoint } from 'react-waypoint';
 import { Link } from 'react-router-dom';
 import Masonry from 'react-masonry-component';
 
-import { variables } from '../../../../styles/variables';
-import { mediaMin } from '../../../../styles/mediaQueries';
-import { Divider } from '../../../shared';
+import { development } from 'data';
 
-import { development } from '../../../../data/development';
+import { Divider } from 'components/shared';
+import { variables } from 'styles/variables';
+import { mediaMin } from 'styles/mediaQueries';
 
 const masonryOptions = {
   transitionDuration: '0.1s'

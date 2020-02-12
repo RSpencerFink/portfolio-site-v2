@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { Waypoint } from 'react-waypoint';
 
+import { experience, education } from 'data';
 import ResumeSection from './ResumeSection';
-import Downloadable from '../../../../assets/documents/R. Spencer Fink Resume.pdf';
-import { experience, education } from '../../../../data';
-import { mediaMin } from '../../../../styles/mediaQueries';
-import { variables } from '../../../../styles/variables';
+import Downloadable from 'assets/documents/R. Spencer Fink Resume.pdf';
+import { mediaMin } from 'styles/mediaQueries';
+import { variables } from 'styles/variables';
 
 const ResumeContainer = styled.div`
   display: flex;

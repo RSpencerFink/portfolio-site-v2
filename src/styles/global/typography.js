@@ -1,5 +1,4 @@
 import { createGlobalStyle } from 'styled-components';
-// import { mediaMin } from '../mediaQueries'
 
 const Typographystyles = createGlobalStyle`
   h1, h2, h3, h4, h5, h6, li, button, a, span, p {

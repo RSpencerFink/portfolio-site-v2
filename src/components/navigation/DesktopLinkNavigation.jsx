@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 
-import { linkRoutes } from '../../data/routes';
+import { linkRoutes } from 'data/routes';
 
 const DesktopHomeNavigation = () => {
   const generateRoutes = () => {
