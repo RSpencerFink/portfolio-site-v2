@@ -3,10 +3,10 @@ import styled from 'styled-components';
 import { useParams, Redirect, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 
-import { DynamicImage } from '../../shared';
-import { analog } from '../../../data';
-import { mediaMin } from '../../../styles/mediaQueries';
-import Back from '../../../assets/images/icons/back.svg';
+import { analog } from 'data';
+import Back from 'assets/images/icons/back.svg';
+import { DynamicImage } from 'components/shared';
+import { mediaMin } from 'styles/mediaQueries';
 
 const DigitalShowContainer = styled.div`
   flex-direction: column;

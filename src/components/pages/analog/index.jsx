@@ -3,10 +3,10 @@ import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 
-import { VAContainer, ProjectList, DynamicImage } from '../../shared';
-import { analog } from '../../../data';
+import { VAContainer, ProjectList, DynamicImage } from 'components/shared';
+import { analog } from 'data';
 
-import { mediaMin } from '../../../styles/mediaQueries';
+import { mediaMin } from 'styles/mediaQueries';
 
 const AnalogItem = styled(Link)`
   display: flex;

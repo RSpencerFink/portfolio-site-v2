@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-import { mediaMin } from '../../styles/mediaQueries';
+import { mediaMin } from 'styles/mediaQueries';
 
 const Left = styled.div`
   display: flex;

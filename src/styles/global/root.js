@@ -1,5 +1,5 @@
 import { createGlobalStyle } from 'styled-components';
-import { variables } from '../variables';
+import { variables } from 'styles/variables';
 
 const RootStyles = createGlobalStyle`
   * {
@@ -8,6 +8,7 @@ const RootStyles = createGlobalStyle`
   html, body {
     background: #fff;
     max-width: 100vw;
+    overscroll-behavior-y: none;
   }
   body {
     margin: 0;

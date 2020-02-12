@@ -4,10 +4,10 @@ import ReactPlayer from 'react-player';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 
-import { VAContainer, ProjectList } from '../../shared';
-import { digital } from '../../../data/digital';
+import { VAContainer, ProjectList } from 'components/shared';
+import { digital } from 'data/digital';
 
-import { mediaMin } from '../../../styles/mediaQueries';
+import { mediaMin } from 'styles/mediaQueries';
 
 const DigitalItem = styled(Link)`
   display: flex;

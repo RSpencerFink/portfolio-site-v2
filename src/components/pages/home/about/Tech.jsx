@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { Waypoint } from 'react-waypoint';
 
+import { tech } from 'data';
 import TechSection from './TechSection';
-import { tech } from '../../../../data';
-import { mediaMin } from '../../../../styles/mediaQueries';
+import { mediaMin } from 'styles/mediaQueries';
 
 const TechContainer = styled.div`
   display: flex;

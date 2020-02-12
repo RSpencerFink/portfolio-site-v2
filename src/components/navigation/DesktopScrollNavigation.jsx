@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-scroll';
 
-import { scrollRoutes } from '../../data/routes';
+import { scrollRoutes } from 'data/routes';
 
 const DesktopHomeNavigation = ({ onSetActive }) => {
   const generateRoutes = () => {

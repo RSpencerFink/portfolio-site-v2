@@ -4,9 +4,9 @@ import { useParams, Redirect, Link } from 'react-router-dom';
 import ReactPlayer from 'react-player';
 import { Helmet } from 'react-helmet';
 
-import { digital } from '../../../data/digital';
-import { mediaMin } from '../../../styles/mediaQueries';
-import Back from '../../../assets/images/icons/back.svg';
+import { digital } from 'data';
+import { mediaMin } from 'styles/mediaQueries';
+import Back from 'assets/images/icons/back.svg';
 
 const DigitalShowContainer = styled.div`
   flex-direction: column;

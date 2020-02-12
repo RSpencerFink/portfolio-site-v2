@@ -3,9 +3,9 @@ import styled from 'styled-components';
 import { Element } from 'react-scroll';
 import axios from 'axios';
 
-import { variables } from '../../../../styles/variables';
-import { mediaMin } from '../../../../styles/mediaQueries';
-import { Divider } from '../../../shared';
+import { Divider } from 'components/shared';
+import { variables } from 'styles/variables';
+import { mediaMin } from 'styles/mediaQueries';
 
 const ContactContainer = styled.div`
   flex-direction: column;

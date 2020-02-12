@@ -1,11 +1,11 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import logo from '../../assets/images/icons/rsf-white.svg';
+import logo from 'assets/images/icons/rsf-white.svg';
 
-import { Divider } from '../shared';
-import { variables } from '../../styles/variables';
-import { mediaMin } from '../../styles/mediaQueries';
+import { Divider } from 'components/shared';
+import { variables } from 'styles/variables';
+import { mediaMin } from 'styles/mediaQueries';
 
 const FooterContainer = styled.footer`
   display: flex;
