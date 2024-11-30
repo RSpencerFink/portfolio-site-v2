@@ -1,16 +1,16 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
-import { Waypoint } from 'react-waypoint';
+import React, { useState } from "react";
+import styled from "styled-components";
+import { Waypoint } from "react-waypoint";
 
-import { mediaMin } from 'styles/mediaQueries';
+import { mediaMin } from "styles/mediaQueries";
 
 const ResumeSectionContainer = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
   transition: opacity 0.5s ease 0.5s, transform 0.5s ease 0.5s;
-  opacity: ${props => (props.visible ? '1' : '0')};
-  transform: translateY(${props => (props.visible ? '0' : '8px')});
+  opacity: ${(props) => (props.visible ? "1" : "0")};
+  transform: translateY(${(props) => (props.visible ? "0" : "8px")});
 `;
 
 const ResumeRow = styled.div`
@@ -66,7 +66,7 @@ const Right = styled.div`
   }
 `;
 
-const ResumeSection = ({ entry }) => {
+const ResumeSection = ({ entry, showJobStart = true }) => {
   const { heading, subHeading, body, start, end } = entry;
   const [mounted, setMounted] = useState(false);
   return (
@@ -82,7 +82,7 @@ const ResumeSection = ({ entry }) => {
             <p>{body}</p>
           </Right>
         </ResumeRow>
-        {start && <Time>{start}</Time>}
+        {start && showJobStart && <Time>{start}</Time>}
       </ResumeSectionContainer>
     </Waypoint>
   );
