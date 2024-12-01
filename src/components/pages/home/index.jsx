@@ -1,10 +1,10 @@
-import React from 'react';
-import { Helmet } from 'react-helmet';
+import React from "react";
+import { Helmet } from "react-helmet";
 
-import Landing from './landing';
-import About from './about';
-import Portfolio from './portfolio';
-import Contact from './contact';
+import Landing from "./landing";
+import About from "./about";
+import Portfolio from "./portfolio";
+import Contact from "./contact";
 
 const Home = () => {
   return (
@@ -13,11 +13,7 @@ const Home = () => {
         <title>R. Spencer Fink | Software Engineer</title>
         <meta
           name="description"
-          content="I’m Spencer. I’m a New York based software developer with strong
-              skills in React / Redux, Ruby on Rails, Javascript, and
-              PostgreSQL. I also have an extensive background in visual arts
-              with an emphasis on photography, filmmaking, and painting. Let’s
-              make something beautiful together."
+          content="I’m a Software Engineer with a strong background in building scalable, user-focused solutions. I specialize in developing tools that empower users, designing and optimizing algorithms, and creating efficient systems that drive business outcomes. With experience in both full-stack development and entrepreneurship, I’m passionate about solving complex problems and delivering impactful results. I enjoy collaborating with teams to bring creative and technical visions to life."
         />
       </Helmet>
       <Landing />

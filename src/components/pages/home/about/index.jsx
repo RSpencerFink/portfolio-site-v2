@@ -1,13 +1,13 @@
-import React from 'react';
-import styled from 'styled-components';
-import { Element } from 'react-scroll';
+import React from "react";
+import styled from "styled-components";
+import { Element } from "react-scroll";
 
-import Resume from './Resume';
-import Tech from './Tech';
-import { Divider, DynamicImage } from 'components/shared';
+import Resume from "./Resume";
+import Tech from "./Tech";
+import { Divider, DynamicImage } from "components/shared";
 
-import { variables } from 'styles/variables';
-import { mediaMin } from 'styles/mediaQueries';
+import { variables } from "styles/variables";
+import { mediaMin } from "styles/mediaQueries";
 
 const AboutContainer = styled.div`
   background-color: ${variables.colors.darkGrey};
@@ -67,11 +67,14 @@ const About = () => {
           </Column>
           <Column>
             <p>
-              I’m Spencer. I’m a New York based software developer with strong
-              skills in React / Redux, Ruby on Rails, Javascript, and
-              PostgreSQL. I also have an extensive background in visual arts
-              with an emphasis on photography, filmmaking, and painting. Let’s
-              make something beautiful together.
+              I’m a Software Engineer with a strong background in building
+              scalable, user-focused solutions. I specialize in developing tools
+              that empower users, designing and optimizing algorithms, and
+              creating efficient systems that drive business outcomes. With
+              experience in both full-stack development and entrepreneurship,
+              I’m passionate about solving complex problems and delivering
+              impactful results. I enjoy collaborating with teams to bring
+              creative and technical visions to life.
             </p>
           </Column>
         </MainRow>
