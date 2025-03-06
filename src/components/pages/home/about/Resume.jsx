@@ -60,7 +60,7 @@ const Resume = () => {
       {experience.map((job, i) => {
         const prevJob = experience[i + 1];
         let showJobStart = true;
-        if (!!prevJob && prevJob.end == job.start) {
+        if (!!prevJob && prevJob.end === job.start) {
           showJobStart = false;
         }
         return <ResumeSection entry={job} showJobStart={showJobStart} />;

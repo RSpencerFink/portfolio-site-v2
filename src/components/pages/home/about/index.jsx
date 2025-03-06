@@ -61,7 +61,7 @@ const About = () => {
         <MainRow>
           <Column>
             <DynamicImage
-              srcProp="assets/images/photos/about/rsf-headshot"
+              srcProp="assets/images/photos/about/rsf-headshot-2"
               altProp="photograph of spencer fink"
             />
           </Column>
