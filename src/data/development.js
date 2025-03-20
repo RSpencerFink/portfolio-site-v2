@@ -6,6 +6,13 @@ const development = [
     tech: "Next.JS, Drizzle ORM, Tailwind CSS, PostgreSQL, Vercel",
   },
   {
+    title: "Freecast",
+    repo: "https://github.com/RSpencerFink/freecast",
+    link: "https://freecast.vercel.app",
+    desc: "Freecast is a modern podcast discovery and analysis platform that allows users to search, explore, and extract insights from podcast content.",
+    tech: "Next.JS, Drizzle ORM, Tailwind CSS, PostgreSQL, Vercel, OpenAI, AssemblyAI, iTunes Search API, python",
+  },
+  {
     title: "react-dynamic-image",
     repo: "https://github.com/RSpencerFink/react-dynamic-image",
     link: "https://www.npmjs.com/package/react-dynamic-image",
