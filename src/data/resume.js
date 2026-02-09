@@ -1,7 +1,14 @@
 const experience = [
   {
-    start: "2020",
+    start: "2025",
     end: "PRESENT",
+    heading: "HYPHA",
+    subHeading: "MEMBER OF THE TECHNICAL STAFF",
+    body: "Hypha is an AI-powered document intelligence platform designed for investment teams. The platform automatically extracts structured data from financial documents like loan agreements, rent rolls, and financial statements, enabling teams to streamline data extraction, portfolio monitoring, and reporting workflows.",
+  },
+  {
+    start: "2020",
+    end: "2025",
     heading: "META",
     subHeading: "SOFTWARE ENGINEER",
     body: "Rights Manager \n\n• Project Go Dark: Led the development of a compliance framework that enabled instant content blocking and muting across all media usage within the Meta family of apps. This solution ensured regulatory compliance and protected the company from potential violations of music licensing agreements, with no latency impact for end users. \n\n• Matching Algorithm Improvements: Spearheaded direction of next-generation media matching algorithms and performed integration into copyright protection tooling, an upgrade that enhanced media detection and cut annual hardware costs by over $10M. \n\n• Music Metadata Clustering: Designed a system to resolve ownership conflicts, deduplicate database records, and streamline complex data models for efficient management in the music ownership space. \n\n Horizon Creator Economy \n\n• Creator Incentives Bonus Programs: Designed, developed, and deployed two data-driven bonus programs that incentivized creators to build immersive worlds, driving mobile user engagement and increasing in-world purchases through monetary incentives for top creators. \n\n• UI Shop: Designed and developed a fully customizable in-game UI shop, streamlining in-game purchases and empowering both internal game designers and third-party creators with robust tools for creating and managing virtual storefronts.",
