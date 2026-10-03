@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { PanelFrame } from '@/components/panels/PanelFrame';
 import { JsonLd } from '@/components/JsonLd';
 import { SITE_URL, person, resume, socials } from '@/content/site';
-import { pageMeta, personLd } from '@/lib/seo';
+import { LLMS_ALTERNATE, pageMeta, personLd } from '@/lib/seo';
 import { Insignia } from '@/components/Insignia';
 import { jobs } from '@/content/work';
 import e from '@/components/panels/Entity.module.css';
@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     image: `${person.headshot.base}_800.jpg`,
     type: 'profile',
   }),
-  alternates: { canonical: '/about', types: { 'application/pdf': resume.href } },
+  alternates: { canonical: '/about', types: { ...LLMS_ALTERNATE, 'application/pdf': resume.href } },
 };
 
 export default function AboutPage() {

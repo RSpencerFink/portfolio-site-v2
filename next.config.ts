@@ -12,6 +12,9 @@ const nextConfig: NextConfig = {
       { source: '/digital', destination: '/visual-arts/digital', permanent: true },
       ...paintings.map((p) => ({ source: `/analog/${p.legacyId}`, destination: `/visual-arts/analog/${p.slug}`, permanent: true })),
       ...films.map((f) => ({ source: `/digital/${f.legacyId}`, destination: `/visual-arts/digital/${f.slug}`, permanent: true })),
+      // Unknown legacy ids land on the listing, as the old app did.
+      { source: '/analog/:path*', destination: '/visual-arts/analog', permanent: true },
+      { source: '/digital/:path*', destination: '/visual-arts/digital', permanent: true },
     ];
   },
 };

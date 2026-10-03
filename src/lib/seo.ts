@@ -11,13 +11,16 @@ interface PageMetaInput {
 }
 
 /** Generated sky OG (1200 × 630, a render of the H3 chart) for pages without their own still or painting. */
+/** Every page advertises the plain-text site summary; set here because page `alternates` replace the layout's. */
+export const LLMS_ALTERNATE = { 'text/plain': '/llms.txt' };
+
 const SKY_OG = { url: '/og/sky.jpg', width: 1200, height: 630, alt: 'The sky chart of R. Spencer Fink' };
 
 export function pageMeta({ title, description, path, image, type = 'website' }: PageMetaInput): Metadata {
   return {
     title,
     description,
-    alternates: { canonical: path },
+    alternates: { canonical: path, types: LLMS_ALTERNATE },
     openGraph: {
       title,
       description,

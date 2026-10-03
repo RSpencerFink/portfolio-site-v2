@@ -34,7 +34,6 @@ export const metadata: Metadata = {
     ],
     apple: '/apple-touch-icon.png',
   },
-  alternates: { types: { 'text/plain': '/llms.txt' } },
 };
 
 export const viewport: Viewport = { themeColor: '#04050A', colorScheme: 'dark' };
