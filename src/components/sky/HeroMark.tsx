@@ -12,11 +12,15 @@ let introDone = false;
 export const skipIntro = () => {
   introDone = true;
 };
-/** T1 draws the letters in reading order (R 0–450, S 350–850, F 750–1200 ms), whatever the SVG paint order. */
+/**
+ * T1 is one continuous eased timeline (1.9 s): the letters draw in reading
+ * order with overlapping strokes (R 0–0.75, S 0.3–1.1, F 0.6–1.35 s), the
+ * fill swells under the last stroke, then fill and sky cross-fade (1.15–1.9 s).
+ */
 const DRAW: [id: string, at: number, dur: number][] = [
-  ['r', 0, 0.45],
-  ['s', 0.35, 0.5],
-  ['f', 0.75, 0.45],
+  ['r', 0, 0.75],
+  ['s', 0.3, 0.8],
+  ['f', 0.6, 0.75],
 ];
 
 /**
@@ -79,24 +83,29 @@ export function HeroMark({ hostRef, reduced, markWidth }: { hostRef: RefObject<H
     }
 
     const tl = gsap.timeline({ onComplete: done });
-    tl.set(host, { '--sky-opacity': 0 }).set(all, { strokeDasharray: 1, strokeDashoffset: 1, strokeOpacity: 0.9, fillOpacity: 0.07 });
+    tl.set(host, { '--sky-opacity': 0 }).set(all, { strokeDasharray: 1, strokeDashoffset: 1, strokeOpacity: 0.9, fillOpacity: 0 });
     for (const [id, at, dur] of DRAW) {
       const el = svg.querySelector(`[data-letter="${id}"]`);
-      if (el) tl.to(el, { strokeDashoffset: 0, duration: dur, ease: 'power3.out' }, at);
+      if (el) tl.to(el, { strokeDashoffset: 0, duration: dur, ease: 'sine.inOut' }, at);
     }
-    // K2: outline complete, filled with a soft halo; K3 (1400–2000): fill becomes sky.
-    tl.to(all, { fillOpacity: 1, duration: 0.25, ease: 'power2.out' }, 0.95)
-      .to(all, { fillOpacity: 0, strokeOpacity: 0.35, duration: 0.6, ease: 'sine.inOut' }, 1.4)
-      .to(host, { '--sky-opacity': 1, duration: 0.6, ease: 'sine.inOut' }, 1.4);
+    // The fill swells as the F completes, then hands over to the sky: one cross-fade, no snap.
+    tl.to(all, { fillOpacity: 0.85, duration: 0.45, ease: 'sine.inOut' }, 0.85)
+      .to(all, { fillOpacity: 0, strokeOpacity: 0.35, duration: 0.75, ease: 'sine.inOut' }, 1.15)
+      .to(host, { '--sky-opacity': 1, duration: 0.75, ease: 'sine.inOut' }, 1.15);
 
-    // Any scroll or key after 1400 ms jumps to the end.
-    const skip = () => {
-      if (tl.time() >= 1.4) tl.progress(1);
+    // Scroll, keys or a tap fast-forward the same timeline (it accelerates to ×2.5 over 300 ms): never a jump,
+    // and the fill-to-sky cross-fade still gets at least 300 ms.
+    let rushed = false;
+    const rush = () => {
+      if (rushed) return;
+      rushed = true;
+      gsap.to(tl, { timeScale: 2.5, duration: 0.3, ease: 'power1.in' });
     };
     const events = ['wheel', 'keydown', 'touchstart', 'pointerdown'] as const;
-    events.forEach((e) => window.addEventListener(e, skip, { passive: true }));
+    events.forEach((e) => window.addEventListener(e, rush, { passive: true }));
     return () => {
-      events.forEach((e) => window.removeEventListener(e, skip));
+      events.forEach((e) => window.removeEventListener(e, rush));
+      gsap.killTweensOf(tl);
       tl.kill();
       finish();
     };
