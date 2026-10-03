@@ -76,7 +76,7 @@ export function resolve(state: CameraState, c: ChartLayout, aspect: number, isHo
   const overview = explorePose(overviewPose(c, aspect), state.view);
   const noMask = { scale: 6.4, opacity: 0 };
   const { target } = state;
-  if (target && target !== 'overview' && typeof target === 'object') {
+  if (typeof target === 'object' && target !== null) {
     return { pose: { pos: target.position, look: target.lookAt, fov: 46 }, focusId: null, focal: false, mask: noMask, heroGlow: 0 };
   }
   if (typeof target === 'string' && target !== 'overview') {
@@ -93,7 +93,7 @@ export function resolve(state: CameraState, c: ChartLayout, aspect: number, isHo
   }
 
   const { id: seg, progress: t } = state.segment;
-  const mask = state.mask ?? heroMask(seg, t);
+  const mask = heroMask(seg, t);
   const portrait = c.layout === 'portrait';
   // Work: five stars, then "Constellation complete" (W3). Projects: the cluster title (P0), then six stars.
   const workPoses = [...WORK.map((id) => journeyStarPose(c, id, aspect, 38)), framePose(c, WORK, aspect, 38, 0.47, 0.35, portrait ? 0.8 : 0.6)];

@@ -63,7 +63,6 @@ export function FilmView({ slug, title, roles, vimeoId, vimeoUrl, still, counter
 
   useEffect(() => () => void player.current?.destroy(), []);
 
-
   const toggleTheater = (on: boolean) => {
     // Mobile landscape: native fullscreen (spec §8). Portrait and iOS (no element fullscreen) keep the inset layout.
     if (on && matchMedia('(max-width: 1023px) and (orientation: landscape)').matches && frame.current?.requestFullscreen) {

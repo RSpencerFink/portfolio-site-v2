@@ -9,6 +9,7 @@ import { films, vimeoUrl } from '@/content/films';
 import { pageMeta } from '@/lib/seo';
 import s from '../visual-arts.module.css';
 import { starSlot } from '../field';
+import { pad } from '@/lib/format';
 
 export const metadata: Metadata = pageMeta({
   title: 'The Filmmaker: Digital',
@@ -16,8 +17,6 @@ export const metadata: Metadata = pageMeta({
   path: '/visual-arts/digital',
   image: films.find((f) => f.still)!.still,
 });
-
-const pad = (n: number) => String(n).padStart(2, '0');
 
 /** R3 · A4. Film stills with timecode chips; hover or focus shows the logline. */
 export default function DigitalPage() {

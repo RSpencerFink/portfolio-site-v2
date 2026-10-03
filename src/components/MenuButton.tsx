@@ -26,12 +26,10 @@ export function MenuButton({ className, controls }: { className?: string; contro
       setOpen(false);
       ref.current?.focus();
     };
-    nav.addEventListener('click', onClick);
-    nav.addEventListener('keydown', onKey);
-    return () => {
-      nav.removeEventListener('click', onClick);
-      nav.removeEventListener('keydown', onKey);
-    };
+    const ac = new AbortController();
+    nav.addEventListener('click', onClick, { signal: ac.signal });
+    nav.addEventListener('keydown', onKey, { signal: ac.signal });
+    return () => ac.abort();
   }, []);
 
   return (

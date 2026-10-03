@@ -41,8 +41,6 @@ export interface School {
   name: string;
   location: string;
   dates: string;
-  startDate: string;
-  endDate: string;
   description: string;
   star: { spectral: SpectralClass; position: ChartPoint };
 }
@@ -54,8 +52,6 @@ export const education: School[] = [
     name: 'App Academy',
     location: 'New York, NY',
     dates: '2018',
-    startDate: '2018',
-    endDate: '2018',
     description: '1000+ hour software engineering bootcamp with a less than 3% acceptance rate.',
     star: { spectral: 'G', position: [0.1833, 0.5156] },
   },
@@ -64,8 +60,6 @@ export const education: School[] = [
     name: 'Emerson College',
     location: 'Boston, MA',
     dates: '2009 — 2013',
-    startDate: '2009',
-    endDate: '2013',
     description: 'BA - Film Production',
     star: { spectral: 'G', position: [0.0837, 0.5783] },
   },

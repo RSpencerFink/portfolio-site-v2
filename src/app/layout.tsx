@@ -7,7 +7,7 @@ import { Journey } from '@/components/journey/Journey';
 import { SiteHeader, SiteFooter } from '@/components/SiteChrome';
 import './globals.css';
 
-// next/font downloads these at build time and serves them from out/_next (self-hosted).
+// next/font downloads these at build time and serves them from /_next (self-hosted).
 const interTight = Inter_Tight({
   subsets: ['latin'],
   weight: ['300', '400', '600'],

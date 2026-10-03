@@ -11,8 +11,8 @@ export const metadata: Metadata = pageMeta({
   path: '/visual-arts',
 });
 
-// Spec §2 calls for a redirect to /visual-arts/analog; static export has no
-// server redirects, so this is a small hub that links both segments.
+// Spec §2 calls for a redirect to /visual-arts/analog; this build keeps a
+// small hub that links both segments instead (ARCHITECTURE.md, Hosting).
 export default function VisualArtsPage() {
   return (
     <main id="main" className={s.main}>

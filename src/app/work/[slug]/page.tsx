@@ -7,6 +7,7 @@ import { jobs } from '@/content/work';
 import { person } from '@/content/site';
 import { organizationLd, pageMeta, PERSON_ID } from '@/lib/seo';
 import e from '@/components/panels/Entity.module.css';
+import { pad } from '@/lib/format';
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -29,7 +30,6 @@ export default async function WorkPage({ params }: Props) {
   if (index < 0) notFound();
   const job = jobs[index];
 
-  const pad = (n: number) => String(n).padStart(2, '0');
   // The chart runs right to left in time: ← is the older star (A2: ← DBOX · 03 / 05 · Hypha →).
   const older = jobs[index + 1];
   const newer = jobs[index - 1];

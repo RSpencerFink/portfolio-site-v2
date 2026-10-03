@@ -9,6 +9,7 @@ import { paintings } from '@/content/paintings';
 import { pageMeta } from '@/lib/seo';
 import s from '../visual-arts.module.css';
 import { starSlot } from '../field';
+import { pad } from '@/lib/format';
 
 export const metadata: Metadata = pageMeta({
   title: 'The Painter: Analog',
@@ -16,8 +17,6 @@ export const metadata: Metadata = pageMeta({
   path: '/visual-arts/analog',
   image: `${paintings[0].image}_800.jpg`,
 });
-
-const pad = (n: number) => String(n).padStart(2, '0');
 
 /** R3 · A3. Paintings float at star positions, sized by real canvas width, joined by constellation lines; hover or focus selects one. */
 export default function AnalogPage() {

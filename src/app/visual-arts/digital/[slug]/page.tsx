@@ -8,6 +8,7 @@ import { films, vimeoEmbedUrl, vimeoUrl } from '@/content/films';
 import { absoluteUrl, person } from '@/content/site';
 import { pageMeta, PERSON_ID } from '@/lib/seo';
 import v from '@/components/panels/FilmView.module.css';
+import { pad } from '@/lib/format';
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -35,7 +36,6 @@ export default async function FilmPage({ params }: Props) {
   if (index < 0) notFound();
   const f = films[index];
 
-  const pad = (n: number) => String(n).padStart(2, '0');
   const prev = films[index - 1];
   const next = films[index + 1];
   const counter = `${pad(index + 1)} / ${pad(films.length)}`;

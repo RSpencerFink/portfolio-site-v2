@@ -133,9 +133,6 @@ export function StepLink({ href, rel, className, children }: { href: string; rel
   );
 }
 
-/** Whether the page is rendering inside a panel (for client children such as the film player). */
-export const usePanelMode = () => use(PanelMode);
-
 /**
  * Renders an entity page as a panel over the sky when the visitor arrived by
  * clicking a star, and as a full page otherwise (direct load, no JS, crawler).

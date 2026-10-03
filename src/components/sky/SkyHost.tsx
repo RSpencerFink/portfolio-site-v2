@@ -31,8 +31,8 @@ const starCount = (w: number, reduced: boolean) => (reduced || w < 640 ? 500 : w
 
 /**
  * Mounted once in the root layout, behind {children}. Decorative
- * (aria-hidden); the HTML mirror carries all content. Reads journeyProgress
- * and the cameraRig; never listens to scroll.
+ * (aria-hidden); the HTML mirror carries all content. Reads the cameraRig;
+ * never listens to scroll.
  */
 export function SkyHost() {
   const hostRef = useRef<HTMLDivElement>(null);

@@ -4,12 +4,13 @@ import { useEffect } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { cameraRig, type Segment } from '@/components/sky/cameraRig';
+import { easeInOut } from '@/components/sky/chart';
 import { journeyProgress } from './progress';
 import { getLenis } from './Journey';
+import { pad } from '@/lib/format';
 
 /** Empty-sky lead-in / lead-out around the first and last dwell, in legs. */
 const EDGE = 0.4;
-const pad = (n: number) => String(n).padStart(2, '0');
 
 type Cleanup = () => void;
 
@@ -49,12 +50,10 @@ function railUpdater(stage: HTMLElement) {
   };
 }
 
-const inOut = (t: number) => (t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2); // power2.inOut
-
 /** Scrolls through Lenis so it never fights an in-flight snap; duration 0 jumps. */
 function scrollToY(y: number, duration = 0.9) {
   const lenis = getLenis();
-  if (lenis) lenis.scrollTo(y, duration ? { duration, easing: inOut } : { immediate: true, force: true });
+  if (lenis) lenis.scrollTo(y, duration ? { duration, easing: easeInOut } : { immediate: true, force: true });
   else window.scrollTo(0, y);
 }
 

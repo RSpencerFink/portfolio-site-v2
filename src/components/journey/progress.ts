@@ -1,5 +1,3 @@
-import { useSyncExternalStore } from 'react';
-
 /**
  * journeyProgress: 0 at the top of the home journey, 1 at the end of the
  * last pinned section. Written only by the journey track; read by the sky.
@@ -21,6 +19,3 @@ export const journeyProgress = {
     };
   },
 };
-
-export const useJourneyProgress = () =>
-  useSyncExternalStore(journeyProgress.subscribe, journeyProgress.get, () => 0);

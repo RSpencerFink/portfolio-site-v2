@@ -2,8 +2,7 @@ import type { CSSProperties } from 'react';
 import Link from 'next/link';
 import { SkyLink } from '@/components/panels/SkyLink';
 import { Insignia } from '@/components/Insignia';
-import { HALO } from '@/components/sky/types';
-import type { SpectralClass } from '@/components/sky/types';
+import { HALO, type SpectralClass } from '@/components/sky/types';
 import { education, person, resume, tech } from '@/content/site';
 import { jobs } from '@/content/work';
 import { projects } from '@/content/projects';
@@ -11,9 +10,9 @@ import { constellations } from '@/content/sky';
 import { paintings } from '@/content/paintings';
 import { films } from '@/content/films';
 import j from './Journey.module.css';
+import { pad } from '@/lib/format';
 
 const c = Object.fromEntries(constellations.map((k) => [k.id, k]));
-const pad = (n: number) => String(n).padStart(2, '0');
 
 /**
  * CSS stand-in for the canvas focal star (spec §4: 14 px core, tinted glow,
@@ -30,10 +29,10 @@ function FocalStar({ spectral }: { spectral: SpectralClass }) {
 }
 
 /** Desktop: rail of buttons on the right edge. Mobile: dot row + counter at the bottom (spec §6 ProgressRail). */
-function Rail({ label, items, offset, hint }: { label: string; items: string[]; offset: number; hint: string }) {
+function Rail({ label, items, offset }: { label: string; items: string[]; offset: number }) {
   return (
     <div className={`${j.rail} ${j.motionOnly}`} data-rail>
-      <p className={`label ${j.hint}`} aria-hidden="true">{hint}</p>
+      <p className={`label ${j.hint}`} aria-hidden="true">Scroll to travel ↓</p>
       <nav aria-label={label}>
         <ol>
           {items.map((name, i) => (
@@ -144,7 +143,7 @@ export function JourneySections() {
             </ul>
           </div>
 
-          <Rail label={`${c.work.name}: stars`} items={jobs.map((x) => x.company)} offset={0} hint="Scroll to travel ↓" />
+          <Rail label={`${c.work.name}: stars`} items={jobs.map((x) => x.company)} offset={0} />
 
           {/* R3 · RM: the rest of the sky, as an index beside the Work list (static layout only). */}
           <nav className={`${j.skyIndex} ${j.staticOnly}`} aria-labelledby="sky-index-title">
@@ -210,7 +209,7 @@ export function JourneySections() {
             ))}
           </ol>
 
-          <Rail label={`${c.projects.name}: stars`} items={projects.map((x) => x.name)} offset={1} hint="Scroll to travel ↓" />
+          <Rail label={`${c.projects.name}: stars`} items={projects.map((x) => x.name)} offset={1} />
         </div>
       </section>
 

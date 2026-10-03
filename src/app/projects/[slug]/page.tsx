@@ -6,6 +6,7 @@ import { projects } from '@/content/projects';
 import { absoluteUrl } from '@/content/site';
 import { pageMeta, PERSON_ID } from '@/lib/seo';
 import e from '@/components/panels/Entity.module.css';
+import { pad } from '@/lib/format';
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -24,7 +25,6 @@ export default async function ProjectPage({ params }: Props) {
   if (index < 0) notFound();
   const p = projects[index];
 
-  const pad = (n: number) => String(n).padStart(2, '0');
   const prev = projects[index - 1];
   const next = projects[index + 1];
   const nearby = [prev, next].filter((x) => x !== undefined);
