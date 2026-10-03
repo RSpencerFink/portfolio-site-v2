@@ -140,3 +140,62 @@
     gap: var(--space-5);
   }
 }
+
+/*
+ * Full-motion home: H3 is the last screen, so the footer leaves the flow
+ * (the document ends at the chart's rest) and its links join the H3 HUD
+ * (R3 · H3: top right, under the header; M-H3: a bottom row under the zoom
+ * controls). Hidden with opacity, not visibility, so Tab still reaches it
+ * from anywhere in the journey and focus brings it on screen.
+ */
+:global(html[data-journey] body:has(#hero)) .footer {
+  position: fixed;
+  top: 66px;
+  right: var(--page-margin);
+  left: auto;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--dur-s) var(--ease-sine);
+}
+
+:global(html[data-journey][data-explore] body:has(#hero)) .footer,
+:global(html[data-journey] body:has(#hero)) .footer:focus-within {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+:global(html[data-journey] body:has(#hero)) .footer img {
+  display: none;
+}
+
+:global(html[data-journey] body:has(#hero)) .footer .links {
+  justify-content: flex-end;
+}
+
+:global(html[data-journey] body:has(#hero)) .footer a {
+  color: var(--text-2);
+}
+
+:global(html[data-journey] body:has(#hero)) .footer a:hover {
+  color: var(--text-hi);
+}
+
+:global(html[data-journey='mobile'] body:has(#hero)) .footer {
+  top: auto;
+  bottom: 6px;
+  left: var(--page-margin);
+}
+
+:global(html[data-journey='mobile'] body:has(#hero)) .footer .links {
+  justify-content: flex-start;
+  gap: 0 var(--space-5);
+}
+
+:global(html[data-journey='mobile'] body:has(#hero)) .footer a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}

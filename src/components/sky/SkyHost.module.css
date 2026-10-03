@@ -411,6 +411,11 @@
     visibility 0s var(--dur-s);
 }
 
+/* Mobile full motion: the footer links take the bottom rows (SiteChrome), so the controls sit above them. */
+:global(html[data-journey='mobile']) .explore {
+  bottom: 106px;
+}
+
 .explore[data-on] {
   opacity: 1;
   visibility: visible;
