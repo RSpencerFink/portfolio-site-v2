@@ -1,12 +1,14 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ViewTransition } from 'react';
+import { ViewTransition, type CSSProperties } from 'react';
+import { ConstellationLines } from '@/components/panels/ConstellationLines';
 import { SkyLink } from '@/components/panels/SkyLink';
 import { VisualArtsToggle } from '@/components/panels/VisualArtsToggle';
 import { paintings } from '@/content/paintings';
 import { pageMeta } from '@/lib/seo';
 import s from '../visual-arts.module.css';
+import { starSlot } from '../field';
 
 export const metadata: Metadata = pageMeta({
   title: 'The Painter: Analog',
@@ -17,7 +19,7 @@ export const metadata: Metadata = pageMeta({
 
 const pad = (n: number) => String(n).padStart(2, '0');
 
-/** R3 · A3. Paintings are the constellation's stars; hover or focus selects one. */
+/** R3 · A3. Paintings float at star positions, sized by real canvas width, joined by constellation lines; hover or focus selects one. */
 export default function AnalogPage() {
   return (
     <main id="main" className={s.main}>
@@ -32,20 +34,21 @@ export default function AnalogPage() {
         <VisualArtsToggle current="analog" />
       </header>
       <ViewTransition name="va-works" share="vt-swap" default="none">
-        <nav aria-label="The Painter">
+        <nav aria-label="The Painter" className={s.field}>
+          <ConstellationLines className={s.lines} />
           <ol className={s.paintings}>
             {paintings.map((p, i) => (
-              <li key={p.slug}>
+              <li key={p.slug} style={starSlot(i, p.widthIn / 48) as CSSProperties}>
                 <SkyLink href={`/visual-arts/analog/${p.slug}`} className={s.work}>
                   <span className={`label ${s.selected}`} aria-hidden="true">
                     Selected · {pad(i + 1)} / {pad(paintings.length)} · Enter to open
                   </span>
-                  <span className={s.frame}>
+                  <span className={s.frame} data-star>
                     <Image
                       src={`${p.image}_800.jpg`}
                       width={800}
                       height={p.height800}
-                      sizes="(max-width: 639px) 50vw, 280px"
+                      sizes="(max-width: 639px) 80vw, 360px"
                       alt=""
                     />
                   </span>

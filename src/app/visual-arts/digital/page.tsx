@@ -1,12 +1,14 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ViewTransition } from 'react';
+import { ViewTransition, type CSSProperties } from 'react';
+import { ConstellationLines } from '@/components/panels/ConstellationLines';
 import { SkyLink } from '@/components/panels/SkyLink';
 import { VisualArtsToggle } from '@/components/panels/VisualArtsToggle';
 import { films, vimeoUrl } from '@/content/films';
 import { pageMeta } from '@/lib/seo';
 import s from '../visual-arts.module.css';
+import { starSlot } from '../field';
 
 export const metadata: Metadata = pageMeta({
   title: 'The Filmmaker: Digital',
@@ -33,15 +35,16 @@ export default function DigitalPage() {
       </header>
       <ViewTransition name="va-works" share="vt-swap" default="none">
         <div className={s.filmsWrap}>
-          <nav aria-label="The Filmmaker">
+          <nav aria-label="The Filmmaker" className={s.field}>
+            <ConstellationLines className={s.lines} />
             <ol className={s.films}>
-              {films.map((f) => {
+              {films.map((f, i) => {
                 const logline = f.description.split('\n')[0];
                 return (
-                  <li key={f.slug}>
+                  <li key={f.slug} style={starSlot(i, [0.8, 1, 0.7, 0.9][i % 4]) as CSSProperties}>
                     <SkyLink href={`/visual-arts/digital/${f.slug}`} className={s.work}>
                       <ViewTransition name={`film-still-${f.slug}`} share="vt-frame" default="none">
-                        <span className={s.still}>
+                        <span className={s.still} data-star>
                           {f.still ? (
                             <Image src={f.still} width={1280} height={720} sizes="(max-width: 639px) 100vw, 380px" alt="" />
                           ) : (
