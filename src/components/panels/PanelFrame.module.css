@@ -10,12 +10,17 @@
 }
 
 /*
- * Panel (R5): the camera centres the entity's star in the upper middle of the
- * viewport (cameraRig, panelPose) and the content reads in a centred column
- * below it. Full viewport, transparent: the dimmed sky is the backdrop.
+ * Panel (R5): the content reads in a centred column and the camera puts the
+ * entity's star --star-gap above its kicker (PanelFrame measures the kicker,
+ * cameraRig.setFocalY). Full viewport, transparent: the dimmed sky is the backdrop.
+ * --star-clear: where a long panel's kicker starts (top-aligned, scrolls).
+ * --star-room: the star and its reticle ticks (±73 px) above a fitting panel's kicker.
  */
 .panel {
   --star-clear: 30vh;
+  --star-gap: 84px;
+  --star-room: calc(var(--star-gap) + 74px);
+  --fit-pad: 8px;
   position: fixed;
   inset: 0;
   z-index: var(--z-panel);
@@ -89,10 +94,26 @@
   inset: 0;
   overflow-y: auto;
   overscroll-behavior: contain;
+  display: flex;
+  flex-direction: column;
   padding: calc(var(--star-clear) + 8px) var(--page-margin) var(--space-9);
-  background: linear-gradient(transparent calc(var(--star-clear) - 80px), rgb(4 5 10 / 0.62) calc(var(--star-clear) + 120px));
+  background: linear-gradient(transparent calc(var(--clear, var(--star-clear)) - 80px), rgb(4 5 10 / 0.62) calc(var(--clear, var(--star-clear)) + 120px));
   background-attachment: fixed;
-  mask: linear-gradient(transparent calc(var(--star-clear) - 44px), #000 calc(var(--star-clear) + 4px));
+  mask: linear-gradient(transparent calc(var(--clear, var(--star-clear)) - 44px), #000 calc(var(--clear, var(--star-clear)) + 4px));
+}
+
+/* Auto margins centre a unit that fits and fall to 0 (top-aligned) when it overflows. */
+.unit {
+  margin-block: auto;
+}
+
+/* Fits the viewport: star + content as one unit, vertically centred, no scroll. */
+.panel[data-fit] .body {
+  padding-block: var(--fit-pad);
+}
+
+.panel[data-fit] .unit {
+  padding-top: var(--star-room);
 }
 
 .body:focus {
@@ -110,15 +131,15 @@
 }
 
 .kicker {
-  margin: 0 0 var(--space-5);
+  margin: 0 0 var(--space-2);
   text-align: center;
 }
 
 .titleRow {
   display: grid;
   justify-items: center;
-  gap: var(--space-3);
-  margin-bottom: var(--space-7);
+  gap: var(--space-2);
+  margin-bottom: var(--space-5);
   text-align: center;
 }
 
@@ -130,6 +151,8 @@
 .media,
 .cinema {
   --star-clear: 128px;
+  --star-room: 0px;
+  --fit-pad: 120px 16px;
 }
 
 .media .column {
@@ -140,10 +163,10 @@
   margin: var(--space-6) 0 0;
 }
 
-/* The painting fits the viewport under the bar; its caption is one short scroll away at most. */
+/* The painting, its title, caption and the step row fit the viewport under the bar together. */
 .media figure img {
   width: auto;
-  max-height: calc(100svh - var(--star-clear) - 48px);
+  max-height: calc(100svh - 344px);
   margin: 0 auto;
 }
 
@@ -158,8 +181,8 @@
   align-items: center;
   gap: var(--space-4);
   max-width: 680px;
-  margin: var(--space-8) auto 0;
-  padding-top: var(--space-3);
+  margin: var(--space-5) auto 0;
+  padding-top: var(--space-2);
   border-top: 1px solid var(--line);
   color: var(--text-2);
 }
@@ -195,6 +218,7 @@
   .media,
   .cinema {
     --star-clear: 116px;
+    --fit-pad: 108px 16px;
   }
 
   .stepName {

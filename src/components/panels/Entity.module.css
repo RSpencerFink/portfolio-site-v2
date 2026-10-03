@@ -1,7 +1,7 @@
 /* Entity bodies inside PanelFrame: job (A2), project (PP), About (AB), painting. */
 .stack {
   display: grid;
-  gap: var(--space-6);
+  gap: 20px;
 }
 
 .stack p {
@@ -107,6 +107,25 @@
   object-fit: cover;
   object-position: 50% 20%;
   border: 1px solid var(--line-strong);
+}
+
+/* About: the portrait beside the name and role, so the panel fits one desktop screen. */
+@media (min-width: 640px) {
+  :has(> .headshot) {
+    grid-template-columns: auto auto;
+    justify-content: center;
+    justify-items: start;
+    align-items: center;
+    column-gap: var(--space-5);
+    row-gap: var(--space-1);
+    text-align: left;
+  }
+
+  .headshot {
+    grid-row: span 2;
+    width: 80px;
+    height: 80px;
+  }
 }
 
 .currently {

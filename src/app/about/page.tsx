@@ -46,21 +46,21 @@ export default function AboutPage() {
       <JsonLd data={{ '@type': 'ProfilePage', url: `${SITE_URL}/about`, mainEntity: personLd() }} />
       <div className={e.stack}>
         <p className="body-l">{person.bio}</p>
-        <section className={e.stack} style={{ gap: 12 }}>
+        <section className={e.stack} style={{ gap: 8 }}>
           <h2 className="label">Currently</h2>
           <p className={`body-l ${e.currently}`}>
             <Insignia job={brava} size={28} />
             {person.currently}
           </p>
         </section>
-        <section className={e.stack} style={{ gap: 12 }}>
+        <section className={e.stack} style={{ gap: 8 }}>
           <h2 className="label">Education</h2>
           <ul className={e.roles}>
             {education.map((s) => (
               <li key={s.slug}>
                 <span>
                   {s.name}
-                  <span className="label-s" style={{ display: 'block', marginTop: 4 }}>
+                  <span className="label-s" style={{ display: 'block', marginTop: 2 }}>
                     {s.description}
                   </span>
                 </span>
@@ -69,7 +69,7 @@ export default function AboutPage() {
             ))}
           </ul>
         </section>
-        <section className={e.stack} style={{ gap: 12 }}>
+        <section className={e.stack} style={{ gap: 8 }}>
           <h2 className="label">Reach</h2>
           <ul className={e.pills}>
             {socials.map((x) => (

@@ -87,7 +87,7 @@ export function resolve(state: CameraState, c: ChartLayout, aspect: number, isHo
       const ids = Object.keys(group.stars).filter((id) => c.byId.has(id));
       return { pose: framePose(c, ids, aspect, 46, 0.5, 0.5, 0.6), focusId: null, focal: false, mask: noMask, heroGlow: 0 };
     }
-    const pose = panelPose(c, target, aspect);
+    const pose = panelPose(c, target, aspect, state.focalY);
     if (pose) return { pose, focusId: target, focal: true, mask: noMask, heroGlow: 0, bare: true };
     // A panel with no star on the chart (most films): the calm sky, no focus.
     return { pose: overview, focusId: null, focal: false, mask: noMask, heroGlow: 0, quiet: true };

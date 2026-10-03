@@ -124,6 +124,7 @@ export function PanelFrame({ slug, title, kicker, lead, subline, prev, next, cou
   const router = useRouter();
   const ref = useRef<HTMLDialogElement>(null);
   const closing = useRef(false);
+  const bodyRef = useRef<HTMLDivElement>(null);
 
   // T7 / T20: camera centres this star, sky dimmed. Only behind a panel (a full page keeps the calm sky).
   useEffect(() => {
@@ -158,6 +159,31 @@ export function PanelFrame({ slug, title, kicker, lead, subline, prev, next, cou
       softNav.close(pathname); // focus goes back to the star's link, as with Close
     };
   }, [asPanel, variant, pathname]);
+
+  // A panel that fits the viewport is one centred unit (star + content, `data-fit`); a longer one keeps
+  // the top-aligned scroller. Either way the camera puts the star --star-gap above the kicker.
+  useLayoutEffect(() => {
+    if (!asPanel) return;
+    const panel = ref.current!;
+    const body = bodyRef.current!;
+    const article = body.querySelector('article')!;
+    const layout = () => {
+      panel.dataset.fit = '';
+      if (body.scrollHeight > body.clientHeight) delete panel.dataset.fit;
+      // Relative to the body, so the landing animation's translate doesn't count.
+      const kicker = article.firstElementChild!.getBoundingClientRect().top - body.getBoundingClientRect().top + body.scrollTop;
+      panel.style.setProperty('--clear', `${kicker}px`);
+      if (variant === 'text') cameraRig.setFocalY((kicker - parseFloat(getComputedStyle(panel).getPropertyValue('--star-gap'))) / body.clientHeight);
+    };
+    layout();
+    const ro = new ResizeObserver(layout);
+    ro.observe(article);
+    ro.observe(body);
+    return () => {
+      ro.disconnect();
+      cameraRig.setFocalY(null);
+    };
+  }, [asPanel, variant]);
 
   // T8. Close / Back to sky / Esc go back in history (Back then leaves the page, as expected).
   // A panel not opened from the sky has no page behind it in history: it fades out and opens its parent.
@@ -279,9 +305,11 @@ export function PanelFrame({ slug, title, kicker, lead, subline, prev, next, cou
             </button>
           </div>
           {/* Focusable so keyboard users can scroll a body with no links in it (axe scrollable-region-focusable). */}
-          <div className={styles.body} data-lenis-prevent data-backdrop tabIndex={0}>
-            {article}
-            {footer}
+          <div ref={bodyRef} className={styles.body} data-lenis-prevent data-backdrop tabIndex={0}>
+            <div className={styles.unit} data-backdrop>
+              {article}
+              {footer}
+            </div>
           </div>
         </dialog>
       </ViewTransition>

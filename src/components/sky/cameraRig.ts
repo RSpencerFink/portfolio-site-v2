@@ -23,6 +23,8 @@ export interface CameraState {
   ambient: number;
   /** H3 explore offset (T18): pan in world units from the overview centre, zoom 1–2.5. */
   view: View;
+  /** Panel focal star height as a share of the viewport (PanelFrame puts it just above the kicker); null = the default. */
+  focalY: number | null;
 }
 
 export interface View {
@@ -32,7 +34,7 @@ export interface View {
 }
 export const HOME_VIEW: View = { x: 0, y: 0, zoom: 1 };
 
-let state: CameraState = { target: null, progress: 0, segment: { id: 'hero', progress: 0 }, dim: 1, ambient: 1, view: HOME_VIEW };
+let state: CameraState = { target: null, progress: 0, segment: { id: 'hero', progress: 0 }, dim: 1, ambient: 1, view: HOME_VIEW, focalY: null };
 const listeners = new Set<() => void>();
 const update = (patch: Partial<CameraState>) => {
   state = { ...state, ...patch };
@@ -56,6 +58,7 @@ export const cameraRig = {
   },
   setDim: (dim: number) => update({ dim }),
   setAmbient: (ambient: number) => update({ ambient }),
+  setFocalY: (focalY: number | null) => focalY !== state.focalY && update({ focalY }),
   /** H3 pan/zoom (T18). Applied to the overview pose only. */
   setView: (view: View) => update({ view }),
   subscribe(listener: () => void) {

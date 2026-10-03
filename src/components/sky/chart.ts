@@ -146,11 +146,11 @@ export function overviewPose(c: ChartLayout, aspect: number): Pose {
 
 /** Visible-height scale of the focal views: desktop ~300 px per unit, portrait ~140. */
 export const focalH = (c: ChartLayout) => (c.layout === 'portrait' ? 6 : 3);
-/** Panel view (T7): the star centred in the upper middle, above the reading column, closer than H3. */
-export function panelPose(c: ChartLayout, id: string, aspect: number): Pose | null {
+/** Panel view (T7): the star centred horizontally just above the reading column (`fy`: share of the viewport height, set by PanelFrame), closer than H3. */
+export function panelPose(c: ChartLayout, id: string, aspect: number, fy: number | null): Pose | null {
   const s = c.byId.get(id);
   if (!s) return null;
-  return c.layout === 'portrait' ? focus(s.world, 9, 46, aspect, 0.5, 0.15) : focus(s.world, 5.2, 46, aspect, 0.5, 0.2);
+  return c.layout === 'portrait' ? focus(s.world, 9, 46, aspect, 0.5, fy ?? 0.15) : focus(s.world, 5.2, 46, aspect, 0.5, fy ?? 0.2);
 }
 
 /** Frame a set of stars inside a viewport box (fx, fy = box centre, frac = share of width). */
