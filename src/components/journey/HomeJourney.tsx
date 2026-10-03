@@ -45,9 +45,10 @@ function railUpdater(stage: HTMLElement) {
 
 const inOut = (t: number) => (t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2); // power2.inOut
 
+/** Scrolls through Lenis so it never fights an in-flight snap; duration 0 jumps. */
 function scrollToY(y: number, duration = 0.9) {
   const lenis = getLenis();
-  if (lenis) lenis.scrollTo(y, { duration, easing: inOut });
+  if (lenis) lenis.scrollTo(y, duration ? { duration, easing: inOut } : { immediate: true, force: true });
   else window.scrollTo(0, y);
 }
 
@@ -62,7 +63,8 @@ function snapOnEnd(st: ScrollTrigger, points: number[], durations: [number, numb
     const p = st.progress;
     const near = points.find((x) => Math.abs(x - p) < 0.01);
     const ahead = st.direction > 0 ? points.find((x) => x >= p) : points.findLast((x) => x <= p);
-    const target = near ?? ahead ?? p;
+    const target = near ?? ahead;
+    if (target === undefined) return; // heading out of the pin: let the visitor leave
     const y = st.start + (st.end - st.start) * target;
     const dist = Math.abs(y - window.scrollY);
     if (dist > 2) scrollToY(y, gsap.utils.clamp(durations[0], durations[1], dist / window.innerHeight));
@@ -103,7 +105,7 @@ function hero(rangeVh: number): Cleanup {
  * T3 / T4 / MO-3: pinned star-to-star stage. Per leg: content exits over the
  * first 20 %, the camera travels, the next content enters over the last 10 %.
  */
-function pinnedStage(stage: HTMLElement, segment: JourneySegment, rangeVh: number): Cleanup {
+function pinnedStage(stage: HTMLElement, segment: JourneySegment, rangeVh: number, firstDwell: Map<string, () => number>): Cleanup {
   const groups = dwellsOf(stage);
   const legs = groups.length - 1;
   const total = legs + 2 * EDGE;
@@ -140,7 +142,9 @@ function pinnedStage(stage: HTMLElement, segment: JourneySegment, rangeVh: numbe
     focusLater(groups[d][0]);
   };
   stage.addEventListener('click', onClick);
-  const unsnap = snapOnEnd(st, [0, ...groups.map((_, d) => (EDGE + d) / total), 1], [0.5, 0.9]);
+  // Dwells only: a stop in the empty lead-in (e.g. after a /#work jump) resolves to the first star.
+  const unsnap = snapOnEnd(st, groups.map((_, d) => (EDGE + d) / total), [0.5, 0.9]);
+  firstDwell.set(segment, () => st.start + ((st.end - st.start) * EDGE) / total);
   return () => {
     stage.removeEventListener('click', onClick);
     unsnap();
@@ -224,9 +228,10 @@ export function HomeJourney() {
       const cleanups: Cleanup[] = [];
       cleanups.push(hero(desktop ? 220 : 140));
       const ranges: Record<string, number> = { work: 500, projects: 600 };
+      const firstDwell = new Map<string, () => number>();
       document.querySelectorAll<HTMLElement>('[data-stage]').forEach((stage) => {
         const id = stage.dataset.stage as 'work' | 'projects';
-        cleanups.push(desktop ? pinnedStage(stage, id, ranges[id]) : mobileStage(stage, id));
+        cleanups.push(desktop ? pinnedStage(stage, id, ranges[id], firstDwell) : mobileStage(stage, id));
       });
       pulls();
 
@@ -235,6 +240,36 @@ export function HomeJourney() {
         ScrollTrigger.create({ trigger: journey, start: 'top top', end: 'bottom bottom', onUpdate: (self) => journeyProgress.set(self.progress) });
       }
       ScrollTrigger.refresh();
+
+      // /#work and /#projects land on the first star, not the pin start (an empty lead-in).
+      const toHash = (hash: string, smooth: boolean) => {
+        const y = firstDwell.get(hash.slice(1))?.();
+        if (y === undefined) return false;
+        scrollToY(y, smooth ? 0.9 : 0);
+        return true;
+      };
+      const onClick = (e: MouseEvent) => {
+        const a = (e.target as HTMLElement).closest('a');
+        if (!a || a.origin !== location.origin || a.pathname !== location.pathname) return;
+        if (!toHash(a.hash, true)) return;
+        e.preventDefault(); // also stops next/link's own hash scroll
+        history.pushState(null, '', a.hash);
+      };
+      document.addEventListener('click', onClick, true);
+      cleanups.push(() => document.removeEventListener('click', onClick, true));
+      // Arriving with a hash (direct load or from another page): let the browser/Next jump to the
+      // anchor first, then correct it. Listeners added after the snaps run last and win.
+      if (location.hash) {
+        const fix = () => toHash(location.hash, false);
+        const call = gsap.delayedCall(0.3, fix);
+        ScrollTrigger.addEventListener('scrollEnd', fix);
+        const stop = gsap.delayedCall(2, () => ScrollTrigger.removeEventListener('scrollEnd', fix));
+        cleanups.push(() => {
+          call.kill();
+          stop.kill();
+          ScrollTrigger.removeEventListener('scrollEnd', fix);
+        });
+      }
 
       return () => {
         cleanups.forEach((c) => c());

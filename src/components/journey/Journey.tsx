@@ -23,7 +23,7 @@ export function Journey() {
     ScrollTrigger.config({ ignoreMobileResize: true });
     const mm = gsap.matchMedia();
     mm.add('(prefers-reduced-motion: no-preference)', () => {
-      const l = new Lenis({ lerp: 0.09, wheelMultiplier: 1, touchMultiplier: 1.4, smoothWheel: true, syncTouch: false, anchors: true });
+      const l = new Lenis({ lerp: 0.09, wheelMultiplier: 1, touchMultiplier: 1.4, smoothWheel: true, syncTouch: false });
       l.on('scroll', ScrollTrigger.update);
       const tick = (t: number) => l.raf(t * 1000);
       gsap.ticker.add(tick);
