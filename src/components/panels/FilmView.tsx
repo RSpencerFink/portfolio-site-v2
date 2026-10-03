@@ -22,16 +22,15 @@ interface Props {
 }
 
 /**
- * VIMEO_NATIVE_CONTROLS (default true). Vimeo only honours `controls: false`
- * on paid plans, and the client's plan is unknown. true: the player asks for
- * Vimeo's own controls and our play / seek / time / mute bar steps aside once
- * the iframe is playing, so exactly one set of controls ever shows (theater
- * and "Watch on Vimeo" stay). false: set this only if the account is on a plan
- * that honours `controls: false`; then our custom bar is the only control set.
+ * VIMEO_NATIVE_CONTROLS: true, because the client's Vimeo plan is Basic and
+ * Basic ignores `controls: false`. Our poster and big play button show until
+ * the first play; from then on Vimeo's own controls are the only playback
+ * controls. Theater mode and "Watch on Vimeo" sit outside the player and stay.
+ * Setting this to false (a paid plan that honours `controls: false`) also needs
+ * a custom play / seek / time / mute bar again; the last one is in git history
+ * (FilmView.tsx before "Vimeo Basic: native controls only").
  */
 export const VIMEO_NATIVE_CONTROLS = true;
-
-const clock = (s: number) => `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
 
 /**
  * R3 · A5 cinema layout and R3 · A6 theater mode (spec §6 FilmPlayer,
@@ -44,9 +43,6 @@ export function FilmView({ slug, title, roles, vimeoId, vimeoUrl, still, counter
   const frame = useRef<HTMLDivElement>(null);
   const player = useRef<VimeoPlayer | null>(null);
   const [status, setStatus] = useState<'poster' | 'loading' | 'ready'>('poster');
-  const [playing, setPlaying] = useState(false);
-  const [muted, setMuted] = useState(false);
-  const [time, setTime] = useState({ seconds: 0, duration: 0 });
   const [theater, setTheater] = useState(false);
 
   // Direct load of ?theater=1. Read after hydration: the server HTML is the cinema layout.
@@ -107,17 +103,8 @@ export function FilmView({ slug, title, roles, vimeoId, vimeoUrl, still, counter
       portrait: false,
     });
     player.current = p;
-    p.on('play', () => setPlaying(true));
-    p.on('pause', () => setPlaying(false));
-    p.on('ended', () => setPlaying(false));
-    p.on('timeupdate', (d: { seconds: number; duration: number }) => setTime({ seconds: d.seconds, duration: d.duration }));
-    p.on('volumechange', (d: { volume: number }) => setMuted(d.volume === 0));
     p.ready().then(() => setStatus('ready'), () => setStatus('poster'));
   };
-
-  const playPause = () => (playing ? player.current?.pause() : start());
-  // One set of controls (see VIMEO_NATIVE_CONTROLS): ours until Vimeo's take over.
-  const custom = !(VIMEO_NATIVE_CONTROLS && status === 'ready');
 
   return (
     <div className={`${styles.root} ${theater ? styles.theater : ''}`}>
@@ -155,51 +142,12 @@ export function FilmView({ slug, title, roles, vimeoId, vimeoUrl, still, counter
           </div>
         </ViewTransition>
         <div className={styles.controls}>
-          {custom && (
-            <input
-              type="range"
-              className={styles.scrub}
-              aria-label="Seek"
-              min={0}
-              max={time.duration || 1}
-              step={0.1}
-              value={time.seconds}
-              disabled={status === 'poster'}
-              style={{ '--p': `${time.duration ? (time.seconds / time.duration) * 100 : 0}%` } as React.CSSProperties}
-              onChange={(e) => {
-                const seconds = Number(e.target.value);
-                setTime((t) => ({ ...t, seconds }));
-                player.current?.setCurrentTime(seconds);
-              }}
-            />
-          )}
           <div className={`label ${styles.row}`}>
-            {custom && (
-              <button type="button" className={styles.iconButton} onClick={playPause} aria-label={playing ? 'Pause' : 'Play'}>
-                <span aria-hidden="true" className={playing ? styles.pauseIcon : styles.playIcon} />
-              </button>
-            )}
             {theater && (
               <span className={styles.theaterTitle} aria-hidden="true">
                 <span className={styles.theaterName}>{title}</span>
                 <span className="label">{roles.join(', ')}</span>
               </span>
-            )}
-            {custom && (
-              <>
-                <span className={styles.time}>
-                  {clock(time.seconds)} / {time.duration ? clock(time.duration) : '—'}
-                </span>
-                <button
-                  type="button"
-                  className={styles.textButton}
-                  disabled={status === 'poster'}
-                  aria-pressed={muted}
-                  onClick={() => player.current?.setVolume(muted ? 1 : 0)}
-                >
-                  {muted ? 'Unmute' : 'Mute'}
-                </button>
-              </>
             )}
             <a href={vimeoUrl} className={styles.vimeo}>
               Watch on Vimeo <span aria-hidden="true">↗</span>

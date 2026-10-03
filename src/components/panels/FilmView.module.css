@@ -67,28 +67,12 @@
   background: rgb(4 5 10 / 0.45);
 }
 
-.bigPlay span,
-.playIcon {
+.bigPlay span {
   display: block;
   margin-left: 4px;
   border-left: 16px solid #fff;
   border-top: 10px solid transparent;
   border-bottom: 10px solid transparent;
-}
-
-.playIcon {
-  margin-left: 2px;
-  border-left-width: 11px;
-  border-top-width: 7px;
-  border-bottom-width: 7px;
-}
-
-.pauseIcon {
-  display: block;
-  width: 10px;
-  height: 13px;
-  border-left: 3px solid #fff;
-  border-right: 3px solid #fff;
 }
 
 .expandIcon {
@@ -122,14 +106,9 @@
   color: var(--text);
 }
 
-.time,
 .vimeo {
+  margin-left: auto;
   white-space: nowrap;
-}
-
-.time {
-  margin-right: auto;
-  font-variant-numeric: tabular-nums;
 }
 
 .iconButton,
@@ -148,41 +127,8 @@
   cursor: pointer;
 }
 
-.textButton:disabled,
-.scrub:disabled {
-  opacity: 0.5;
-  cursor: default;
-}
-
 .vimeo {
   text-decoration: none;
-}
-
-/* Custom scrub: a native range (spec §9) drawn as a 1 px line with white progress. */
-.scrub {
-  appearance: none;
-  width: 100%;
-  height: 16px;
-  margin: 0;
-  background: linear-gradient(#fff, #fff) 0 50% / var(--p, 0%) 2px no-repeat,
-    linear-gradient(var(--line-strong), var(--line-strong)) 0 50% / 100% 1px no-repeat;
-  cursor: pointer;
-}
-
-.scrub::-webkit-slider-thumb {
-  appearance: none;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: #fff;
-}
-
-.scrub::-moz-range-thumb {
-  width: 12px;
-  height: 12px;
-  border: 0;
-  border-radius: 50%;
-  background: #fff;
 }
 
 .upNext {
@@ -299,10 +245,6 @@
 
 .theater .theaterTitle .label {
   color: var(--text-dim);
-}
-
-.theater .time {
-  margin-right: 0;
 }
 
 .theater .upNext {
