@@ -47,22 +47,55 @@
   }
 }
 
-/* One continuous mask over the three panes. Pane widths follow the letters (R 40 %, S 28 %, F 32 %). */
+/* Three layers over the mark's full box, each masked by its own letter (rsf-r/s/f.svg share the mark's
+   viewBox, so the letters stay registered and the channels between them stay dark). One work per letter. */
 .montage {
   position: relative;
-  display: grid;
-  grid-template-columns: 40fr 28fr 32fr;
   aspect-ratio: 1519.3 / 729.6;
-  mask: url('/logo/rsf-mark.svg') center / 100% 100% no-repeat;
   transform-origin: 52% 50%;
   will-change: scale;
 }
 
 .pane {
-  position: relative;
+  position: absolute;
+  inset: 0;
+  mask: var(--letter) center / 100% 100% no-repeat;
 }
 
-.pane img {
+/* The work covers its letter's bounding box (viewBox units as percentages of the mark). */
+.art {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: var(--w);
+  height: var(--h);
+}
+
+.pane[data-letter='R'] {
+  --letter: url('/logo/rsf-r.svg');
+  --x: 0.86%;
+  --y: 3.5%;
+  --w: 39.31%;
+  --h: 93.33%;
+}
+
+.pane[data-letter='S'] {
+  --letter: url('/logo/rsf-s.svg');
+  --x: 34.34%;
+  --y: 1.6%;
+  --w: 35.62%;
+  --h: 96.93%;
+}
+
+.pane[data-letter='F'] {
+  --letter: url('/logo/rsf-f.svg');
+  --x: 65.8%;
+  --y: 3.45%;
+  --w: 33.73%;
+  --h: 93.38%;
+}
+
+.art img {
   object-fit: cover;
   /* Portrait paintings keep their faces in the letters; stills fill the height, so this only trims their sides. */
   object-position: 50% 30%;
@@ -93,7 +126,7 @@
   cursor: pointer;
 }
 
-@media (scripting: none), (prefers-reduced-motion: reduce) {
+@media (scripting: none) {
   .hint {
     display: none;
   }
