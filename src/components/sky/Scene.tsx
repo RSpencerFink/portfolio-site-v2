@@ -8,6 +8,7 @@ import { cameraRig, type Vec3 } from './cameraRig';
 import { chartLayout, lerpPose, overviewPose, type Layout, type Pose } from './chart';
 import { resolve, type Resolved } from './resolve';
 import { hoverStore } from './hover';
+import { Meteors } from './Meteors';
 import { backgroundFrag, backgroundVert, contentFrag, contentVert, nebulaFrag, nebulaVert } from './shaders';
 import { HALO, type SpectralClass } from './types';
 
@@ -393,6 +394,7 @@ export function Scene({ layout, count, motion, isHome, onFrame, onLowFps }: Scen
         <planeGeometry args={[1, 1]} />
       </mesh>
       <mesh geometry={bg} material={bgMat} frustumCulled={false} renderOrder={1} />
+      {motion !== 'reduced' && <Meteors low={motion === 'low'} isHome={isHome} />}
       <primitive object={lines.group} />
       <mesh geometry={content.geometry} material={contentMat} frustumCulled={false} renderOrder={2} />
     </>

@@ -328,6 +328,7 @@ ViewTransition names in use: `star-panel`, `va-toggle`, `va-title`, `va-works`, 
 | Nebula | scale 1 → 1.03 + opacity ±6% @ 14 s; centre drift 12 px @ 40 s; 0.35× camera parallax | opacity only @ 20 s | static |
 | Scroll hint pulse | every 4 s, opacity 1 → 0.6 → 1 | same | none |
 | Motion streaks during travel | opacity ≤ 0.35 at speed > 0.4 | off | off |
+| Shooting stars | one at a time, 8–20 s apart (first after 6–12 s); thin white-headed streak, tail 120–260 px fading to transparent with a faint blue-white tint, life 0.6–1.1 s, quick rise then ease-out fade; heading 200°–250° or mirrored, starting in the upper 60 %, clear of the central mark area and of any HTML text or control. None during the hero mask, a camera flight, a panel, theater, the Visual Arts window or a hidden tab | same, gap doubled in low power; tails ×0.7 below 640 px | none |
 
 ### Performance budget
 
@@ -347,7 +348,7 @@ ViewTransition names in use: `star-panel`, `va-toggle`, `va-title`, `va-works`, 
 - No pin, no mask scale (T2): H1 is a 100 vh section; the next section is the static sky with the Work list (R3 · RM); the mask crossfades away in 200 ms at the boundary.
 - No camera travel (T3–T6): camera fixed; jobs/projects are plain lists; the related star brightens as its row enters the viewport.
 - Panels, toggle, cinema, theater: 200 ms opacity crossfades in place (`vt-fade`); no slides, no shared-element flight, no stagger.
-- Ambient: all off; `frameloop="demand"`; hover still colours the label and shows the reticle without drawing it; system cursor.
+- Ambient: all off (no shooting stars); `frameloop="demand"`; hover still colours the label and shows the reticle without drawing it; system cursor.
 - Mobile sheet still follows the finger but snaps instantly; no inertia on pinch/drag.
 - Low power (not reduced motion): mobile column of the table above.
 
