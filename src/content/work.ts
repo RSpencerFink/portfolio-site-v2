@@ -57,11 +57,11 @@ export const jobs: Job[] = [
     sections: [
       {
         bullets: [
-          { text: 'Owns product strategy, technical execution, and delivery for two major product areas, partnering with design and product from discovery through launch. Transitioned execution to junior engineers while continuing to lead product strategy and architecture.' },
-          { text: 'Lead a cross-functional team of 4 engineers, 2 designers, and 1 product manager, setting priorities, developing talent, and driving high-quality execution.' },
+          { text: 'Owned product strategy, technical execution, and delivery for two major product areas, partnering with design and product from discovery through launch. Transitioned execution to junior engineers while continuing to lead product strategy and architecture.' },
+          { text: 'Led a cross-functional team of 4 engineers, 2 designers, and 1 product manager, setting priorities, developing talent, and driving high-quality execution.' },
           { text: 'Redesigned the software engineering interview process to better assess product judgment, engineering excellence, and collaborative problem-solving, improving hiring signal and consistency.' },
           { text: 'Instituted comprehensive production reliability practices, including stronger observability, incident-response processes, release safeguards, and operational ownership, to improve system resilience and delivery confidence.' },
-          { text: 'Provide hands-on technical leadership by setting architectural direction, unblocking complex work, and raising the bar for engineering quality across the team.' },
+          { text: 'Provided hands-on technical leadership by setting architectural direction, unblocking complex work, and raising the bar for engineering quality across the team.' },
         ],
       },
     ],
