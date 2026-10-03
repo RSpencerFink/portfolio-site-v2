@@ -1,0 +1,13 @@
+.host {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-sky);
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 50% 35% at 50% 48%, var(--sky-nebula), transparent 70%),
+    var(--sky-ground);
+}
+
+@media print {
+  .host { display: none; }
+}
