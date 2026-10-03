@@ -382,3 +382,9 @@
     display: none;
   }
 }
+
+/* Cinema and theater: the film owns the screen; no star labels read through it. */
+:global(html[data-theater]) .labels :is(.text, .cname),
+:global(html[data-panel='cinema']) .labels :is(.text, .cname) {
+  opacity: 0;
+}
