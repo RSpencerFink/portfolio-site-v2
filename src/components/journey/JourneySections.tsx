@@ -103,24 +103,28 @@ export function JourneySections() {
                       <span className={j.sep}> · </span>
                       <span className={j.dates}>{job.dates}</span>
                     </p>
-                    {job.description && <p className={`body-l ${j.lede}`}>{job.description}</p>}
-                    {dense && (
-                      <div className={j.columns}>
-                        {job.sections.map((sec, k) => (
-                          <div key={sec.heading ?? k}>
-                            {sec.heading && <h4 className={`heading ${j.colHead}`}>{sec.heading}</h4>}
-                            <ul className={j.bullets}>
-                              {sec.bullets.map((b) => (
-                                <li key={b.text}>
-                                  {b.lead && <p className="body-strong">{b.lead}</p>}
-                                  <p className="body-l">{b.text}</p>
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        ))}
-                      </div>
-                    )}
+                    {/* A stop taller than the screen: this column scrolls first, then the stepper moves on (stepper.ts). */}
+                    <div className={j.scroll} data-scroll>
+                      {job.description && <p className={`body-l ${j.lede}`}>{job.description}</p>}
+                      {dense && (
+                        <div className={j.columns}>
+                          {job.sections.map((sec, k) => (
+                            <div key={sec.heading ?? k}>
+                              {sec.heading && <h4 className={`heading ${j.colHead}`}>{sec.heading}</h4>}
+                              <ul className={j.bullets}>
+                                {sec.bullets.map((b) => (
+                                  <li key={b.text}>
+                                    {b.lead && <p className="body-strong">{b.lead}</p>}
+                                    <p className="body-l">{b.text}</p>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                    <p className={`label ${j.more}`} aria-hidden="true">More ↓</p>
                   </article>
                 </li>
               );

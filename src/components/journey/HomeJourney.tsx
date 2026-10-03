@@ -184,6 +184,30 @@ function mobileStage(stage: HTMLElement, segment: Segment, segs: CameraSegment[]
   return stops;
 }
 
+/** A long stop's text column: marks whether there is more above (`data-scrolled`) and below (`data-more`, "More ↓"). */
+function columnEdges(): Cleanup {
+  const els = [...document.querySelectorAll<HTMLElement>('#journey [data-scroll]')];
+  const mark = (el: HTMLElement) => {
+    el.toggleAttribute('data-scrolled', el.scrollTop > 2);
+    el.toggleAttribute('data-more', el.scrollTop + el.clientHeight < el.scrollHeight - 2);
+  };
+  const onScroll = (e: Event) => mark(e.currentTarget as HTMLElement);
+  // The column and its text: a resize or the web fonts change how much there is to read.
+  const ro = new ResizeObserver((entries) => entries.forEach((e) => mark(e.target.closest<HTMLElement>('[data-scroll]')!)));
+  els.forEach((el) => {
+    el.addEventListener('scroll', onScroll, { passive: true });
+    [el, ...el.children].forEach((c) => ro.observe(c));
+  });
+  return () => {
+    ro.disconnect();
+    els.forEach((el) => {
+      el.removeEventListener('scroll', onScroll);
+      el.removeAttribute('data-scrolled');
+      el.removeAttribute('data-more');
+    });
+  };
+}
+
 /** T5 / T6: the unpinned stretches between pins, plus the pole mark's rise at the hand-off to H3. */
 function pulls(segs: CameraSegment[]) {
   const projects = document.getElementById('projects');
@@ -225,7 +249,7 @@ export function HomeJourney() {
       });
       pulls(segs);
       const stops = () => [...(stageStops.work?.() ?? []), ...(stageStops.projects?.() ?? [])].sort((a, b) => a - b);
-      cleanups.push(stepper(stops));
+      cleanups.push(stepper(stops), columnEdges());
 
       // Hash targets: /#work the first Work stop (Brava), /#projects the featured build,
       // /#chart (a direct-loaded panel's Close) the H3 rest at the end of the document.

@@ -11,6 +11,17 @@ const TOL = 3;
 let busyUntil = 0;
 const busy = () => performance.now() < busyUntil;
 
+/** The scrolling text column of the stop on screen (JourneySections `[data-scroll]`), if it overflows. */
+function column() {
+  return [...document.querySelectorAll<HTMLElement>('#journey [data-scroll]')].find((el) => {
+    const r = el.getBoundingClientRect();
+    return el.scrollHeight > el.clientHeight + 2 && r.bottom > 0 && r.top < innerHeight && el.checkVisibility({ visibilityProperty: true, opacityProperty: true });
+  });
+}
+/** The column has more to read in that direction. */
+const canScroll = (el: HTMLElement | undefined, dir: number): el is HTMLElement =>
+  !!el && (dir > 0 ? el.scrollTop + el.clientHeight < el.scrollHeight - 2 : el.scrollTop > 2);
+
 /**
  * Every programmatic scroll on the home page (steps, rail ticks, hash jumps,
  * the hero snap) goes through here, so the stepper knows to hold.
@@ -19,6 +30,9 @@ const busy = () => performance.now() < busyUntil;
 export function goTo(y: number, duration = FLIGHT) {
   const lenis = getLenis();
   busyUntil = performance.now() + duration * 1000 + 80;
+  // Every stop is entered at the top of its text; the one being left keeps its place until it has faded.
+  const leaving = column();
+  document.querySelectorAll<HTMLElement>('#journey [data-scroll]').forEach((el) => el !== leaving && (el.scrollTop = 0));
   if (!lenis) return window.scrollTo(0, y);
   if (!duration) return lenis.scrollTo(y, { immediate: true, force: true });
   lenis.scrollTo(y, { duration, easing: easeInOut, force: true, lock: true });
@@ -35,17 +49,25 @@ const typing = (t: EventTarget | null) => !!(t as Element | null)?.closest?.('in
  * through, so the page scrolls on into the hero above or the chart below.
  * Free scrolling (inertia from the hero, a scrollbar drag) can't fly past a
  * stop either: it is caught at the first stop it would cross.
+ * A stop whose text is taller than the screen scrolls its column first; only
+ * a fresh gesture that starts with the column at its end (or start, going
+ * back) moves on, so the gesture that reaches the edge never also steps.
  */
 export function stepper(stops: () => number[]) {
   const y = () => window.scrollY;
   /** The stop one step from here, or undefined when the gesture should leave the zone (or we're outside it). */
+  const inZone = (s = stops()) => !!s.length && y() > s[0] - innerHeight * 0.6 && y() < s.at(-1)! + innerHeight * 0.6;
   const targetFor = (dir: 1 | -1) => {
     const s = stops();
-    if (!s.length) return;
+    if (!inZone(s)) return;
     const cur = y();
-    const margin = innerHeight * 0.6;
-    if (cur < s[0] - margin || cur > s.at(-1)! + margin) return;
     return dir > 0 ? s.find((v) => v > cur + TOL) : s.findLast((v) => v < cur - TOL);
+  };
+  /** At rest in the zone on a stop whose column can still scroll that way: the column to scroll. */
+  const columnFor = (dir: number) => {
+    if (busy() || !inZone()) return;
+    const el = column();
+    return canScroll(el, dir) ? el : undefined;
   };
   const step = (dir: 1 | -1) => {
     const t = targetFor(dir);
@@ -58,6 +80,8 @@ export function stepper(stops: () => number[]) {
   let lastAbs = 0;
   /** The current wheel gesture was taken by the stepper (its tail is swallowed too). */
   let taken = false;
+  /** The current wheel gesture scrolls this stop's column (to its end at most; it never steps). */
+  let inner: HTMLElement | undefined;
   const onWheel = (e: WheelEvent) => {
     if (e.ctrlKey || e.metaKey || Math.abs(e.deltaY) < Math.abs(e.deltaX) || typing(e.target)) return;
     const abs = Math.abs(e.deltaY);
@@ -66,7 +90,16 @@ export function stepper(stops: () => number[]) {
     lastWheel = e.timeStamp;
     lastAbs = abs;
     // A gesture that starts mid-flight is swallowed whole, its inertia tail included.
-    if (fresh) taken = busy();
+    if (fresh) {
+      taken = busy();
+      inner = columnFor(e.deltaY);
+    }
+    if (inner) {
+      inner.scrollTop += e.deltaMode === 1 ? e.deltaY * 16 : e.deltaY;
+      e.preventDefault();
+      e.stopPropagation();
+      return;
+    }
     if (!busy() && !taken) taken = step(e.deltaY > 0 ? 1 : -1);
     if (!taken) return;
     e.preventDefault();
@@ -84,6 +117,14 @@ export function stepper(stops: () => number[]) {
           ? -1
           : 0;
     if (!dir) return;
+    const col = columnFor(dir);
+    if (col) {
+      e.preventDefault();
+      col.scrollBy({ top: dir * col.clientHeight * 0.8, behavior: 'smooth' });
+      return;
+    }
+    // Holding the key scrolls a long column to its end and stops there: moving on takes a fresh press.
+    if (e.repeat && !busy() && inZone() && column()) return void e.preventDefault();
     if (busy()) {
       if (targetFor(dir as 1 | -1) !== undefined || e.repeat) e.preventDefault();
       return;
@@ -92,23 +133,30 @@ export function stepper(stops: () => number[]) {
   };
 
   // Touch: decide on the first real move whether the swipe is ours (then the page doesn't scroll natively).
-  let touch: { y: number; dir: 0 | 1 | -1 } | null = null;
+  // A swipe that starts with the stop's column able to scroll scrolls it instead: natively (with momentum) when the
+  // finger is on the column, by hand otherwise. Either way it ends at the column's edge (overscroll-behavior: contain).
+  let touch: { y: number; last: number; dir: 0 | 1 | -1; inner?: HTMLElement } | null = null;
   const onTouchStart = (e: TouchEvent) => {
-    touch = e.touches.length === 1 && !typing(e.target) ? { y: e.touches[0].clientY, dir: 0 } : null;
+    touch = e.touches.length === 1 && !typing(e.target) ? { y: e.touches[0].clientY, last: e.touches[0].clientY, dir: 0 } : null;
   };
   const onTouchMove = (e: TouchEvent) => {
     if (!touch) return;
-    const dy = touch.y - e.touches[0].clientY;
+    const at = e.touches[0].clientY;
+    const dy = touch.y - at;
     if (!touch.dir) {
       if (Math.abs(dy) < 8) return;
       const dir = dy > 0 ? 1 : -1;
-      touch.dir = busy() || targetFor(dir) !== undefined ? dir : 0;
+      touch.inner = columnFor(dir);
+      touch.dir = touch.inner || busy() || targetFor(dir) !== undefined ? dir : 0;
       if (!touch.dir) return void (touch = null); // leaving the zone: native scroll
     }
+    if (touch.inner?.contains(e.target as Node)) return;
+    if (touch.inner) touch.inner.scrollTop += touch.last - at;
+    touch.last = at;
     if (e.cancelable) e.preventDefault();
   };
   const onTouchEnd = (e: TouchEvent) => {
-    if (!touch?.dir) return;
+    if (!touch?.dir || touch.inner) return void (touch = null);
     const dy = touch.y - e.changedTouches[0].clientY;
     if (!busy() && Math.abs(dy) > 32) step(touch.dir as 1 | -1);
     touch = null;

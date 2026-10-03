@@ -242,6 +242,43 @@
   line-height: 21px;
 }
 
+/*
+ * The text under a stop's title. When the stop is taller than the screen it
+ * scrolls on its own (stepper.ts scrolls it before moving on), fading out at
+ * the top once scrolled and at the bottom while there is more ("More ↓").
+ * HomeJourney sets data-scrolled / data-more.
+ */
+.scroll {
+  display: grid;
+  gap: var(--space-3);
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+  --fade-top: 0px;
+  --fade-bottom: 0px;
+  -webkit-mask: linear-gradient(transparent, #000 var(--fade-top), #000 calc(100% - var(--fade-bottom)), transparent);
+  mask: linear-gradient(transparent, #000 var(--fade-top), #000 calc(100% - var(--fade-bottom)), transparent);
+}
+
+.scroll[data-scrolled] {
+  --fade-top: 32px;
+}
+
+.scroll[data-more] {
+  --fade-bottom: 64px;
+}
+
+.more {
+  color: var(--text-2);
+  opacity: 0;
+  transition: opacity var(--dur-s) var(--ease-out);
+}
+
+.scroll[data-more] + .more {
+  opacity: 1;
+}
+
 .stack {
   display: grid;
   gap: var(--space-5);
@@ -325,7 +362,7 @@
   border-radius: 8px !important;
 }
 
-:global(html:not([data-journey])) .workSection :is(.kicker, .lede, .columns, .sep) {
+:global(html:not([data-journey])) .workSection :is(.kicker, .lede, .columns, .sep, .scroll, .more) {
   display: none;
 }
 
@@ -619,6 +656,13 @@
   width: min(760px, 58vw);
 }
 
+/* A long stop's column ends 96 px above the bottom, clear of "Scroll to travel"; its text scrolls inside. */
+:global(html[data-journey='pinned']) .slide[data-dense] .content {
+  display: flex;
+  flex-direction: column;
+  max-height: calc(78vh - 96px);
+}
+
 :global(html[data-journey='pinned']) .featured .content {
   width: min(470px, 32vw);
 }
@@ -773,6 +817,19 @@
 
 :global(html[data-journey='mobile']) .slide .content {
   padding-top: 220px;
+}
+
+/* Each job is exactly one screen; a long one's text scrolls in its column, above the rail (the layer's 96 px bottom padding). */
+:global(html[data-journey='mobile']) .workSection .slide {
+  height: 100svh;
+  display: flex;
+  flex-direction: column;
+}
+
+:global(html[data-journey='mobile']) .workSection .content {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
 }
 
 :global(html[data-journey='mobile']) .featured {
