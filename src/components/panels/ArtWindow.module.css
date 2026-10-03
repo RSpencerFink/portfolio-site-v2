@@ -35,6 +35,18 @@
   width: var(--mark-w);
 }
 
+/* With JS the works are a random pick: hidden until it has loaded, so the server's set never swaps on screen. */
+@media (scripting: enabled) {
+  .stage {
+    opacity: 0;
+    transition: opacity var(--dur-s) var(--ease-out);
+  }
+
+  .stage[data-ready] {
+    opacity: 1;
+  }
+}
+
 /* One continuous mask over the three panes. Pane widths follow the letters (R 40 %, S 28 %, F 32 %). */
 .montage {
   position: relative;
@@ -52,6 +64,8 @@
 
 .pane img {
   object-fit: cover;
+  /* Portrait paintings keep their faces in the letters; stills fill the height, so this only trims their sides. */
+  object-position: 50% 30%;
 }
 
 .captions {
@@ -66,15 +80,17 @@
 
 .foot {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-5);
+  justify-content: flex-end;
   width: var(--mark-w);
 }
 
 .hint {
-  margin: 0;
+  min-height: 44px;
+  padding: 0;
   color: var(--text);
+  background: none;
+  border: 0;
+  cursor: pointer;
 }
 
 @media (scripting: none), (prefers-reduced-motion: reduce) {

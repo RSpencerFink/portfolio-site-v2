@@ -18,17 +18,16 @@ export const metadata: Metadata = pageMeta({
   image: films.find((f) => f.still)!.still,
 });
 
-/** R3 · A4. Film stills with timecode chips; hover or focus shows the logline. */
-const pane = (letter: 'R' | 'S' | 'F', slug: string) => {
-  const f = films.find((x) => x.slug === slug)!;
-  return { letter, src: f.still!, name: f.title };
-};
-const WINDOW = [pane('R', 'nightshade'), pane('S', 'spare-key'), pane('F', 'bayonet')];
+/** R3 · A4. Film stills; hover or focus shows the logline. */
+/** The window's pool: every film with a still, a random three per visit; the server HTML shows FALLBACK. */
+const work = (f: (typeof films)[number]) => ({ src: f.still!, name: f.title });
+const POOL = films.filter((f) => f.still).map(work);
+const FALLBACK = ['nightshade', 'spare-key', 'bayonet'].map((slug) => work(films.find((f) => f.slug === slug)!));
 
 export default function DigitalPage() {
   return (
     <main id="main" className={s.main}>
-      <ArtWindow panes={WINDOW} current="digital" />
+      <ArtWindow pool={POOL} fallback={FALLBACK} />
       <header className={s.head}>
         <ViewTransition name="va-title" share="vt-fade" default="none">
           <h1 className="display-s">The Filmmaker</h1>
@@ -54,9 +53,6 @@ export default function DigitalPage() {
                         ) : (
                           <span className={s.titleCard}>{f.title}</span>
                         )}
-                        <span className={`label-s ${s.timecode}`} aria-hidden="true">
-                          00:00:00:00
-                        </span>
                         <span className={s.play} aria-hidden="true" />
                       </span>
                     </ViewTransition>

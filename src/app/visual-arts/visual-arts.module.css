@@ -68,13 +68,18 @@
   display: grid;
   gap: var(--space-3);
   text-decoration: none;
-  transition: opacity var(--dur-s) var(--ease-out);
+  transition: filter var(--dur-s) var(--ease-out);
 }
 
-/* Others drop to 50 % while one is selected (spec §3 opacity). */
+/* The selected work's overlays (logline, "Enter to open") sit above its neighbours. */
+.work:is(:hover, :focus-visible) {
+  z-index: 1;
+}
+
+/* Others dim to 50 % while one is selected (spec §3), staying opaque: the sky never shows through a work. */
 .paintings:has(.work:is(:hover, :focus-visible)) .work:not(:hover, :focus-visible),
 .films:has(.work:is(:hover, :focus-visible)) .work:not(:hover, :focus-visible) {
-  opacity: 0.5;
+  filter: brightness(0.5);
 }
 
 .frame,
@@ -93,7 +98,8 @@
 .still {
   aspect-ratio: 16 / 9;
   border: 1px solid var(--line-strong);
-  background: var(--panel);
+  /* Opaque (--panel is 88 %): no star shows through Montauk's title card. */
+  background: #0a0c14;
 }
 
 .still img {
@@ -155,6 +161,7 @@
 }
 
 .caption {
+  position: relative;
   display: grid;
   gap: 2px;
 }
@@ -189,16 +196,6 @@
   color: var(--text-hi);
 }
 
-.timecode {
-  position: absolute;
-  top: 8px;
-  left: 8px;
-  padding: 2px 6px;
-  color: var(--text);
-  background: rgb(4 5 10 / 0.7);
-  border: 1px solid var(--line-strong);
-}
-
 .play {
   position: absolute;
   top: 50%;
@@ -227,8 +224,13 @@
   opacity: 1;
 }
 
+/* An overlay under the caption: showing it never moves another work. */
 .logline {
-  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  visibility: hidden;
   margin-top: var(--space-2);
   font-size: 17px;
   line-height: 24px;
@@ -237,7 +239,7 @@
 }
 
 .work:is(:hover, :focus-visible) .logline {
-  display: block;
+  visibility: visible;
 }
 
 @media (max-width: 1023px) {

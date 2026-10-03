@@ -19,16 +19,15 @@ export const metadata: Metadata = pageMeta({
 });
 
 /** R3 · A3. Paintings float at star positions, sized by real canvas width, joined by constellation lines; hover or focus selects one. */
-const pane = (letter: 'R' | 'S' | 'F', slug: string) => {
-  const p = paintings.find((x) => x.slug === slug)!;
-  return { letter, src: `${p.image}_800.jpg`, name: p.title };
-};
-const WINDOW = [pane('R', 'dr-manhattan'), pane('S', 'marilyn-monroe'), pane('F', 'walter-white')];
+/** The window's pool: every painting, a random three per visit; the server HTML shows FALLBACK. */
+const work = (p: (typeof paintings)[number]) => ({ src: `${p.image}_800.jpg`, name: p.title });
+const POOL = paintings.map(work);
+const FALLBACK = ['dr-manhattan', 'marilyn-monroe', 'walter-white'].map((slug) => work(paintings.find((p) => p.slug === slug)!));
 
 export default function AnalogPage() {
   return (
     <main id="main" className={s.main}>
-      <ArtWindow panes={WINDOW} current="analog" />
+      <ArtWindow pool={POOL} fallback={FALLBACK} />
       <header className={s.head}>
         <ViewTransition name="va-title" share="vt-fade" default="none">
           <h1 className="display-s">The Painter</h1>
