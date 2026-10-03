@@ -7,6 +7,7 @@ import { cameraRig } from '@/components/sky/cameraRig';
 import { softNav, useArrivedFromSky } from './softNav';
 import styles from './PanelFrame.module.css';
 import './transitions.css';
+import { isModified } from '@/lib/events';
 
 export interface StepItem {
   href: string;
@@ -122,8 +123,8 @@ export function StepLink({ href, rel, className, children }: { href: string; rel
       className={className}
       replace={panel}
       scroll={!panel}
-      onClick={() => {
-        if (!panel) return;
+      onClick={(e) => {
+        if (!panel || isModified(e)) return;
         softNav.set(href);
         stepFocus = rel ?? null;
       }}
@@ -323,8 +324,9 @@ export function PanelFrame({ slug, title, kicker, lead, subline, prev, next, cou
               }
             }
             const typing = (e.target as Element).closest('input, textarea, select');
-            if (!typing && e.key === 'ArrowLeft') step(prev, 'prev');
-            if (!typing && e.key === 'ArrowRight') step(next, 'next');
+            if (typing || e.altKey || e.metaKey || e.ctrlKey) return; // Alt/Cmd+← is the browser's Back
+            if (e.key === 'ArrowLeft') step(prev, 'prev');
+            if (e.key === 'ArrowRight') step(next, 'next');
           }}
           onClick={(e) => {
             // Clicks on ::backdrop target the dialog itself, outside its box.

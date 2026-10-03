@@ -33,7 +33,7 @@ export function VisualArtsToggle({ current }: { current: 'analog' | 'digital' })
       aria-label="Visual arts"
       className={`label ${styles.toggle}`}
       onKeyDown={(e) => {
-        if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+        if ((e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') || e.altKey || e.metaKey || e.ctrlKey) return;
         const to = tabs.find((t) => t.id !== current)!;
         e.preventDefault();
         refocus = true;
@@ -48,6 +48,7 @@ export function VisualArtsToggle({ current }: { current: 'analog' | 'digital' })
           key={t.id}
           role="tab"
           aria-selected={t.id === current}
+          tabIndex={t.id === current ? 0 : -1}
           href={t.href}
           className={styles.tab}
         >

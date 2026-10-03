@@ -8,6 +8,7 @@ import { easeInOut } from '@/components/sky/chart';
 import { journeyProgress } from './progress';
 import { getLenis } from './Journey';
 import { pad } from '@/lib/format';
+import { isModified } from '@/lib/events';
 
 /** Empty-sky lead-in / lead-out around the first and last dwell, in legs. */
 const EDGE = 0.4;
@@ -275,7 +276,7 @@ export function HomeJourney() {
       };
       const onClick = (e: MouseEvent) => {
         const a = (e.target as HTMLElement).closest('a');
-        if (!a || a.origin !== location.origin || a.pathname !== location.pathname) return;
+        if (!a || isModified(e) || a.origin !== location.origin || a.pathname !== location.pathname) return;
         if (!toHash(a.hash, true)) return;
         e.preventDefault(); // also stops next/link's own hash scroll
         history.pushState(null, '', a.hash);

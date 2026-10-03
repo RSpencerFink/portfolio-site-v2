@@ -89,10 +89,11 @@ export function FilmView({ slug, title, roles, vimeoId, vimeoUrl, still, counter
   });
 
   const start = async () => {
-    if (player.current) return void player.current.play();
+    if (player.current) return void player.current.play().catch(() => {});
     setStatus('loading');
     const { default: Player } = await import('@vimeo/player');
-    const p = new Player(host.current!, {
+    if (!host.current) return; // panel closed while the player loaded
+    const p = new Player(host.current, {
       id: Number(vimeoId),
       autoplay: true,
       controls: !VIMEO_NATIVE_CONTROLS,

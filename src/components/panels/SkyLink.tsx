@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useRef, type ComponentProps } from 'react';
 import { softNav } from './softNav';
+import { isModified } from '@/lib/events';
 
 /**
  * A link that opens its target as a panel over the sky. Use for star links
@@ -57,7 +58,7 @@ export function SkyLink({ onClick, ref: outerRef, ...props }: ComponentProps<typ
         else if (outerRef) outerRef.current = el;
       }}
       onClick={(e) => {
-        softNav.set(props.href);
+        if (!isModified(e)) softNav.set(props.href);
         onClick?.(e);
       }}
     />

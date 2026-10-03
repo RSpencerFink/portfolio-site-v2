@@ -5,6 +5,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Lenis from 'lenis';
 import 'lenis/dist/lenis.css';
+import { isModified } from '@/lib/events';
 
 let lenis: Lenis | null = null;
 
@@ -44,7 +45,7 @@ export function Journey() {
   useEffect(() => {
     const onClick = (e: MouseEvent) => {
       const a = (e.target as Element).closest?.<HTMLAnchorElement>('a[href^="#"]');
-      if (!a || e.defaultPrevented || a.hash === location.hash) return;
+      if (!a || e.defaultPrevented || isModified(e) || a.hash === location.hash) return;
       const state = history.state;
       addEventListener('hashchange', () => history.replaceState(state, ''), { once: true });
     };
