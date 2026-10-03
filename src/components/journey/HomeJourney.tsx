@@ -4,9 +4,9 @@ import { useEffect } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { cameraRig, type Segment } from '@/components/sky/cameraRig';
-import { easeInOut } from '@/components/sky/chart';
 import { journeyProgress } from './progress';
 import { getLenis } from './Journey';
+import { goTo, stepper } from './stepper';
 import { pad } from '@/lib/format';
 import { isModified } from '@/lib/events';
 
@@ -37,43 +37,28 @@ function dwellsOf(stage: HTMLElement) {
 function railUpdater(stage: HTMLElement) {
   const ticks = [...stage.querySelectorAll<HTMLButtonElement>('[data-dwell]')];
   const counter = stage.querySelector<HTMLElement>('[data-counter]');
-  const offset = Number(stage.dataset.offset ?? 0);
   let current = -1;
   return (d: number) => {
     if (d === current) return;
     current = d;
-    // Title / "constellation complete" dwells have no tick: the rail keeps its last star.
-    const star = d - offset;
-    if (ticks[star]) {
-      ticks.forEach((t, i) => (i === star ? t.setAttribute('aria-current', 'step') : t.removeAttribute('aria-current')));
-      if (counter) counter.textContent = `${pad(star + 1)} / ${pad(ticks.length)}`;
+    // The "constellation complete" dwell has no tick: the rail keeps its last star.
+    if (ticks[d]) {
+      ticks.forEach((t, i) => (i === d ? t.setAttribute('aria-current', 'step') : t.removeAttribute('aria-current')));
+      if (counter) counter.textContent = `${pad(d + 1)} / ${pad(ticks.length)}`;
     }
   };
 }
 
-/** Scrolls through Lenis so it never fights an in-flight snap; duration 0 jumps. */
-function scrollToY(y: number, duration = 0.9) {
-  const lenis = getLenis();
-  if (lenis) lenis.scrollTo(y, duration ? { duration, easing: easeInOut } : { immediate: true, force: true });
-  else window.scrollTo(0, y);
-}
-
-/**
- * Directional snap (spec T2/T3: a release mid-travel finishes the trip), run
- * through Lenis on scroll end. ScrollTrigger's built-in `snap` fights Lenis'
- * smoothing and settled short of the dwell in testing.
- */
-function snapOnEnd(st: ScrollTrigger, points: number[], durations: [number, number]): Cleanup {
+/** Directional snap at the hero's ends (T2: a release mid-fly finishes the trip). */
+function snapOnEnd(st: ScrollTrigger, points: number[]): Cleanup {
   const onEnd = () => {
     if (!st.isActive) return;
     const p = st.progress;
     const near = points.find((x) => Math.abs(x - p) < 0.01);
-    const ahead = st.direction > 0 ? points.find((x) => x >= p) : points.findLast((x) => x <= p);
-    const target = near ?? ahead;
-    if (target === undefined) return; // heading out of the pin: let the visitor leave
+    const target = near ?? (st.direction > 0 ? points.find((x) => x >= p) : points.findLast((x) => x <= p));
+    if (target === undefined) return;
     const y = st.start + (st.end - st.start) * target;
-    const dist = Math.abs(y - window.scrollY);
-    if (dist > 2) scrollToY(y, gsap.utils.clamp(durations[0], durations[1], dist / window.innerHeight));
+    if (Math.abs(y - window.scrollY) > 2) goTo(y, 0.6);
   };
   ScrollTrigger.addEventListener('scrollEnd', onEnd);
   return () => ScrollTrigger.removeEventListener('scrollEnd', onEnd);
@@ -86,14 +71,9 @@ const focusLater = (el: HTMLElement | undefined) => gsap.delayedCall(1, () => el
 function hero(rangeVh: number, segs: CameraSegment[]): Cleanup {
   const el = document.getElementById('hero');
   if (!el) return () => {};
-  const mask = el.querySelectorAll('[data-mask]');
   const fade = el.querySelectorAll('[data-hero-fade]');
-  const tl = gsap
-    .timeline({ defaults: { ease: 'none' } })
-    .to(mask, { scale: 2.2, duration: 60, ease: 'power2.inOut' }, 0)
-    .to(fade, { autoAlpha: 0, duration: 60 }, 0)
-    .to(mask, { scale: 6.4, duration: 80, ease: 'power2.inOut' }, 60)
-    .to(mask, { autoAlpha: 0, duration: 33 }, 187);
+  // Opacity only (no visibility flips): the hint and the hidden name fade as the mask flies in.
+  const tl = gsap.timeline({ defaults: { ease: 'none' } }).to(fade, { opacity: 0, duration: 60 }, 0).set({}, {}, rangeVh);
   const st = ScrollTrigger.create({
     animation: tl,
     trigger: el,
@@ -104,14 +84,15 @@ function hero(rangeVh: number, segs: CameraSegment[]): Cleanup {
     invalidateOnRefresh: true,
   });
   segs.push({ id: 'hero', st, t: (y) => local(st, y) });
-  return snapOnEnd(st, [0, 1], [0.6, 0.6]);
+  return snapOnEnd(st, [0, 1]);
 }
 
 /**
  * T3 / T4 / MO-3: pinned star-to-star stage. Per leg: content exits over the
  * first 20 %, the camera travels, the next content enters over the last 10 %.
+ * Returns the scroll position of each dwell: the stepper's stops.
  */
-function pinnedStage(stage: HTMLElement, segment: Segment, rangeVh: number, firstDwell: Map<string, () => number>, segs: CameraSegment[]): Cleanup {
+function pinnedStage(stage: HTMLElement, segment: Segment, rangeVh: number, segs: CameraSegment[], cleanups: Cleanup[]) {
   const groups = dwellsOf(stage);
   const legs = groups.length - 1;
   const total = legs + 2 * EDGE;
@@ -131,7 +112,7 @@ function pinnedStage(stage: HTMLElement, segment: Segment, rangeVh: number, firs
     pin: true,
     start: 'top top',
     end: () => `+=${(window.innerHeight * rangeVh) / 100}`,
-    scrub: 0.8,
+    scrub: 0.3,
     invalidateOnRefresh: true,
     onUpdate: (self) => {
       update(Math.min(Math.max(Math.round(self.progress * total - EDGE), 0), legs));
@@ -141,30 +122,28 @@ function pinnedStage(stage: HTMLElement, segment: Segment, rangeVh: number, firs
     onToggle: (self) => stage.toggleAttribute('data-live', self.isActive),
   });
 
-  // Camera: 0 at the first dwell, 1 at the last (the empty lead-in/out holds the end stars).
-  segs.push({ id: segment, st, t: (y) => gsap.utils.clamp(0, 1, (local(st, y) * total - EDGE) / legs) });
+  // Camera: 0 at the first dwell, 1 at the last (the empty lead-in/out holds the end stars). One dwell: always 0.
+  segs.push({ id: segment, st, t: (y) => (legs ? gsap.utils.clamp(0, 1, (local(st, y) * total - EDGE) / legs) : 0) });
+  const stops = () => groups.map((_, d) => st.start + ((st.end - st.start) * (EDGE + d)) / total);
 
-  // Rail ticks scroll to their star (lenis.scrollTo, 900 ms, MO-3), then focus it.
+  // Rail ticks travel to their star (one stop's flight, MO-3), then focus it.
   const onClick = (e: MouseEvent) => {
     const tick = (e.target as HTMLElement).closest<HTMLElement>('[data-dwell]');
     if (!tick) return;
     const d = Number(tick.dataset.dwell);
-    scrollToY(st.start + ((st.end - st.start) * (EDGE + d)) / total);
+    goTo(stops()[d]);
     focusLater(groups[d][0]);
   };
   stage.addEventListener('click', onClick);
-  // Dwells only: a stop in the empty lead-in (e.g. after a /#work jump) resolves to the first star.
-  const unsnap = snapOnEnd(st, groups.map((_, d) => (EDGE + d) / total), [0.5, 0.9]);
-  firstDwell.set(segment, () => st.start + ((st.end - st.start) * EDGE) / total);
-  return () => {
+  cleanups.push(() => {
     stage.removeEventListener('click', onClick);
     stage.removeAttribute('data-live');
-    unsnap();
-  };
+  });
+  return stops;
 }
 
-/** T17 / MO-9: no pin; each dwell is a 100svh snap slide that activates as it crosses the middle. */
-function mobileStage(stage: HTMLElement, segment: Segment, segs: CameraSegment[]): Cleanup {
+/** T17 / MO-9: no pin; each dwell is a 100svh slide that activates as it crosses the middle. */
+function mobileStage(stage: HTMLElement, segment: Segment, segs: CameraSegment[], cleanups: Cleanup[]) {
   const groups = dwellsOf(stage);
   const update = railUpdater(stage);
   // The camera moves to a dwell as its slide activates (its text enters at the same moment).
@@ -187,22 +166,25 @@ function mobileStage(stage: HTMLElement, segment: Segment, segs: CameraSegment[]
   );
   const st = ScrollTrigger.create({ trigger: stage, start: 'top 60%', end: 'bottom 40%' });
   segs.push({ id: segment, st, t: () => active / Math.max(1, groups.length - 1) });
+  const layers = [...stage.querySelectorAll<HTMLElement>('[data-slide]')];
+  const stops = () => layers.map((el) => el.getBoundingClientRect().top + window.scrollY);
 
   const onClick = (e: MouseEvent) => {
     const tick = (e.target as HTMLElement).closest<HTMLElement>('[data-dwell]');
     if (!tick) return;
     const el = groups[Number(tick.dataset.dwell)][0];
-    scrollToY(el.getBoundingClientRect().top + window.scrollY);
+    goTo(el.getBoundingClientRect().top + window.scrollY);
     focusLater(el);
   };
   stage.addEventListener('click', onClick);
-  return () => {
+  cleanups.push(() => {
     stage.removeEventListener('click', onClick);
     stage.querySelectorAll<HTMLElement>('[data-active]').forEach((el) => delete el.dataset.active);
-  };
+  });
+  return stops;
 }
 
-/** T5 / T6: the unpinned stretches between pins, plus the cartouche rise at the hand-off to H3. */
+/** T5 / T6: the unpinned stretches between pins, plus the pole mark's rise at the hand-off to H3. */
 function pulls(segs: CameraSegment[]) {
   const projects = document.getElementById('projects');
   if (projects) {
@@ -212,19 +194,15 @@ function pulls(segs: CameraSegment[]) {
   }
   const chart = document.getElementById('chart');
   if (!chart) return;
-  const tl = gsap
-    .timeline({ defaults: { ease: 'none' } })
-    .fromTo(chart.querySelector('[data-pole]'), { autoAlpha: 0, scale: 0.92 }, { autoAlpha: 1, scale: 1, duration: 0.5, ease: 'power2.inOut' }, 0.1)
-    .fromTo(chart.querySelectorAll('[data-cartouche]'), { autoAlpha: 0, y: 16 }, { autoAlpha: 1, y: 0, duration: 0.25, stagger: 0.08, ease: 'power3.out' }, 0.55)
-    .set({}, {}, 1);
-  const st = ScrollTrigger.create({ animation: tl, trigger: chart, start: 'top bottom', end: 'bottom bottom', scrub: 1 });
+  const st = ScrollTrigger.create({ trigger: chart, start: 'top bottom', end: 'bottom bottom' });
   segs.push({ id: 'pull2', st, t: (y) => local(st, y) });
 }
 
 /**
- * Builds the home journey's ScrollTriggers (spec §7 T2–T6, T17). Mounted by
- * the home page so it rebuilds after soft navigation. Nothing is built under
- * reduced motion: the static R3 · RM layout stays.
+ * Builds the home journey's ScrollTriggers (spec §7 T2–T6, T17) and the
+ * one-gesture-one-stop stepper over the Work stops and the featured build.
+ * Mounted by the home page so it rebuilds after soft navigation. Nothing is
+ * built under reduced motion: the static R3 · RM layout stays.
  */
 export function HomeJourney() {
   useEffect(() => {
@@ -239,15 +217,23 @@ export function HomeJourney() {
       const cleanups: Cleanup[] = [];
       const segs: CameraSegment[] = [];
       cleanups.push(hero(desktop ? 220 : 140, segs));
-      const ranges: Record<string, number> = { work: 500, projects: 600 };
-      const firstDwell = new Map<string, () => number>();
+      const ranges: Record<string, number> = { work: 500, projects: 100 };
+      const stageStops: Record<string, () => number[]> = {};
       document.querySelectorAll<HTMLElement>('#journey [data-stage]').forEach((stage) => {
         const id = stage.dataset.stage as 'work' | 'projects';
-        cleanups.push(desktop ? pinnedStage(stage, id, ranges[id], firstDwell, segs) : mobileStage(stage, id, segs));
+        stageStops[id] = desktop ? pinnedStage(stage, id, ranges[id], segs, cleanups) : mobileStage(stage, id, segs, cleanups);
       });
       pulls(segs);
-      // /#chart (a direct-loaded panel's Close) lands on the H3 rest: the end of the document.
-      firstDwell.set('chart', () => ScrollTrigger.maxScroll(window));
+      const stops = () => [...(stageStops.work?.() ?? []), ...(stageStops.projects?.() ?? [])].sort((a, b) => a - b);
+      cleanups.push(stepper(stops));
+
+      // Hash targets: /#work the first Work stop (Brava), /#projects the featured build,
+      // /#chart (a direct-loaded panel's Close) the H3 rest at the end of the document.
+      const hashY: Record<string, () => number | undefined> = {
+        work: () => stageStops.work?.()[0],
+        projects: () => stageStops.projects?.()[0],
+        chart: () => ScrollTrigger.maxScroll(window),
+      };
 
       // Runs after Lenis + ScrollTrigger on every GSAP tick; setSegment ignores unchanged values.
       const follow = () => {
@@ -269,36 +255,34 @@ export function HomeJourney() {
       }
       ScrollTrigger.refresh();
 
-      // /#work and /#projects land on the first star, not the pin start (an empty lead-in).
-      const toHash = (hash: string, smooth: boolean) => {
-        const y = firstDwell.get(hash.slice(1))?.();
+      // One move (item 7): the page jumps to the stop and the camera flies there from wherever it was.
+      const toHash = (hash: string) => {
+        const y = hashY[hash.slice(1)]?.();
         if (y === undefined) return false;
         // Arriving from a short page (a panel's Close): Lenis' debounced limit may still be that page's height.
         getLenis()?.resize();
-        scrollToY(y, smooth ? 0.9 : 0);
+        goTo(y, 0);
+        follow();
         return true;
       };
       const onClick = (e: MouseEvent) => {
         const a = (e.target as HTMLElement).closest('a');
         if (!a || isModified(e) || a.origin !== location.origin || a.pathname !== location.pathname) return;
-        if (!toHash(a.hash, true)) return;
+        if (!toHash(a.hash)) return;
         e.preventDefault(); // also stops next/link's own hash scroll
-        history.pushState(null, '', a.hash);
+        history.pushState(history.state, '', a.hash);
       };
       document.addEventListener('click', onClick, true);
       cleanups.push(() => document.removeEventListener('click', onClick, true));
-      // Arriving with a hash (direct load or from another page): let the browser/Next jump to the
-      // anchor first, then correct it. Listeners added after the snaps run last and win.
-      if (location.hash) {
-        const fix = () => toHash(location.hash, false);
-        const call = gsap.delayedCall(0.3, fix);
-        ScrollTrigger.addEventListener('scrollEnd', fix);
-        const stop = gsap.delayedCall(2, () => ScrollTrigger.removeEventListener('scrollEnd', fix));
-        cleanups.push(() => {
-          call.kill();
-          stop.kill();
-          ScrollTrigger.removeEventListener('scrollEnd', fix);
-        });
+      // Arriving with a hash (direct load, header link from another page): land on the stop now,
+      // before the first paint of the journey, then correct once if Next's own anchor scroll lands later.
+      if (location.hash && toHash(location.hash)) {
+        const fix = () => {
+          const y = hashY[location.hash.slice(1)]?.();
+          if (y !== undefined && Math.abs(window.scrollY - y) > 2) toHash(location.hash);
+        };
+        const call = gsap.delayedCall(0.05, fix);
+        cleanups.push(() => call.kill());
       }
 
       return () => {

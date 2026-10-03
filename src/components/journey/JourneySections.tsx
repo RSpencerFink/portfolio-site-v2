@@ -5,7 +5,8 @@ import { Insignia } from '@/components/Insignia';
 import { HALO, type SpectralClass } from '@/components/sky/types';
 import { education, person, resume } from '@/content/site';
 import { jobs } from '@/content/work';
-import { projects } from '@/content/projects';
+import { featured } from '@/content/projects';
+import { ProjectFacts, ProjectPreview } from '@/components/featured/Featured';
 import { constellations } from '@/content/sky';
 import { paintings } from '@/content/paintings';
 import { films } from '@/content/films';
@@ -29,7 +30,7 @@ function FocalStar({ spectral }: { spectral: SpectralClass }) {
 }
 
 /** Desktop: rail of buttons on the right edge. Mobile: dot row + counter at the bottom (spec §6 ProgressRail). */
-function Rail({ label, items, offset }: { label: string; items: string[]; offset: number }) {
+function Rail({ label, items }: { label: string; items: string[] }) {
   return (
     <div className={`${j.rail} ${j.motionOnly}`} data-rail>
       <p className={`label ${j.hint}`} aria-hidden="true">Scroll to travel ↓</p>
@@ -37,7 +38,7 @@ function Rail({ label, items, offset }: { label: string; items: string[]; offset
         <ol>
           {items.map((name, i) => (
             <li key={name}>
-              <button type="button" className={`label-s ${j.tick}`} data-dwell={i + offset} aria-current={i === 0 ? 'step' : undefined}>
+              <button type="button" className={`label-s ${j.tick}`} data-dwell={i} aria-current={i === 0 ? 'step' : undefined}>
                 <span className={j.tickLabel}>{name}</span>
                 <span className={j.mark} aria-hidden="true" />
               </button>
@@ -53,8 +54,8 @@ function Rail({ label, items, offset }: { label: string; items: string[]; offset
 }
 
 /**
- * The home journey (spec §1 rows 1–8): hero, Constellation of Work, Builder's
- * Cluster, hand-off to the chart. Real HTML in every mode. Without JS or under
+ * The home journey (spec §1 rows 1–8): hero, Constellation of Work, the
+ * featured build, hand-off to the chart. Real HTML in every mode. Without JS or under
  * reduced motion it is the static R3 · RM layout; <HomeJourney/> sets
  * `<html data-journey="pinned|mobile">` and drives it with ScrollTrigger.
  * Each `[data-slide]` is one resting state ("dwell") of its stage.
@@ -74,7 +75,7 @@ export function JourneySections() {
       </section>
 
       <section id="work" className={`${j.section} ${j.workSection}`} aria-labelledby="work-title">
-        <div className={j.stage} data-stage="work" data-offset="0">
+        <div className={j.stage} data-stage="work">
           <header className={`${j.layer} ${j.complete}`} data-slide="5" data-target="work" tabIndex={-1}>
             <h2 id="work-title" className="display-l">{c.work.name}</h2>
             <p className="label">{c.work.subline}</p>
@@ -134,7 +135,7 @@ export function JourneySections() {
                 <li key={e.slug}>
                   <p className="body-strong">{e.name}</p>
                   <p className="label-s">
-                    {e.location} · {e.dates}
+                    {[e.location, e.dates].filter(Boolean).join(' · ')}
                   </p>
                   <p className="body">{e.description}</p>
                 </li>
@@ -142,13 +143,13 @@ export function JourneySections() {
             </ul>
           </div>
 
-          <Rail label={`${c.work.name}: stars`} items={jobs.map((x) => x.company)} offset={0} />
+          <Rail label={`${c.work.name}: stars`} items={jobs.map((x) => x.company)} />
 
           {/* R3 · RM: the rest of the sky, as an index beside the Work list (static layout only). */}
           <nav className={`${j.skyIndex} ${j.staticOnly}`} aria-labelledby="sky-index-title">
             <h3 id="sky-index-title" className="label">Sky index</h3>
             <ul className="body-l">
-              <li><a href="#projects">{c.projects.name} · {projects.length} projects</a></li>
+              <li><a href="#projects">{c.projects.name} · {featured.name}</a></li>
               <li><Link href="/visual-arts/analog">{c.painter.name} · {paintings.length} paintings</Link></li>
               <li><Link href="/visual-arts/digital">{c.filmmaker.name} · {films.length} films</Link></li>
               <li><a href="#origins">{c.origins.name} · {education.length} schools</a></li>
@@ -159,56 +160,23 @@ export function JourneySections() {
       </section>
 
       <section id="projects" className={j.section} aria-labelledby="projects-title">
-        <div className={j.stage} data-stage="projects" data-offset="1">
-          <header className={`${j.layer} ${j.cluster}`} data-slide="0" data-target="projects" tabIndex={-1}>
-            <h2 id="projects-title" className="display-l">{c.projects.name}</h2>
-            <p className="label">{c.projects.subline}</p>
-          </header>
-
-          <ol className={j.slides}>
-            {projects.map((p, i) => (
-              <li key={p.slug} className={`${j.layer} ${j.slide}`} data-slide={i + 1} data-target={p.slug} data-dense tabIndex={-1} aria-labelledby={`project-${p.slug}`}>
-                <FocalStar spectral={p.star.spectral} />
-                <article className={j.content}>
-                  <p className={`label ${j.kicker}`}>Project {pad(i + 1)}</p>
-                  <h3 id={`project-${p.slug}`} className={`display-xl ${j.title}`} data-long={p.name.length > 12 || undefined}>
-                    <SkyLink href={`/projects/${p.slug}`}>{p.name}</SkyLink>
-                  </h3>
-                  <div className={j.columns}>
-                    <div className={j.stack}>
-                      <p className={`body-l ${j.lede}`}>{p.description}</p>
-                      <ul className={j.pills}>
-                        {p.live && (
-                          <li>
-                            <a className={`label ${j.pill} ${j.pillPrimary}`} href={p.live.url} target="_blank" rel="noopener noreferrer">
-                              {p.live.label} ↗
-                            </a>
-                          </li>
-                        )}
-                        {p.repo && (
-                          <li>
-                            <a className={`label ${j.pill}`} href={p.repo} target="_blank" rel="noopener noreferrer">
-                              Repository ↗
-                            </a>
-                          </li>
-                        )}
-                      </ul>
-                    </div>
-                    <div>
-                      <h4 className={`heading ${j.colHead}`}>Built with</h4>
-                      <ul className={`mono-body ${j.builtWith}`}>
-                        {p.tech.map((t) => (
-                          <li key={t}>{t}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
-                </article>
-              </li>
-            ))}
-          </ol>
-
-          <Rail label={`${c.projects.name}: stars`} items={projects.map((x) => x.name)} offset={1} />
+        {/* Paper R4 · P · Featured — Section-8-Scout: one stop after Work. */}
+        <div className={j.stage} data-stage="projects">
+          <article className={`${j.layer} ${j.slide} ${j.featured}`} data-slide="0" data-target={featured.slug} tabIndex={-1} aria-labelledby="projects-title">
+            <FocalStar spectral={featured.star.spectral} />
+            <div className={`${j.content} ${j.stack}`}>
+              <p className={`label ${j.kicker}`}>Featured build</p>
+              <h2 id="projects-title" className={`display-xl ${j.title}`} data-long>
+                <SkyLink href={`/projects/${featured.slug}`}>{featured.name}</SkyLink>
+              </h2>
+              <ProjectFacts project={featured} />
+            </div>
+            <div className={j.previewCol}>
+              <ProjectPreview project={featured} sizes="(max-width: 768px) 100vw, 34vw" />
+            </div>
+          </article>
+          <p className={`label ${j.hint} ${j.motionOnly}`} aria-hidden="true">Scroll to travel ↓</p>
+          <p className={`label ${j.counter} ${j.motionOnly}`} aria-hidden="true">Featured build</p>
         </div>
       </section>
 

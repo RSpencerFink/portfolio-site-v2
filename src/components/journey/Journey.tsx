@@ -6,6 +6,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Lenis from 'lenis';
 import 'lenis/dist/lenis.css';
 import { isModified } from '@/lib/events';
+import { softNav } from '@/components/panels/softNav';
 
 let lenis: Lenis | null = null;
 
@@ -49,8 +50,20 @@ export function Journey() {
       const state = history.state;
       addEventListener('hashchange', () => history.replaceState(state, ''), { once: true });
     };
+    // Header navigation is one move (item 7): an open panel is dismissed instantly, no exit animation.
+    const onHeader = (e: MouseEvent) => {
+      const a = (e.target as Element).closest?.<HTMLAnchorElement>('body > header a[href]');
+      if (!a || isModified(e) || !document.documentElement.dataset.panel) return;
+      softNav.dismiss();
+      // Gone now, so the route change can't cross-fade it out either.
+      document.querySelectorAll<HTMLElement>('dialog[open]').forEach((d) => (d.style.visibility = 'hidden'));
+    };
     document.addEventListener('click', onClick);
-    return () => document.removeEventListener('click', onClick);
+    document.addEventListener('click', onHeader, true);
+    return () => {
+      document.removeEventListener('click', onClick);
+      document.removeEventListener('click', onHeader, true);
+    };
   }, []);
 
   return null;
