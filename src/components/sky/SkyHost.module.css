@@ -29,45 +29,39 @@
 
 /* ---- H1 mark ------------------------------------------------------------ */
 
+/*
+ * The letterbox (ground with the letters cut out; outside the mark the sky reads at ~14%) and the glow are
+ * viewport-sized canvases redrawn at the current mask scale (HeroMark drawMark); only the outline strokes scale
+ * as a layer, and only up to 2.2×, where they have faded out.
+ */
+.letterbox,
+.markGlow {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
 .letterbox,
 .mark {
-  position: absolute;
   opacity: var(--mask-opacity, 1);
-  will-change: transform;
-}
-
-/* Ground with the letters cut out; outside the mark the sky reads at ~14%. */
-.letterbox {
-  inset: 0;
-  background: rgb(4 5 10 / 0.86);
-  mask:
-    url('/logo/rsf-mark.svg') center / var(--mark-w) auto no-repeat,
-    linear-gradient(#000 0 0);
-  mask-composite: exclude;
-  -webkit-mask-composite: xor;
-  transform: scale(var(--mask-scale, 1));
-  /* The S centre (52% across the mark) is the fly-through point (T2). */
-  transform-origin: calc(50% + var(--mark-w) * 0.02) 50%;
 }
 
 .mark {
+  position: absolute;
   left: 50%;
   top: 50%;
   width: var(--mark-w);
   aspect-ratio: 1519.3 / 729.6;
   transform: translate(-50%, -50%) scale(var(--mask-scale, 1));
   transform-origin: 52% 50%;
-  /* Blend the whole group: a blend mode inside it would be isolated by the transform. */
-  mix-blend-mode: screen;
+  will-change: transform;
 }
 
 /* --sky-nebula-core inside the letters, screened over the canvas so stars stay white. */
 .markGlow {
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(ellipse 62% 75% at 52% 50%, #2e3384 0%, #1e2260 58%, #0b0d24 100%);
-  mask: url('/logo/rsf-mark.svg') 0 0 / 100% 100% no-repeat;
-  opacity: calc(var(--hero-glow, 1) * var(--sky-opacity, 0));
+  mix-blend-mode: screen;
+  opacity: calc(var(--hero-glow, 1) * var(--sky-opacity, 0) * var(--mask-opacity, 1));
 }
 
 .markStrokes {
@@ -112,6 +106,12 @@
   left: 0;
   top: 0;
   will-change: transform;
+}
+
+/* H1 in/out-of-letter changes (syncLabels) ease instead of popping. */
+.anchor,
+.marker {
+  transition: opacity 180ms var(--ease-sine);
 }
 
 .marker {

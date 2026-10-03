@@ -34,6 +34,7 @@ const reg = (key: string) => (el: HTMLElement | SVGSVGElement | null) => {
   if (el) nodes.set(key, el as HTMLElement);
   else nodes.delete(key);
 };
+let lastScale = 1;
 let last = { focus: '' as string | null, focal: '', hover: '' as string | null, level: '', mask: '', overview: '', stage: '' };
 
 function place(el: HTMLElement | undefined, world: Vec3, f: FrameInfo, margin = 80) {
@@ -74,6 +75,8 @@ function loadMark() {
       const alpha = new Uint8ClampedArray(w * h);
       for (let i = 0; i < alpha.length; i++) alpha[i] = rgba[i * 4 + 3];
       mark = { alpha, w, h };
+      // Ask for a frame (the loop runs on demand under reduced motion), so the labels get their first verdict now.
+      cameraRig.setAmbient(cameraRig.getState().ambient);
     })
     .catch(() => {});
 }
@@ -117,12 +120,34 @@ function labelInside(x: number, y: number, el: HTMLElement, f: FrameInfo) {
 }
 
 const outside = new Map<HTMLElement, string>();
-/** Fade a label with the letterbox unless its anchor and its whole text box are inside the letters. */
-function letterFade(el: HTMLElement | undefined, at: readonly [number, number] | null, f: FrameInfo, fade: string | null) {
+/** Settled in/out verdict per label, and a candidate that must hold for HOLD frames before it replaces it. */
+const verdicts = new Map<HTMLElement, { inside: boolean; next: boolean; frames: number }>();
+const HOLD = 6;
+/**
+ * Fade a label with the letterbox unless its anchor and its whole text box are inside the letters.
+ * Hysteresis: a new verdict must hold for HOLD frames, and none is taken while the mask is scaling fast
+ * (`frozen`), so a label near a letter edge never flickers in and out; the change itself eases (CSS).
+ */
+function letterFade(el: HTMLElement | undefined, at: readonly [number, number] | null, f: FrameInfo, fade: string | null, frozen: boolean) {
   if (!el) return;
   let inside = true;
-  if (fade !== null && at) {
-    inside = labelInside(at[0], at[1], el, f);
+  if (fade === null || !at) verdicts.delete(el);
+  else {
+    const v = verdicts.get(el);
+    if (!mark) inside = false; // no verdict until the letters have loaded
+    else if (!v) {
+      const now = labelInside(at[0], at[1], el, f);
+      verdicts.set(el, { inside: now, next: now, frames: 0 });
+      inside = now;
+    } else {
+      if (!frozen) {
+        const now = labelInside(at[0], at[1], el, f);
+        v.frames = now === v.inside ? 0 : now === v.next ? v.frames + 1 : 1;
+        v.next = now;
+        if (v.frames >= HOLD) v.inside = now;
+      }
+      inside = v.inside;
+    }
   }
   const value = inside ? '' : (fade ?? '');
   if ((outside.get(el) ?? '') === value) return;
@@ -161,13 +186,16 @@ export function syncLabels(f: FrameInfo, chart: ChartLayout) {
   const masked = mask === 'on' && chart.layout !== 'portrait';
   if (masked) loadMark();
   const fade = masked ? (1 - f.resolved.mask.opacity).toFixed(2) : null;
+  // Mask scale change since the last frame as a share of the scale: above 1.5 % the verdicts hold still.
+  const frozen = Math.abs(f.resolved.mask.scale - lastScale) / f.resolved.mask.scale > 0.015;
+  lastScale = f.resolved.mask.scale;
   for (const star of chart.stars) {
     const el = nodes.get(`star:${star.id}`);
-    letterFade(el, place(el, star.world, f), f, fade);
+    letterFade(el, place(el, star.world, f), f, fade, frozen);
   }
   for (const n of chart.names) {
     const el = nodes.get(`name:${n.id}`);
-    letterFade(el, place(el, n.world, f, 400), f, fade);
+    letterFade(el, place(el, n.world, f, 400), f, fade, frozen);
   }
 
   const pole = nodes.get('pole');
@@ -214,6 +242,7 @@ function redraw(el: HTMLElement | undefined) {
 /** Reset cached attributes when the overlay remounts (layout change). */
 export const resetLabels = () => {
   outside.clear();
+  verdicts.clear();
   spans.clear();
   last = { focus: '', focal: '', hover: '', level: '', mask: '', overview: '', stage: '' };
 };

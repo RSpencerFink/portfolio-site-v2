@@ -5,7 +5,7 @@ import { useFrame, useThree, type RootState } from '@react-three/fiber';
 import * as THREE from 'three';
 import { constellations } from '@/content/sky';
 import { cameraRig, type Vec3 } from './cameraRig';
-import { chartLayout, lerpPose, overviewPose, type Layout, type Pose } from './chart';
+import { chartLayout, lerp, lerpPose, overviewPose, type Layout, type Pose } from './chart';
 import { resolve, type Resolved } from './resolve';
 import { hoverStore } from './hover';
 import { Meteors } from './Meteors';
@@ -208,6 +208,7 @@ type Ctx = {
   chart: ReturnType<typeof chartLayout>;
   pointer: { current: { tx: number; ty: number; x: number; y: number } };
   cur: { current: Pose | null };
+  curMask: { current: { scale: number; opacity: number; heroGlow: number } | null };
   fps: { current: { t0: number; last: number; frames: number; warm: boolean } };
 } & Omit<SceneProps, 'count'>;
 
@@ -217,17 +218,21 @@ const ndc = new THREE.Vector3();
 function tick(ctx: Ctx, state: RootState, frameDelta: number) {
   // A long gap (tab switch, a view transition holding frames) must not jump the damped camera.
   const delta = Math.min(frameDelta, 1 / 30);
-  const { bgMat, contentMat, nebulaMat, nebula, content, lines, chart, pointer, cur, fps, layout, motion, isHome, onFrame, onLowFps } = ctx;
+  const { bgMat, contentMat, nebulaMat, nebula, content, lines, chart, pointer, cur, curMask, fps, layout, motion, isHome, onFrame, onLowFps } = ctx;
   const camera = state.camera as THREE.PerspectiveCamera;
   const { width, height } = state.size;
   const dpr = state.viewport.dpr;
   const t = motion === 'reduced' ? 0 : state.clock.elapsedTime;
   const rig = cameraRig.getState();
-  const r = resolve(rig, chart, width / height, isHome);
+  const target = resolve(rig, chart, width / height, isHome);
 
   // Camera: damp toward the resolved pose. Journey poses are already scrubbed, so they damp faster.
   const k = motion === 'reduced' || !cur.current ? 1 : 1 - Math.exp(-delta * (rig.target ? 5 : 10));
-  const pose = (cur.current = cur.current ? lerpPose(cur.current, r.pose, k) : r.pose);
+  const pose = (cur.current = cur.current ? lerpPose(cur.current, target.pose, k) : target.pose);
+  // The H1 mask and glow damp with the camera, so the letters and the sky behind them move as one in every frame.
+  const was = curMask.current ?? { ...target.mask, heroGlow: target.heroGlow };
+  const m = (curMask.current = { scale: lerp(was.scale, target.mask.scale, k), opacity: lerp(was.opacity, target.mask.opacity, k), heroGlow: lerp(was.heroGlow, target.heroGlow, k) });
+  const r: Resolved = { ...target, mask: { scale: m.scale, opacity: m.opacity }, heroGlow: m.heroGlow };
   camera.position.set(...pose.pos);
   camera.lookAt(...pose.look);
   camera.fov = pose.fov;
@@ -383,10 +388,11 @@ export function Scene({ layout, count, motion, isHome, onFrame, onLowFps }: Scen
   }, [motion]);
 
   const cur = useRef<Pose | null>(null);
+  const curMask = useRef<{ scale: number; opacity: number; heroGlow: number } | null>(null);
   const fps = useRef({ t0: 0, last: 0, frames: 0, warm: false });
 
   useFrame((state, delta) =>
-    tick({ bgMat, contentMat, nebulaMat, nebula, content, lines, chart, pointer, cur, fps, layout, motion, isHome, onFrame, onLowFps }, state, delta),
+    tick({ bgMat, contentMat, nebulaMat, nebula, content, lines, chart, pointer, cur, curMask, fps, layout, motion, isHome, onFrame, onLowFps }, state, delta),
   );
 
   return (

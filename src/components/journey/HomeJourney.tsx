@@ -268,8 +268,11 @@ export function HomeJourney() {
         const t = seg.t(y);
         cameraRig.setSegment(seg.id, t);
         // Header (SiteChrome): centred menu on H1, gone while the mask flies (0–60 vh), full HUD from 130 vh (T1/T2).
-        const chrome = seg.id !== 'hero' || t > 0.6 ? 'full' : t > 0.27 ? 'fly' : 'hero';
-        if (root.dataset.chrome !== chrome) root.dataset.chrome = chrome;
+        // Hysteresis: a state is kept until the scroll is 0.02 below its threshold, so a rest on one never flips the header.
+        const was = root.dataset.chrome;
+        const at = (edge: number, ...states: string[]) => t > edge - (states.includes(was ?? '') ? 0.02 : 0);
+        const chrome = seg.id !== 'hero' || at(0.6, 'full') ? 'full' : at(0.27, 'fly', 'full') ? 'fly' : 'hero';
+        if (was !== chrome) root.dataset.chrome = chrome;
       };
       gsap.ticker.add(follow);
       cleanups.push(() => gsap.ticker.remove(follow));

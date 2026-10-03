@@ -6,7 +6,7 @@ import dynamic from 'next/dynamic';
 import { cameraRig } from './cameraRig';
 import { chartLayout, layoutFor, markShare } from './chart';
 import { hoverStore } from './hover';
-import { HeroMark, skipIntro } from './HeroMark';
+import { drawMark, HeroMark, skipIntro } from './HeroMark';
 import type { FrameInfo, Motion } from './Scene';
 import { resetLabels, StarLabels, syncLabels } from './StarLabels';
 import styles from './SkyHost.module.css';
@@ -121,6 +121,7 @@ export function SkyHost() {
       if (!document.documentElement.dataset.sky) document.documentElement.dataset.sky = 'live';
       const next = { scale: f.resolved.mask.scale.toFixed(4), opacity: f.resolved.mask.opacity.toFixed(3), glow: f.resolved.heroGlow.toFixed(3) };
       if (next.scale !== vars.current.scale) host.style.setProperty('--mask-scale', next.scale);
+      if (f.resolved.mask.opacity > 0) drawMark(f.resolved.mask.scale);
       if (next.opacity !== vars.current.opacity) host.style.setProperty('--mask-opacity', next.opacity);
       if (next.glow !== vars.current.glow) host.style.setProperty('--hero-glow', next.glow);
       vars.current = next;
