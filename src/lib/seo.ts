@@ -10,6 +10,9 @@ interface PageMetaInput {
   type?: 'website' | 'profile' | 'article' | 'video.other';
 }
 
+/** Generated sky OG (1200 × 630, a render of the H3 chart) for pages without their own still or painting. */
+const SKY_OG = { url: '/og/sky.jpg', width: 1200, height: 630, alt: 'The sky chart of R. Spencer Fink' };
+
 export function pageMeta({ title, description, path, image, type = 'website' }: PageMetaInput): Metadata {
   return {
     title,
@@ -21,9 +24,9 @@ export function pageMeta({ title, description, path, image, type = 'website' }: 
       url: path,
       siteName: person.name,
       type,
-      ...(image && { images: [{ url: image }] }),
+      images: [image ? { url: image } : SKY_OG],
     },
-    twitter: { card: image ? 'summary_large_image' : 'summary', title, description },
+    twitter: { card: 'summary_large_image', title, description },
   };
 }
 
