@@ -1,6 +1,5 @@
 'use client';
 
-import { useEffect, ViewTransition } from 'react';
 import { Insignia } from '@/components/Insignia';
 import { SkyLink } from '@/components/panels/SkyLink';
 import { education } from '@/content/site';
@@ -13,13 +12,13 @@ import { hoverStore } from './hover';
 import type { FrameInfo } from './Scene';
 import s from './SkyHost.module.css';
 
-const LEFT = new Set(['hypha', 'prizm-imagery', 'walter-white', 'concord']);
+const LEFT = new Set(['hypha', 'meta', 'dr-manhattan', 'marilyn-monroe', 'nightshade', 'spare-key', 'emerson-college', 'georgia-tech']);
 
 function sublineFor(star: ChartStar): string | undefined {
   const job = jobs.find((j) => j.slug === star.id);
   if (job) return job.dates;
   const project = projects.find((p) => p.slug === star.id);
-  if (project) return project.live ? (project.live.label.includes('npm') ? 'npm' : 'Live site') : 'Repository';
+  if (project) return `${project.kind} · ${project.status}`;
   const painting = paintings.find((p) => p.slug === star.id);
   if (painting) return painting.size;
   const school = education.find((e) => e.slug === star.id);
@@ -58,15 +57,20 @@ export function syncLabels(f: FrameInfo, chart: ChartLayout) {
   const root = nodes.get('root');
   if (!root) return;
   const ppu = pxPerUnit(f.pose, f.height);
-  const level = f.resolved.quiet ? 'hidden' : labelLevel(chart, ppu, f.height);
+  // A panel reads over the sky: no labels, names or pole mark behind its column (bare); the focal reticle stays.
+  const level = f.resolved.quiet || f.resolved.bare ? 'hidden' : labelLevel(chart, ppu, f.height);
   const mask = f.resolved.mask.opacity > 0.01 ? 'on' : 'off';
   const overviewPpu = pxPerUnit(overviewPose(chart, f.width / f.height), f.height);
   // Zoomed in on H3 (T18) still counts as the chart: pole mark and ticks stay.
   const zoomed = cameraRig.getState().view.zoom > 1;
-  const overview = mask === 'off' && !f.resolved.quiet && (zoomed || ppu < overviewPpu * 1.3) ? 'on' : 'off';
+  const overview = mask === 'off' && !f.resolved.quiet && !f.resolved.bare && (zoomed || ppu < overviewPpu * 1.3) ? 'on' : 'off';
   if (level !== last.level) root.dataset.level = last.level = level;
   if (mask !== last.mask) root.dataset.mask = last.mask = mask;
-  if (overview !== last.overview) root.dataset.overview = last.overview = overview;
+  if (overview !== last.overview) {
+    root.dataset.overview = last.overview = overview;
+    // The pole mark is on screen: the header's RSF mark steps aside (one mark at a time).
+    document.documentElement.toggleAttribute('data-pole', overview === 'on');
+  }
   const stage = f.resolved.stage ? 'on' : 'off';
   if (stage !== last.stage) root.dataset.section = last.stage = stage;
 
@@ -141,15 +145,9 @@ export const resetLabels = () => {
  * RA/Dec ticks, positioned from the camera every frame. Links are pointer
  * targets only (tabIndex −1): the host is aria-hidden and the page's HTML
  * mirror carries the accessible star links.
- *
- * Each linked marker shares `star-<slug>` with its panel's header dot (T7).
- * The marker for the open path unmounts in the same commit the panel mounts,
- * so React pairs the two and the star morphs into the dot (and back on close).
  */
-export function StarLabels({ chart, openPath }: { chart: ChartLayout; openPath: string }) {
+export function StarLabels({ chart }: { chart: ChartLayout }) {
   const hover = (id: string | null) => () => hoverStore.set(id);
-  // The clicked marker unmounts without a pointerleave (it becomes the panel's dot): drop its hover.
-  useEffect(() => () => hoverStore.set(null), [openPath]);
   return (
     <div ref={reg('root')} className={s.labels} data-layout={chart.layout}>
       {chart.names.map((n) => (
@@ -176,6 +174,7 @@ export function StarLabels({ chart, openPath }: { chart: ChartLayout; openPath: 
       ))}
 
       {chart.stars.map((star) => {
+        if (star.helper) return null;
         const job = jobs.find((j) => j.slug === star.id);
         const sub = sublineFor(star);
         const inner = (
@@ -195,18 +194,16 @@ export function StarLabels({ chart, openPath }: { chart: ChartLayout; openPath: 
           className: s.marker,
           'data-side': LEFT.has(star.id) ? 'left' : 'right',
           'data-observer': star.id === 'observer' ? '' : undefined,
+          'data-lodestar': star.lodestar ? '' : undefined,
           'data-group': star.group,
           onPointerEnter: hover(star.id),
           onPointerLeave: hover(null),
           onClick: hover(null),
         };
-        if (star.href === openPath) return null;
         return star.href ? (
-          <ViewTransition key={star.id} name={`star-${star.id}`} share="vt-morph" default="none">
-            <SkyLink href={star.href} tabIndex={-1} {...props}>
-              {inner}
-            </SkyLink>
-          </ViewTransition>
+          <SkyLink key={star.id} href={star.href} tabIndex={-1} {...props}>
+            {inner}
+          </SkyLink>
         ) : (
           <div key={star.id} {...props}>
             {inner}

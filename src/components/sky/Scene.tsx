@@ -271,12 +271,15 @@ function tick(ctx: Ctx, state: RootState, frameDelta: number) {
   const hover = hoverStore.get();
   const kk = motion === 'reduced' ? 1 : 1 - Math.exp(-delta * 12);
   // Calm sky (off-home backdrop, R3 · RM below the hero): starfield, nebula and a faint grid only.
-  for (const [m, on, calm] of lines.fades) m.opacity += ((r.quiet ? calm : on) - m.opacity) * kk;
+  // Behind a panel (bare) the lines go too, so nothing but the focal star sits behind the reading column.
+  for (const [m, on, calm] of lines.fades) m.opacity += ((r.quiet || r.bare ? calm : on) - m.opacity) * kk;
   const arr = content.state.array as Float32Array;
   content.stars.forEach((s, i) => {
     const isFocus = s.id === r.focusId;
-    const core = r.quiet ? 0 : isFocus ? (r.focal ? 14 : 7.5) : 5.5;
-    const halo = r.quiet ? 0 : s.id === hover ? 1.4 : 1;
+    // Helpers are dimmer figure stars; the lodestar (featured build) burns brighter than its neighbours.
+    const rest = s.helper ? 2.6 : s.lodestar ? 8.5 : 5.5;
+    const core = r.quiet || (r.bare && !isFocus) ? 0 : isFocus ? (r.focal ? 14 : Math.max(7.5, rest)) : rest;
+    const halo = r.quiet ? 0 : s.id === hover ? 1.4 : s.helper ? 0.45 : s.lodestar ? 1.3 : 1;
     const glow = isFocus && r.focal ? 1 : 0;
     arr[i * 4] += (core + (s.id === hover ? 1 : 0) - arr[i * 4]) * kk;
     arr[i * 4 + 1] += (halo - arr[i * 4 + 1]) * kk;

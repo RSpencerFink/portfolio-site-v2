@@ -1,14 +1,22 @@
-/* R3 · A5 cinema: player 840 × 473 + 262 px info column. */
+/* Cinema (R5): media first. The player centred, then title, roles and credits in the reading column, then Up next. */
 .root {
   display: grid;
-  grid-template-columns: minmax(0, 840px) minmax(220px, 1fr);
-  gap: var(--space-7) 40px;
+  grid-template-columns: minmax(0, 1fr);
 }
 
 .stage {
-  display: grid;
-  gap: 0;
-  min-width: 0;
+  display: contents;
+}
+
+.root:not(.theater) .info {
+  width: 100%;
+  max-width: 680px;
+  margin: 0 auto;
+  padding-top: var(--space-7);
+}
+
+.upNext {
+  order: 1;
 }
 
 .frame {
@@ -132,7 +140,7 @@
 }
 
 .upNext {
-  padding-top: var(--space-7);
+  padding-top: var(--space-8);
 }
 
 .info {
@@ -214,7 +222,9 @@
 }
 
 .theater .stage {
+  display: grid;
   grid-row: 1 / 3;
+  min-width: 0;
 }
 
 .theater .frame {
@@ -271,26 +281,8 @@
 }
 
 @media (max-width: 1023px) {
-  .root,
   .theater {
     grid-template-columns: 1fr;
-  }
-
-  /* Single column: player, then title and credits, then Up next (M-A5). */
-  .stage {
-    display: contents;
-  }
-
-  .root:not(.theater) {
-    row-gap: 0;
-  }
-
-  .root:not(.theater) .info {
-    padding-top: var(--space-7);
-  }
-
-  .upNext {
-    order: 1;
   }
 
   .theater {
@@ -300,7 +292,7 @@
   }
 
   .theater .stage {
-    grid-row: auto;
+    display: contents;
   }
 
   .theater .info {

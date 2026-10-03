@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, use, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore, ViewTransition, type ReactNode } from 'react';
+import { createContext, use, useEffect, useEffectEvent, useLayoutEffect, useRef, useState, useSyncExternalStore, ViewTransition, type ReactNode } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { cameraRig } from '@/components/sky/cameraRig';
@@ -15,12 +15,12 @@ export interface StepItem {
 }
 
 interface Props {
-  /** Star id (entity slug, or "observer"); the header dot carries view-transition-name `star-${slug}`. */
+  /** Star id (entity slug, or "observer"): the camera centres this star. */
   slug: string;
   title: string;
   /** Breadcrumb, e.g. "Star 03 / Constellation of Work". */
   kicker: string;
-  /** Insignia or headshot beside the title. */
+  /** Insignia or headshot above the title. */
   lead?: ReactNode;
   /** Line under the title (identities, role). */
   subline?: ReactNode;
@@ -30,8 +30,12 @@ interface Props {
   counter?: string;
   /** Accessible name of the prev/next footer. */
   stepLabel?: string;
-  /** `cinema` (films): 1208 px wide, full height on mobile, the page renders its own h1 with id `${slug}-title`. */
-  variant?: 'panel' | 'cinema';
+  /**
+   * `text` (jobs, projects, About): a reading column under the centred star.
+   * `media` (paintings): the work first, title and caption below.
+   * `cinema` (films): player first; the page renders its own h1 with id `${slug}-title`.
+   */
+  variant?: 'text' | 'media' | 'cinema';
   children: ReactNode;
 }
 
@@ -41,7 +45,6 @@ const titleId = (slug: string) => `${slug}-title`;
 const PanelMode = createContext<'sky' | 'direct' | null>(null);
 /** Which footer link to focus after a step lands (the new panel is a fresh mount). */
 let stepFocus: string | null = null;
-const MOBILE = '(max-width: 639px)';
 
 /** False for the server HTML and the hydration pass, true after: with JS, every entity route is a panel. */
 const useHydrated = () => useSyncExternalStore(noop, () => true, () => false);
@@ -49,15 +52,15 @@ function noop() {
   return () => {};
 }
 
-/** Where Close goes from a panel with no sky page behind it: the painting or film index, else the home sky chart. */
+/** Where Close goes from a panel with no sky page behind it: the painting or film constellation, else the home sky chart. */
 const parentOf = (path: string) => (path.startsWith('/visual-arts/') ? path.slice(0, path.lastIndexOf('/')) : '/#chart');
 
 const reduceMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-/** The panel's own exit (T8): slide 24 px right (mobile: down), fade; 200 ms crossfade under reduced motion. */
-function slideOut(el: HTMLElement, detached = false) {
+/** The panel's exit (T8): the column fades and sinks 12 px while the camera flies back; 200 ms crossfade under reduced motion. */
+function fadeOut(el: HTMLElement, detached = false) {
   if (detached) {
-    // A copy of a panel React has already removed: inert, no duplicate ids, removed when done.
+    // A copy of a panel React has already removed (browser Back): inert, no duplicate ids, removed when done.
     el.inert = true;
     el.querySelectorAll('[id]').forEach((n) => n.removeAttribute('id'));
     el.querySelectorAll('iframe, video').forEach((n) => n.remove()); // no second Vimeo player
@@ -65,65 +68,19 @@ function slideOut(el: HTMLElement, detached = false) {
     document.body.append(el);
   }
   const reduce = reduceMotion();
-  const to = reduce ? '0 0' : matchMedia(MOBILE).matches ? '0 100%' : '24px 0';
-  const out = el.animate([{}, { opacity: 0, translate: to }], { duration: reduce ? 200 : 240, easing: 'cubic-bezier(0.2, 0.8, 0.2, 1)', fill: 'forwards' });
+  const out = el.animate([{}, { opacity: 0, translate: reduce ? '0 0' : '0 12px' }], {
+    duration: reduce ? 200 : 240,
+    easing: 'cubic-bezier(0.2, 0.8, 0.2, 1)',
+    fill: 'forwards',
+  });
   return out.finished.finally(() => detached && el.remove());
 }
 
-const named = (el: HTMLElement | null | undefined, name: string, cls: string) => {
-  if (!el) return;
-  el.style.viewTransitionName = name;
-  el.style.setProperty('view-transition-class', cls);
-};
-
 /**
- * Close as a view transition (T8, the reverse of T7). React's <ViewTransition> only animates
- * updates it runs in startTransition, and a history traversal is committed synchronously in
- * popstate, so this names the elements by hand: the panel exits as `star-panel` (vt-panel slide)
- * and the header dot pairs with the star's sky marker (or the work card) as `star-<slug>` (vt-morph). The update
- * callback resolves once React has committed the page under the panel (popstate) and its marker
- * exists; the sky positions the marker in the frame the new snapshot is taken.
- */
-function morphBack(dialog: HTMLDialogElement, slug: string, path: string, back: () => void) {
-  named(dialog, 'star-panel', 'vt-panel');
-  // The page underneath is not cross-faded (transitions.css): the live sky dollies back on its own.
-  document.documentElement.dataset.closing = '';
-  named(dialog.querySelector<HTMLElement>('[data-dot]'), `star-${slug}`, 'vt-morph');
-  let marker: HTMLElement | null = null;
-  const vt = document.startViewTransition(
-    () =>
-      new Promise<void>((resolve) => {
-        const settle = () => {
-          clearTimeout(safety);
-          // Let the restored page run its effects (journey pins, scroll restoration) first.
-          setTimeout(() => {
-            // The work card it was opened from (Painter / Filmmaker), else the star on the sky.
-            marker =
-              document.querySelector<HTMLElement>(`#main a[href="${path}"] [data-star]`) ??
-              document.querySelector<HTMLElement>(`[data-layout] a[href="${path}"]`);
-            named(marker, `star-${slug}`, 'vt-morph');
-            resolve();
-          }, 60);
-        };
-        const safety = setTimeout(resolve, 1500);
-        addEventListener('popstate', settle, { once: true });
-        back();
-      }),
-  );
-  softNav.closingUntil(vt.finished);
-  vt.finished.finally(() => {
-    delete document.documentElement.dataset.closing;
-    if (!marker) return;
-    marker.style.viewTransitionName = '';
-    marker.style.removeProperty('view-transition-class');
-  });
-}
-
-/**
- * Prev/next and "nearby" links. In panel mode they record the sibling as a
- * panel path (keeping the panel's origin) and replace history, so Close always
- * returns to the page the star was clicked on, or to the parent page. On a full
- * page they are plain links.
+ * Prev/next links. In panel mode they record the sibling as a panel path
+ * (keeping the panel's origin) and replace history, so Close always returns
+ * to the page the star was clicked on, or to the parent page. On a full page
+ * they are plain links.
  */
 export function StepLink({ href, rel, className, children }: { href: string; rel?: 'prev' | 'next'; className?: string; children: ReactNode }) {
   const panel = use(PanelMode);
@@ -146,18 +103,19 @@ export function StepLink({ href, rel, className, children }: { href: string; rel
 }
 
 /**
- * Renders an entity page as a panel over the sky whenever JS runs, and as a
- * full page in the server HTML (no JS, crawlers; hidden until hydration with JS).
+ * Renders an entity page as a centred, camera-led panel whenever JS runs,
+ * and as a full page in the server HTML (no JS, crawlers; hidden until
+ * hydration with JS). One layout path for every way in: the camera flies to
+ * the entity's star and centres it in the upper middle, the sky dims and
+ * drops its labels and lines, and the content reads in a centred column
+ * below it. The site header stays usable above the panel.
  *
- * Panel mode: native modal <dialog> (focus containment, inert page, Esc).
- * Reached by clicking a star, Close / Esc / backdrop click go back to the page
- * the star was on and its SkyLink takes focus again. Reached any other way
- * (direct load, reload, a plain link), the panel appears without a slide (T20)
- * and Close navigates to the parent page. ← → step through siblings without leaving the
- * panel. Below 640 px the panel is a draggable bottom sheet (peek 36 % / full 8 %
- * / dismiss); films stay full height.
+ * Reached by clicking a star, Close / Back to sky / Esc go back in history
+ * to the page the star was on and its SkyLink takes focus again. Reached any
+ * other way (direct load, reload, a plain link) it fades in (T20) and Close
+ * opens the parent page. ← → step through siblings without leaving the panel.
  */
-export function PanelFrame({ slug, title, kicker, lead, subline, prev, next, counter, stepLabel, variant = 'panel', children }: Props) {
+export function PanelFrame({ slug, title, kicker, lead, subline, prev, next, counter, stepLabel, variant = 'text', children }: Props) {
   const pathname = usePathname();
   const asPanel = useHydrated();
   // The hydration pass rendered the full page: this panel is the first paint of a hard load (T20).
@@ -165,13 +123,9 @@ export function PanelFrame({ slug, title, kicker, lead, subline, prev, next, cou
   const fromSky = useArrivedFromSky(pathname);
   const router = useRouter();
   const ref = useRef<HTMLDialogElement>(null);
-  const drag = useRef<{ y: number; t: number; v: number; top: number } | null>(null);
-  // Mobile: a sheet opened from the sky peeks over its star; a direct load came for the content.
-  const [snap, setSnap] = useState<'peek' | 'full'>(fromSky ? 'peek' : 'full');
   const closing = useRef(false);
 
-  // T7 / T20: camera on this star, sky dimmed. Only behind a panel: text on a full page
-  // gets the calm sky (no labels or lines), so the chart never reads through it.
+  // T7 / T20: camera centres this star, sky dimmed. Only behind a panel (a full page keeps the calm sky).
   useEffect(() => {
     if (!asPanel) return;
     cameraRig.setTarget(slug);
@@ -186,27 +140,27 @@ export function PanelFrame({ slug, title, kicker, lead, subline, prev, next, cou
   useLayoutEffect(() => {
     if (!asPanel) return;
     const dialog = ref.current!;
-    dialog.showModal();
-    // Consumed: after a browser Back, a plain link to this path opens the full page.
+    // Non-modal: the site header above the panel stays usable (header navigation, item 7).
+    dialog.show();
+    // Consumed: after a browser Back, a plain link to this path opens the panel as direct.
     softNav.set(null);
-    // Hides the site header/footer behind the panel (transitions.css).
+    // Hides the site footer and raises the header over the panel (transitions.css).
     document.documentElement.dataset.panel = variant;
-    if (stepFocus) dialog.querySelector<HTMLElement>(`a[rel="${stepFocus}"]`)?.focus();
+    const focus = stepFocus && dialog.querySelector<HTMLElement>(`a[rel="${stepFocus}"]`);
+    (focus || dialog).focus({ preventScroll: true });
     stepFocus = null;
     return () => {
       delete document.documentElement.dataset.panel;
-      // Browser Back (popstate) unmounts the panel synchronously, so no view transition can
-      // snapshot it first. A detached copy slides out instead. Steps (softNav set) and Close skip this.
-      if (closing.current || softNav.get() !== null) return;
-      slideOut(dialog.cloneNode(true) as HTMLElement, true);
+      // Header navigation dismisses instantly; steps (softNav set) and Close have run their own exit.
+      if (softNav.takeDismiss() || closing.current || softNav.get() !== null) return;
+      // Browser Back (popstate) unmounts the panel synchronously: a detached copy fades out instead.
+      fadeOut(dialog.cloneNode(true) as HTMLElement, true);
       softNav.close(pathname); // focus goes back to the star's link, as with Close
     };
   }, [asPanel, variant, pathname]);
 
-  // T8. Close / Esc / backdrop go back in history (Back then leaves the page, as expected).
-  // Where the View Transitions API exists, the back navigation runs inside one: the panel
-  // slides out and its header dot morphs back into the star (the reverse of T7).
-  // A panel not opened from the sky has no page behind it in history: it slides out and opens its parent.
+  // T8. Close / Back to sky / Esc go back in history (Back then leaves the page, as expected).
+  // A panel not opened from the sky has no page behind it in history: it fades out and opens its parent.
   const close = () => {
     if (closing.current) return;
     closing.current = true;
@@ -214,10 +168,9 @@ export function PanelFrame({ slug, title, kicker, lead, subline, prev, next, cou
     // Back on the home chart the star's mirror link would take focus and scroll the page away from H3.
     if (parent === '/#chart') softNav.set(null);
     else softNav.close(pathname);
-    const dialog = ref.current;
-    if (parent) return void (dialog ? slideOut(dialog) : Promise.resolve()).finally(() => router.push(parent));
-    if (dialog && 'startViewTransition' in document) return morphBack(dialog, slug, pathname, () => router.back());
-    (dialog ? slideOut(dialog) : Promise.resolve()).finally(() => router.back());
+    const done = ref.current ? fadeOut(ref.current) : Promise.resolve();
+    softNav.closingUntil(done);
+    done.finally(() => (parent ? router.push(parent) : router.back()));
   };
 
   const step = (item: StepItem | undefined, rel: 'prev' | 'next') => {
@@ -227,22 +180,30 @@ export function PanelFrame({ slug, title, kicker, lead, subline, prev, next, cou
     router.replace(item.href, { scroll: false });
   };
 
-  const dot = (
-    <ViewTransition name={`star-${slug}`} share="vt-morph" default="none">
-      <span className={styles.dot} aria-hidden="true" data-dot />
-    </ViewTransition>
-  );
+  // Esc and ← → anywhere on the page while the panel is open (the dialog is non-modal).
+  const onKey = useEffectEvent((e: KeyboardEvent) => {
+    if (e.defaultPrevented || e.altKey || e.metaKey || e.ctrlKey) return; // Alt/Cmd+← is the browser's Back
+    if ((e.target as Element).closest?.('input, textarea, select, [role="tablist"]')) return;
+    if (e.key === 'Escape') close();
+    else if (e.key === 'ArrowLeft') step(prev, 'prev');
+    else if (e.key === 'ArrowRight') step(next, 'next');
+    else return;
+    e.preventDefault();
+  });
+  useEffect(() => {
+    if (!asPanel) return;
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [asPanel]);
 
   const titleBlock =
     variant === 'cinema' ? null : (
       <div className={styles.titleRow}>
         {lead}
-        <div className={styles.titleText}>
-          <h1 id={titleId(slug)} className="display-m">
-            {title}
-          </h1>
-          {subline}
-        </div>
+        <h1 id={titleId(slug)} className="display-m">
+          {title}
+        </h1>
+        {subline}
       </div>
     );
 
@@ -268,53 +229,24 @@ export function PanelFrame({ slug, title, kicker, lead, subline, prev, next, cou
     </nav>
   );
 
+  const kickerLine = <p className={`label ${styles.kicker}`}>{kicker}</p>;
+  const article = (
+    <article aria-labelledby={titleId(slug)} className={styles.column}>
+      {kickerLine}
+      {variant === 'text' && titleBlock}
+      {children}
+      {variant === 'media' && titleBlock}
+    </article>
+  );
+
   if (!asPanel) {
     return (
       <main id="main" className={`${styles.page} ${variant === 'cinema' ? styles.pageWide : ''}`}>
-        <article aria-labelledby={titleId(slug)}>
-          <p className={`label ${styles.kicker}`}>
-            {dot}
-            {kicker}
-          </p>
-          {titleBlock}
-          {children}
-        </article>
+        {article}
         {footer}
       </main>
     );
   }
-
-  const onPointerDown = (e: React.PointerEvent) => {
-    if (variant === 'cinema' || !matchMedia(MOBILE).matches || (e.target as Element).closest('a, button')) return;
-    e.currentTarget.setPointerCapture(e.pointerId);
-    drag.current = { y: e.clientY, t: e.timeStamp, v: 0, top: ref.current!.getBoundingClientRect().top };
-    ref.current!.style.transition = 'none';
-  };
-  const onPointerMove = (e: React.PointerEvent) => {
-    const d = drag.current;
-    if (!d) return;
-    const dy = e.clientY - d.y;
-    d.v = dy / Math.max(1, e.timeStamp - d.t);
-    d.y = e.clientY;
-    d.t = e.timeStamp;
-    // The sheet follows the finger 1:1, never above the full snap.
-    d.top = Math.max(innerHeight * 0.08, d.top + dy);
-    ref.current!.style.top = `${d.top}px`;
-  };
-  const onPointerUp = () => {
-    const d = drag.current;
-    if (!d) return;
-    drag.current = null;
-    ref.current!.style.transition = '';
-    ref.current!.style.top = '';
-    // MO-9: nearest snap by position; a fling (> 0.5 px/ms) goes one snap in its direction.
-    const snaps = [0.08, 0.36, 1].map((f) => f * innerHeight);
-    let i = snaps.reduce((best, s, k) => (Math.abs(s - d.top) < Math.abs(snaps[best] - d.top) ? k : best), 0);
-    if (d.v > 0.5) i = snaps.findIndex((s) => s > d.top + 1);
-    if (d.v < -0.5) i = Math.max(0, snaps.findLastIndex((s) => s < d.top - 1));
-    if (i === 2 || i === -1) close();
-    else setSnap(i === 0 ? 'full' : 'peek');
-  };
 
   return (
     <PanelMode value={fromSky ? 'sky' : 'direct'}>
@@ -322,70 +254,35 @@ export function PanelFrame({ slug, title, kicker, lead, subline, prev, next, cou
         <dialog
           ref={ref}
           aria-labelledby={titleId(slug)}
-          aria-modal="true"
-          className={`${styles.panel} ${variant === 'cinema' ? styles.cinema : ''}`}
-          data-snap={snap}
+          tabIndex={-1}
+          className={`${styles.panel} ${styles[variant] ?? ''}`}
           data-landing={landing ? '' : undefined}
-          onCancel={(e) => {
-            e.preventDefault();
-            close();
-          }}
-          onKeyDown={(e) => {
-            if (e.defaultPrevented) return;
-            if (e.key === 'Escape') {
-              e.preventDefault();
-              close();
-            }
-            // A modal <dialog> lets Tab leave for the browser chrome; keep it cycling inside.
-            if (e.key === 'Tab') {
-              const all = [...e.currentTarget.querySelectorAll<HTMLElement>('a[href], button:not(:disabled), input:not(:disabled), iframe')].filter((el) =>
-                el.checkVisibility({ visibilityProperty: true }),
-              );
-              const edge = e.shiftKey ? all[0] : all.at(-1);
-              if (document.activeElement === edge) {
-                e.preventDefault();
-                (e.shiftKey ? all.at(-1) : all[0])?.focus();
-              }
-            }
-            const typing = (e.target as Element).closest('input, textarea, select');
-            if (typing || e.altKey || e.metaKey || e.ctrlKey) return; // Alt/Cmd+← is the browser's Back
-            if (e.key === 'ArrowLeft') step(prev, 'prev');
-            if (e.key === 'ArrowRight') step(next, 'next');
-          }}
           onClick={(e) => {
-            // Clicks on ::backdrop target the dialog itself, outside its box.
-            if (e.target !== e.currentTarget) return;
-            const r = e.currentTarget.getBoundingClientRect();
-            if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) close();
+            // A click on the empty sky around the column closes, like a backdrop.
+            if (e.target === e.currentTarget || (e.target as Element).hasAttribute('data-backdrop')) close();
           }}
         >
-          <header
-            className={styles.bar}
-            onPointerDown={onPointerDown}
-            onPointerMove={onPointerMove}
-            onPointerUp={onPointerUp}
-            onPointerCancel={onPointerUp}
-          >
-            <span className={styles.grabber} aria-hidden="true" />
-            <p className={`label ${styles.kicker}`}>
-              {dot}
-              {kicker}
-            </p>
-            <button type="button" className={`label ${styles.close}`} onClick={close}>
-              Close <span aria-hidden="true">×</span>
+          <div className={styles.bar}>
+            <a
+              href={fromSky ? '/' : parentOf(pathname)}
+              className={`label ${styles.back}`}
+              onClick={(e) => {
+                if (isModified(e)) return;
+                e.preventDefault();
+                close();
+              }}
+            >
+              <span aria-hidden="true">← </span>Back to sky
+            </a>
+            <button type="button" className={styles.close} aria-label="Close" onClick={close}>
+              <span aria-hidden="true">✕</span>
             </button>
-          </header>
-          {/* Focusable so keyboard users can scroll a body with no links in it (axe scrollable-region-focusable). */}
-          <div className={styles.body} data-lenis-prevent tabIndex={0}>
-            <article>
-              {titleBlock}
-              {children}
-            </article>
           </div>
-          {footer}
-          <p className={`label ${styles.hint}`} aria-hidden="true">
-            Esc to close{prev || next ? ' · ← → step through stars' : ''}
-          </p>
+          {/* Focusable so keyboard users can scroll a body with no links in it (axe scrollable-region-focusable). */}
+          <div className={styles.body} data-lenis-prevent data-backdrop tabIndex={0}>
+            {article}
+            {footer}
+          </div>
         </dialog>
       </ViewTransition>
     </PanelMode>

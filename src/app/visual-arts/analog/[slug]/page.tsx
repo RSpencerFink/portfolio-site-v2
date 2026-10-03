@@ -45,6 +45,7 @@ export default async function PaintingPage({ params }: Props) {
       next={next && { href: `/visual-arts/analog/${next.slug}`, name: next.title }}
       counter={`${pad(index + 1)} / ${pad(paintings.length)}`}
       stepLabel="The Painter"
+      variant="media"
     >
       <JsonLd
         data={{

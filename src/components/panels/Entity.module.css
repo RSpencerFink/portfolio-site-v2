@@ -97,18 +97,7 @@
   border-color: rgb(255 255 255 / 0.7);
 }
 
-.chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-}
 
-.chips li {
-  padding: 6px 12px;
-  border: 1px solid var(--line-strong);
-  border-radius: var(--radius-chip);
-  color: var(--text);
-}
 
 .headshot {
   flex-shrink: 0;

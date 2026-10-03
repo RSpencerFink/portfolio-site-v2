@@ -88,19 +88,12 @@
   inset: 0;
 }
 
-/* While the H1 mask is up, labels show only inside the letters (same geometry as .mark). */
-.host[data-home] .labels {
-  --mark-h: calc(var(--mark-w) * 0.4802);
-  mask:
-    url('/logo/rsf-mark.svg') no-repeat,
-    linear-gradient(rgb(0 0 0 / calc(1 - var(--mask-opacity, 1))) 0 0);
-  mask-size: calc(var(--mark-w) * var(--mask-scale, 1)) auto, 100% 100%;
-  mask-position:
-    calc(50vw - var(--mark-w) * var(--mask-scale, 1) / 2 - var(--mark-w) * 0.02 * (var(--mask-scale, 1) - 1))
-      calc(50vh - var(--mark-h) * var(--mask-scale, 1) / 2),
-    0 0;
-  mask-composite: add;
-}
+/*
+ * While the H1 mask is up the letterbox (above this layer) covers the labels
+ * outside the letters. No CSS mask on the labels themselves: a mask whose
+ * size changes every scroll frame re-rasterises the whole layer, and a late
+ * raster showed as a flash of unmasked labels while scrolling in (item 4).
+ */
 
 /* Portrait: the narrow letters would cut labels into fragments, so only stars and lines show through the mark. */
 .host[data-home] .labels[data-layout='portrait'][data-mask='on'] :is(.text, .cname) {
@@ -146,7 +139,19 @@
   transition: opacity var(--dur-s) var(--ease-sine);
 }
 
-/* Calm sky (labels hidden): the Observer ring goes with the other star marks. */
+/* The lodestar (R4 option B): a four-point glint, two 1 px gradient lines. */
+.marker[data-lodestar] .hit::before {
+  content: '';
+  position: absolute;
+  inset: -20px;
+  background:
+    linear-gradient(90deg, transparent, rgb(202 215 255 / 0.85) 50%, transparent) center / 100% 1px no-repeat,
+    linear-gradient(transparent, rgb(202 215 255 / 0.85) 50%, transparent) center / 1px 100% no-repeat;
+  transition: opacity var(--dur-s) var(--ease-sine);
+}
+
+/* Calm sky (labels hidden): the Observer ring and the glint go with the other star marks. */
+.labels[data-level='hidden'] .marker:is([data-observer], [data-lodestar]) .hit::before,
 .labels[data-level='hidden'] .marker[data-observer] .hit::after {
   opacity: 0;
 }
@@ -257,7 +262,7 @@
   }
 }
 
-/* Pole star: plain white RSF mark with a soft glow, cartouche below (spec §5). */
+/* Pole star: plain white RSF mark with a soft glow (spec §5). */
 .pole {
   opacity: 0;
   transition: opacity var(--dur-s) var(--ease-sine);
@@ -278,39 +283,9 @@
   filter: drop-shadow(0 0 10px rgb(255 255 255 / 0.35)) drop-shadow(0 0 40px rgb(202 215 255 / 0.25));
 }
 
-.cartouche {
-  position: absolute;
-  left: 0;
-  top: calc(var(--pole-w, 324px) * 0.24 + 18px);
-  display: grid;
-  justify-items: center;
-  gap: 10px;
-  white-space: nowrap;
-  transform: translateX(-50%);
-}
 
-.cartoucheName {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  font-size: 26px;
-  line-height: 28px;
-  font-weight: 300;
-  letter-spacing: -0.03em;
-  color: var(--text);
-}
 
-.cartoucheName::before,
-.cartoucheName::after {
-  content: '';
-  width: 48px;
-  height: 1px;
-  background: var(--line-strong);
-}
 
-.labels[data-layout='portrait'] .cartouche {
-  display: none;
-}
 
 /* RA / Dec ticks: ornament only (--text-mute). */
 .tick {
@@ -392,6 +367,11 @@
   .host {
     display: none;
   }
+}
+
+/* A painting or a film covers its star: no reticle peeking out behind the work. */
+:global(html:is([data-panel='media'], [data-panel='cinema'])) .reticle {
+  visibility: hidden !important;
 }
 
 /* Cinema and theater: the film owns the screen; no star labels read through it. */

@@ -14,6 +14,8 @@ let arrivedDirect = false;
 let returnFocus: string | null = null;
 /** The close transition in flight: focus moves once it has finished, so it can't scroll the page mid-morph. */
 let closing: Promise<unknown> = Promise.resolve();
+/** Header navigation: the open panel goes without an exit animation (one move to the destination). */
+let dismiss = false;
 
 const normalize = (path: string) => path.replace(/\/+$/, '') || '/';
 
@@ -32,7 +34,18 @@ export const softNav = {
   },
   /** Whether a link to `href` should take focus back (peek; claim it with done()). */
   wantsFocus: (href: string) => returnFocus !== null && returnFocus === normalize(href),
-  /** PanelFrame hands over its close view transition (vt.finished). */
+  /** Header navigation is leaving the panel: unmount it instantly. */
+  dismiss() {
+    dismiss = true;
+    arrivedPath = null;
+  },
+  /** PanelFrame's unmount reads (and clears) the dismiss flag. */
+  takeDismiss() {
+    const d = dismiss;
+    dismiss = false;
+    return d;
+  },
+  /** PanelFrame hands over its close animation. */
   closingUntil(done: Promise<unknown>) {
     closing = done.catch(() => {});
   },

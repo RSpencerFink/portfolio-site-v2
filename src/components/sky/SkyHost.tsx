@@ -146,7 +146,7 @@ export function SkyHost() {
             onLowFps={() => setLowPower(true)}
           />
         )}
-        <StarLabels key={layout} chart={chart} openPath={pathname} />
+        <StarLabels key={layout} chart={chart} />
       </div>
       {isHome && <HeroMark hostRef={hostRef} reduced={reduced} markWidth={markWidth} />}
     </div>
