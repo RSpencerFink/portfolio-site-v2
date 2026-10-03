@@ -54,7 +54,7 @@ export const constellations: Constellation[] = [
   {
     id: 'painter',
     name: 'The Painter',
-    subline: 'V stars · Analog',
+    subline: 'IV stars · Analog',
     namePosition: [0.625, 0.5333],
     starIds: paintings.map((p) => p.slug),
     lines: [['walter-white', 'dr-manhattan'], ['dr-manhattan', 'marilyn-monroe'], ['marilyn-monroe', 'han-solo'], ['han-solo', 'walter-white']],

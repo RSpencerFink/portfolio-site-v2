@@ -212,7 +212,7 @@ The Painter
 | Dr. Manhattan | 0.7156 | 0.6228 |
 | Marilyn Monroe | 0.8125 | 0.6778 |
 | Han Solo | 0.7288 | 0.7994 |
-| Name "The Painter / V stars · Analog" | 0.6250 | 0.5333 |
+| Name "The Painter / IV stars · Analog" | 0.6250 | 0.5333 |
 
 Lines: Walter White → Dr. Manhattan → Marilyn Monroe → Han Solo → Walter White. (The "Visual Arts Portfolio" link star was removed by decision; the Painter/Filmmaker views are the portfolio, and the footer keeps a plain text link.)
 
