@@ -2,22 +2,17 @@
 
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { usePathname } from 'next/navigation';
-import { Canvas } from '@react-three/fiber';
-import { setConsoleFunction } from 'three';
+import dynamic from 'next/dynamic';
 import { cameraRig } from './cameraRig';
 import { chartLayout, layoutFor } from './chart';
 import { hoverStore } from './hover';
 import { HeroMark, skipIntro } from './HeroMark';
-import { Scene, type FrameInfo, type Motion } from './Scene';
+import type { FrameInfo, Motion } from './Scene';
 import { resetLabels, StarLabels, syncLabels } from './StarLabels';
 import styles from './SkyHost.module.css';
 
-// R3F 9.x still constructs THREE.Clock (deprecated in r183). Drop that one
-// warning; forward everything else unchanged.
-setConsoleFunction((type: 'log' | 'warn' | 'error', message: string, ...params: unknown[]) => {
-  if (typeof message === 'string' && message.includes('Clock: This module has been deprecated')) return;
-  console[type](message, ...params);
-});
+// three + R3F (~1 MB) load after the page, in their own chunk.
+const SkyCanvas = dynamic(() => import('./SkyCanvas'), { ssr: false });
 
 const reducedQuery = '(prefers-reduced-motion: reduce)';
 const useReducedMotion = () =>
@@ -138,19 +133,17 @@ export function SkyHost() {
     <div ref={hostRef} className={styles.host} data-home={isHome ? '' : undefined} aria-hidden="true">
       <div className={styles.sky}>
         {size && (
-          <Canvas
-            className={styles.canvas}
+          <SkyCanvas
             frameloop={!visible ? 'never' : motion === 'full' ? 'always' : 'demand'}
             dpr={lowPower && size.w < 640 ? [1, 1.5] : [1, 2]}
-            gl={{ antialias: false, alpha: false, powerPreference: 'high-performance' }}
-            camera={{ fov: 62, near: 0.1, far: 200, position: [0, 0, 8] }}
-            onCreated={({ scene, gl }) => {
-              gl.setClearColor('#04050A');
-              scene.background = null;
-            }}
-          >
-            <Scene layout={layout} count={starCount(size.w, reduced)} motion={motion} isHome={homeJourney} onHomeRoute={isHome} onFrame={onFrame} onLowFps={() => setLowPower(true)} />
-          </Canvas>
+            layout={layout}
+            count={starCount(size.w, reduced)}
+            motion={motion}
+            isHome={homeJourney}
+            onHomeRoute={isHome}
+            onFrame={onFrame}
+            onLowFps={() => setLowPower(true)}
+          />
         )}
         <StarLabels key={layout} chart={chart} openPath={pathname} />
       </div>

@@ -1,7 +1,6 @@
 'use client';
 
 import { ViewTransition } from 'react';
-import { Vector3 } from 'three';
 import { Insignia } from '@/components/Insignia';
 import { SkyLink } from '@/components/panels/SkyLink';
 import { education, person } from '@/content/site';
@@ -36,15 +35,14 @@ const reg = (key: string) => (el: HTMLElement | SVGSVGElement | null) => {
   if (el) nodes.set(key, el as HTMLElement);
   else nodes.delete(key);
 };
-const v = new Vector3();
 let last = { focus: '' as string | null, focal: '', hover: '' as string | null, level: '', mask: '', overview: '', stage: '' };
 
 function place(el: HTMLElement | undefined, world: Vec3, f: FrameInfo, margin = 80) {
   if (!el) return null;
-  v.set(...world).project(f.camera);
-  const x = ((v.x + 1) / 2) * f.width;
-  const y = ((1 - v.y) / 2) * f.height;
-  const on = v.z < 1 && x > -margin && x < f.width + margin && y > -margin && y < f.height + margin;
+  const [nx, ny, nz] = f.project(world);
+  const x = ((nx + 1) / 2) * f.width;
+  const y = ((1 - ny) / 2) * f.height;
+  const on = nz < 1 && x > -margin && x < f.width + margin && y > -margin && y < f.height + margin;
   el.style.transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0)`;
   el.style.visibility = on ? '' : 'hidden';
   return [x, y] as const;

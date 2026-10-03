@@ -4,8 +4,9 @@ import { useEffect, useMemo, useRef } from 'react';
 import { useFrame, useThree, type RootState } from '@react-three/fiber';
 import * as THREE from 'three';
 import { constellations } from '@/content/sky';
-import { cameraRig } from './cameraRig';
-import { chartLayout, lerpPose, overviewPose, resolve, type Layout, type Pose, type Resolved } from './chart';
+import { cameraRig, type Vec3 } from './cameraRig';
+import { chartLayout, lerpPose, overviewPose, type Layout, type Pose } from './chart';
+import { resolve, type Resolved } from './resolve';
 import { hoverStore } from './hover';
 import { backgroundFrag, backgroundVert, contentFrag, contentVert, nebulaFrag, nebulaVert } from './shaders';
 import { HALO, type SpectralClass } from './types';
@@ -13,7 +14,8 @@ import { HALO, type SpectralClass } from './types';
 export type Motion = 'full' | 'low' | 'reduced';
 
 export interface FrameInfo {
-  camera: THREE.PerspectiveCamera;
+  /** World point → normalised device coordinates for this frame's camera. */
+  project: (world: Vec3) => [number, number, number];
   width: number;
   height: number;
   resolved: Resolved;
@@ -203,6 +205,8 @@ type Ctx = {
   fps: { current: { t0: number; frames: number; warm: boolean } };
 } & Omit<SceneProps, 'count'>;
 
+const ndc = new THREE.Vector3();
+
 /** One frame: camera, ambient uniforms, content-star states, then labels via onFrame. */
 function tick(ctx: Ctx, state: RootState, delta: number) {
   const { bgMat, contentMat, nebulaMat, nebula, content, chart, pointer, cur, fps, layout, motion, isHome, onHomeRoute, onFrame, onLowFps } = ctx;
@@ -272,7 +276,11 @@ function tick(ctx: Ctx, state: RootState, delta: number) {
   });
   content.state.needsUpdate = true;
 
-  onFrame({ camera, width, height, resolved: r, pose });
+  const project = (w: Vec3): [number, number, number] => {
+    ndc.set(...w).project(camera);
+    return [ndc.x, ndc.y, ndc.z];
+  };
+  onFrame({ project, width, height, resolved: r, pose });
 
   // Measured fps < 45 for 2 s → low power (spec §7 performance budget).
   if (motion === 'full') {
@@ -292,7 +300,7 @@ function tick(ctx: Ctx, state: RootState, delta: number) {
   }
 }
 
-interface SceneProps {
+export interface SceneProps {
   layout: Layout;
   count: number;
   motion: Motion;
