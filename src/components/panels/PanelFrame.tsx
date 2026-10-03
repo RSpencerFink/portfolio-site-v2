@@ -49,6 +49,7 @@ function slideOut(el: HTMLElement, detached = false) {
     // A copy of a panel React has already removed: inert, no duplicate ids, removed when done.
     el.inert = true;
     el.querySelectorAll('[id]').forEach((n) => n.removeAttribute('id'));
+    el.querySelectorAll('iframe, video').forEach((n) => n.remove()); // no second Vimeo player
     el.removeAttribute('aria-labelledby');
     document.body.append(el);
   }

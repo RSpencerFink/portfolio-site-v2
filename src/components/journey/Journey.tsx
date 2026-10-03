@@ -38,5 +38,19 @@ export function Journey() {
     return () => mm.revert();
   }, []);
 
+  // Native in-page anchors (the skip link, the RM sky index) push a history entry with no state.
+  // Next's popstate handler ignores such entries, so a later router.back() onto one (closing a
+  // panel) would change the URL without rendering the page. Carry Next's history state over.
+  useEffect(() => {
+    const onClick = (e: MouseEvent) => {
+      const a = (e.target as Element).closest?.<HTMLAnchorElement>('a[href^="#"]');
+      if (!a || e.defaultPrevented || a.hash === location.hash) return;
+      const state = history.state;
+      addEventListener('hashchange', () => history.replaceState(state, ''), { once: true });
+    };
+    document.addEventListener('click', onClick);
+    return () => document.removeEventListener('click', onClick);
+  }, []);
+
   return null;
 }
