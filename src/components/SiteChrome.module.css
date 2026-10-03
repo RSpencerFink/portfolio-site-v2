@@ -19,6 +19,17 @@
   display: inline-flex;
   align-items: center;
   gap: var(--space-3);
+  transition:
+    opacity var(--dur-s) var(--ease-sine),
+    visibility 0s;
+}
+
+/* One RSF mark on screen at a time: the header mark steps aside for the H3 pole mark and the Visual Arts window. */
+:global(html[data-pole]) .home,
+:global(html[data-window]) .home {
+  opacity: 0;
+  visibility: hidden;
+  transition-delay: 0s, var(--dur-s);
 }
 
 .links {
@@ -34,9 +45,10 @@
   clip-path: none;
 }
 
+/* Short pages: the footer sits at the bottom of the viewport (globals.css makes body a column). */
 .footer {
   border-top: 1px solid var(--line);
-  margin-top: var(--space-10);
+  margin-top: auto;
 }
 
 /* Home H1 (spec §1 row 1): only the centred menu, no logo/name block. */
@@ -158,17 +170,14 @@
   border: 0;
   opacity: 0;
   pointer-events: none;
-  transition: opacity var(--dur-s) var(--ease-sine);
 }
 
+/* Fades in only: a fade-out transition would flash the links when the journey first takes the footer out of the flow. */
 :global(html[data-journey][data-explore] body:has(#hero)) .footer,
 :global(html[data-journey] body:has(#hero)) .footer:focus-within {
   opacity: 1;
   pointer-events: auto;
-}
-
-:global(html[data-journey] body:has(#hero)) .footer img {
-  display: none;
+  transition: opacity var(--dur-s) var(--ease-sine);
 }
 
 :global(html[data-journey] body:has(#hero)) .footer .links {

@@ -18,7 +18,7 @@ export function SiteHeader() {
         <ul id="primary-links" className={`label ${styles.links}`}>
           <li><Link href="/#work">Work</Link></li>
           <li><Link href="/#projects">Projects</Link></li>
-          <li><Link href="/visual-arts">Visual Arts</Link></li>
+          <li><Link href="/visual-arts/analog">Visual Arts</Link></li>
           <li><Link href="/about">About</Link></li>
         </ul>
       </nav>
@@ -29,7 +29,6 @@ export function SiteHeader() {
 export function SiteFooter() {
   return (
     <footer className={styles.footer}>
-      <Image src="/logo/rsf.svg" alt="RSF" width={83} height={40} />
       <ul className={`label ${styles.links}`}>
         {socials.map((s) => (
           <li key={s.label}>
@@ -37,7 +36,6 @@ export function SiteFooter() {
           </li>
         ))}
         <li><a href={resume.href}>{resume.label}</a></li>
-        <li><Link href="/visual-arts">Visual Arts Portfolio</Link></li>
       </ul>
     </footer>
   );

@@ -54,19 +54,8 @@
   gap: var(--space-2);
 }
 
-.list {
-  display: grid;
-  gap: var(--space-7);
-}
 
-.stack p {
-  margin: 0;
-}
 
-.stack {
-  display: grid;
-  gap: var(--space-4);
-}
 
 .chips {
   display: flex;
