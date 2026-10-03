@@ -18,20 +18,20 @@ const PLANE = {
 
 // Portrait group placement in mobile-artboard px: [left, top, width] of the group's star bbox.
 const PORTRAIT_GROUPS: Record<string, [number, number, number]> = {
-  work: [30, 96, 210], // Brava's label keeps ≥ 24 px from the right edge (spec §8)
-  projects: [230, 262, 120],
-  origins: [24, 500, 150],
-  painter: [226, 560, 140],
-  filmmaker: [40, 676, 186],
+  work: [30, 90, 200], // Brava's label keeps ≥ 24 px from the right edge (spec §8)
+  projects: [240, 250, 120],
+  origins: [20, 290, 140],
+  painter: [220, 500, 140],
+  filmmaker: [36, 520, 180],
 };
 
 // Portrait constellation-name anchors (top-left of the block) in mobile-artboard px, from R3 · M-H3.
 const PORTRAIT_NAMES: Record<string, [number, number]> = {
-  work: [30, 244],
-  projects: [226, 292],
-  origins: [24, 612],
-  painter: [236, 520],
-  filmmaker: [40, 642],
+  work: [30, 226],
+  projects: [236, 280],
+  origins: [240, 340],
+  painter: [250, 604],
+  filmmaker: [40, 660],
 };
 
 const positioned = [...stars.filter((s): s is Star & { position: ChartPoint } => !!s.position), ...helperStars];

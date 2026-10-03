@@ -88,6 +88,11 @@
   inset: 0;
 }
 
+/* Nothing shows until the first frame has placed the markers (they all start at 0, 0). */
+.labels:not([data-level]) {
+  visibility: hidden;
+}
+
 /*
  * While the H1 mask is up the letterbox (above this layer) covers the labels
  * outside the letters. No CSS mask on the labels themselves: a mask whose
