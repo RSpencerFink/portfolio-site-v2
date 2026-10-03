@@ -63,6 +63,21 @@ export function FilmView({ slug, title, roles, vimeoId, vimeoUrl, still, counter
 
   useEffect(() => () => void player.current?.destroy(), []);
 
+  // Warm the player so a click starts quickly: open connections to Vimeo and fetch the player module while idle.
+  useEffect(() => {
+    const links = ['https://player.vimeo.com', 'https://i.vimeocdn.com', 'https://f.vimeocdn.com', 'https://vod-adaptive-ak.vimeocdn.com'].map((href) => {
+      const l = document.createElement('link');
+      l.rel = 'preconnect';
+      l.href = href;
+      l.crossOrigin = '';
+      document.head.append(l);
+      return l;
+    });
+    const idle = window.requestIdleCallback ?? ((cb: () => void) => setTimeout(cb, 200));
+    idle(() => void import('@vimeo/player'));
+    return () => links.forEach((l) => l.remove());
+  }, []);
+
   const toggleTheater = (on: boolean) => {
     // Mobile landscape: native fullscreen (spec §8). Portrait and iOS (no element fullscreen) keep the inset layout.
     if (on && matchMedia('(max-width: 1023px) and (orientation: landscape)').matches && frame.current?.requestFullscreen) {
@@ -96,7 +111,7 @@ export function FilmView({ slug, title, roles, vimeoId, vimeoUrl, still, counter
     const p = new Player(host.current, {
       id: Number(vimeoId),
       autoplay: true,
-      controls: !VIMEO_NATIVE_CONTROLS,
+      controls: VIMEO_NATIVE_CONTROLS,
       dnt: true,
       title: false,
       byline: false,
