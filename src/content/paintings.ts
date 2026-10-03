@@ -10,7 +10,7 @@ export interface Painting {
   size: string;
   widthIn: number;
   heightIn: number;
-  /** `${image}_<w>.jpg`, w in 400, 600, 800, 1100, 1500, 2000, 2500. */
+  /** `${image}_<w>.jpg`, w in 800 (cards, OG) and 1500 (full page). */
   image: string;
   /** Pixel height of the 800 px master, for intrinsic sizing. */
   height800: number;
