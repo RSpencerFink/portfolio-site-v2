@@ -3,8 +3,8 @@ import { useState } from 'react';
 /**
  * Records the path the visitor reached by clicking a star (soft navigation
  * from the sky). A hard load starts at null, so direct loads and crawlers get
- * the full page. Panel mode is "arrived path === current path", so ordinary
- * links never inherit a stale flag.
+ * the full page. Panel mode is "arrived path === current path"; PanelFrame
+ * clears the flag once its panel is open, so ordinary links never inherit it.
  */
 let arrivedPath: string | null = null;
 /** Star link to focus once the visitor is back on the page the panel opened from. */

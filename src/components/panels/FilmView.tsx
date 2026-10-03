@@ -59,9 +59,9 @@ export function FilmView({ slug, title, roles, vimeoId, vimeoUrl, still, counter
 
 
   const toggleTheater = (on: boolean) => {
-    if (on && matchMedia('(max-width: 639px)').matches) {
-      // Mobile: native fullscreen (spec §8).
-      frame.current?.requestFullscreen?.().catch(() => {});
+    // Mobile landscape: native fullscreen (spec §8). Portrait and iOS (no element fullscreen) keep the inset layout.
+    if (on && matchMedia('(max-width: 1023px) and (orientation: landscape)').matches && frame.current?.requestFullscreen) {
+      frame.current.requestFullscreen().catch(() => {});
       return;
     }
     history.replaceState(history.state, '', on ? '?theater=1' : location.pathname);

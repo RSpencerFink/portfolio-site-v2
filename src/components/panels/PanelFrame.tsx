@@ -103,6 +103,8 @@ export function PanelFrame({ slug, title, kicker, lead, subline, prev, next, cou
     if (!asPanel) return;
     const dialog = ref.current!;
     dialog.showModal();
+    // Consumed: after a browser Back, a plain link to this path opens the full page.
+    softNav.set(null);
     // Hides the site header/footer behind the panel (transitions.css).
     document.documentElement.dataset.panel = variant;
     if (stepFocus) dialog.querySelector<HTMLElement>(`a[rel="${stepFocus}"]`)?.focus();
