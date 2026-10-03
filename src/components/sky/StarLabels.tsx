@@ -36,7 +36,7 @@ const reg = (key: string) => (el: HTMLElement | SVGSVGElement | null) => {
   else nodes.delete(key);
 };
 const v = new Vector3();
-let last = { focus: '' as string | null, hover: '' as string | null, level: '', mask: '', overview: '' };
+let last = { focus: '' as string | null, focal: '', hover: '' as string | null, level: '', mask: '', overview: '' };
 
 function place(el: HTMLElement | undefined, world: Vec3, f: FrameInfo, margin = 80) {
   if (!el) return null;
@@ -59,10 +59,10 @@ export function syncLabels(f: FrameInfo, chart: ChartLayout) {
   const root = nodes.get('root');
   if (!root) return;
   const ppu = pxPerUnit(f.pose, f.height);
-  const level = labelLevel(chart, ppu, f.height);
+  const level = f.resolved.quiet ? 'hidden' : labelLevel(chart, ppu, f.height);
   const mask = f.resolved.mask.opacity > 0.01 ? 'on' : 'off';
   const overviewPpu = pxPerUnit(overviewPose(chart, f.width / f.height), f.height);
-  const overview = mask === 'off' && ppu < overviewPpu * 1.3 ? 'on' : 'off';
+  const overview = mask === 'off' && !f.resolved.quiet && ppu < overviewPpu * 1.3 ? 'on' : 'off';
   if (level !== last.level) root.dataset.level = last.level = level;
   if (mask !== last.mask) root.dataset.mask = last.mask = mask;
   if (overview !== last.overview) root.dataset.overview = last.overview = overview;
@@ -99,11 +99,13 @@ export function syncLabels(f: FrameInfo, chart: ChartLayout) {
     else reticle.style.visibility = 'hidden';
     setAttr(reticle, 'data-variant', f.resolved.focal ? 'focal' : 'current');
   }
-  if (focus !== last.focus) {
+  const focal = f.resolved.focal ? 'focal' : '';
+  if (focus !== last.focus || focal !== last.focal) {
     if (last.focus) setAttr(nodes.get(`star:${last.focus}`), 'data-focus', null);
-    if (focus) setAttr(nodes.get(`star:${focus}`), 'data-focus', '');
-    redraw(reticle);
+    if (focus) setAttr(nodes.get(`star:${focus}`), 'data-focus', focal);
+    if (focus !== last.focus) redraw(reticle);
     last.focus = focus;
+    last.focal = focal;
   }
   const hs = hover && hover !== focus ? chart.byId.get(hover) : undefined;
   if (ring) {
@@ -126,7 +128,7 @@ function redraw(el: HTMLElement | undefined) {
 
 /** Reset cached attributes when the overlay remounts (layout change). */
 export const resetLabels = () => {
-  last = { focus: '', hover: '', level: '', mask: '', overview: '' };
+  last = { focus: '', focal: '', hover: '', level: '', mask: '', overview: '' };
 };
 
 /* ------------------------------------------------------------------------ */

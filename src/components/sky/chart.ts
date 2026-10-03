@@ -101,7 +101,7 @@ export function chartLayout(layout: Layout): ChartLayout {
           ? toWorld([PORTRAIT_NAMES[c.id][0] / 390, PORTRAIT_NAMES[c.id][1] / 844], layout)
           : toWorld(c.namePosition ?? [0.5, 0.5], layout, c.id),
     })),
-    pole: layout === 'portrait' ? [0, 0, 0] : toWorld(POLE_STAR.position, layout),
+    pole: layout === 'portrait' ? [0, -0.35, 0] : toWorld(POLE_STAR.position, layout),
     poleSize: layout === 'portrait' ? [2.2, 1.06] : [POLE_STAR.markSize[0] / 100, POLE_STAR.markSize[1] / 100],
     plane: PLANE[layout],
   };
@@ -245,6 +245,8 @@ export interface Resolved {
   mask: { scale: number; opacity: number };
   /** 0–1 extra nebula-core glow inside the mark (H1/H2). */
   heroGlow: number;
+  /** Backdrop only (a full page off the home route): no labels, no pole mark. */
+  quiet?: boolean;
 }
 
 /** Where the camera wants to be for this rig state. Pure; the scene damps toward it. */
@@ -260,7 +262,7 @@ export function resolve(state: CameraState, c: ChartLayout, aspect: number, isHo
     if (pose) return { pose, focusId: target, focal: true, mask: noMask, heroGlow: 0 };
   }
   if (target === 'overview' || !isHome) {
-    return { pose: overview, focusId: 'brava', focal: false, mask: noMask, heroGlow: 0 };
+    return { pose: overview, focusId: target ? 'brava' : null, focal: false, mask: noMask, heroGlow: 0, quiet: !target };
   }
 
   const [seg, t] = segmentAt(state.progress);

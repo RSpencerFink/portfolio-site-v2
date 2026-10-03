@@ -156,6 +156,15 @@
   text-align: right;
 }
 
+/* A focal star's label clears the 34 px reticle ring. */
+.marker[data-focus='focal'][data-side='right'] .text {
+  left: 46px;
+}
+
+.marker[data-focus='focal'][data-side='left'] .text {
+  right: 46px;
+}
+
 .words {
   display: grid;
   gap: 1px;
