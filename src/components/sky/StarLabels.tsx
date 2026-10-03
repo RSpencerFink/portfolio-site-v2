@@ -1,6 +1,6 @@
 'use client';
 
-import { ViewTransition } from 'react';
+import { useEffect, ViewTransition } from 'react';
 import { Insignia } from '@/components/Insignia';
 import { SkyLink } from '@/components/panels/SkyLink';
 import { education, person } from '@/content/site';
@@ -148,6 +148,8 @@ export const resetLabels = () => {
  */
 export function StarLabels({ chart, openPath }: { chart: ChartLayout; openPath: string }) {
   const hover = (id: string | null) => () => hoverStore.set(id);
+  // The clicked marker unmounts without a pointerleave (it becomes the panel's dot): drop its hover.
+  useEffect(() => () => hoverStore.set(null), [openPath]);
   return (
     <div ref={reg('root')} className={s.labels} data-layout={chart.layout}>
       {chart.names.map((n) => (
@@ -200,6 +202,7 @@ export function StarLabels({ chart, openPath }: { chart: ChartLayout; openPath: 
           'data-group': star.group,
           onPointerEnter: hover(star.id),
           onPointerLeave: hover(null),
+          onClick: hover(null),
         };
         if (star.href === openPath) return null;
         return star.href ? (

@@ -59,9 +59,16 @@ export function HeroMark({ hostRef, reduced, markWidth }: { hostRef: RefObject<H
     // Flags are set on completion so a StrictMode effect re-run (or an interrupted intro) still plays it.
     const done = () => {
       introDone = true;
-      sessionStorage.setItem(SESSION_KEY, '1');
+      try {
+        sessionStorage.setItem(SESSION_KEY, '1');
+      } catch {}
     };
-    if (sessionStorage.getItem(SESSION_KEY)) {
+    // Storage blocked: treat it as a first visit.
+    let seen = false;
+    try {
+      seen = !!sessionStorage.getItem(SESSION_KEY);
+    } catch {}
+    if (seen) {
       // Repeat visit in this session: no draw, the sky fades in (600 ms).
       gsap.set(all, settled);
       const t = gsap.fromTo(host, { '--sky-opacity': 0 }, { '--sky-opacity': 1, duration: 0.6, ease: 'sine.inOut', onComplete: done });

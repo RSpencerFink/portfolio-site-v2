@@ -207,7 +207,7 @@ type Ctx = {
   chart: ReturnType<typeof chartLayout>;
   pointer: { current: { tx: number; ty: number; x: number; y: number } };
   cur: { current: Pose | null };
-  fps: { current: { t0: number; frames: number; warm: boolean } };
+  fps: { current: { t0: number; last: number; frames: number; warm: boolean } };
 } & Omit<SceneProps, 'count'>;
 
 const ndc = new THREE.Vector3();
@@ -295,11 +295,16 @@ function tick(ctx: Ctx, state: RootState, frameDelta: number) {
   if (motion === 'full') {
     const now = performance.now();
     const f = fps.current;
-    if (!f.t0) f.t0 = now;
+    // A paused loop (hidden tab, frameloop 'never') or a long stall restarts the window instead of counting as slow.
+    if (!f.t0 || now - f.last > 250) {
+      f.t0 = now;
+      f.frames = 0;
+    }
+    f.last = now;
     f.frames++;
     if (now - f.t0 >= 2000) {
       const value = (f.frames * 1000) / (now - f.t0);
-      (window as unknown as { __rsfSkyFps?: number }).__rsfSkyFps = value;
+      if (process.env.NODE_ENV !== 'production') (window as unknown as { __rsfSkyFps?: number }).__rsfSkyFps = value;
       // The first window includes shader compile and page load; only later windows count.
       if (value < 45 && f.warm) onLowFps();
       f.warm = true;
@@ -338,6 +343,15 @@ export function Scene({ layout, count, motion, isHome, onFrame, onLowFps }: Scen
 
   useEffect(() => () => bg.dispose(), [bg]);
   useEffect(() => () => content.geometry.dispose(), [content]);
+  useEffect(
+    () => () =>
+      lines.group.children.forEach((o) => {
+        const l = o as THREE.LineSegments;
+        l.geometry.dispose();
+        (l.material as THREE.Material).dispose();
+      }),
+    [lines],
+  );
 
   // Outside full motion the loop runs on demand: redraw on rig/hover changes, or at 30 fps in low power.
   useEffect(() => {
@@ -364,7 +378,7 @@ export function Scene({ layout, count, motion, isHome, onFrame, onLowFps }: Scen
   }, [motion]);
 
   const cur = useRef<Pose | null>(null);
-  const fps = useRef({ t0: 0, frames: 0, warm: false });
+  const fps = useRef({ t0: 0, last: 0, frames: 0, warm: false });
 
   useFrame((state, delta) =>
     tick({ bgMat, contentMat, nebulaMat, nebula, content, lines, chart, pointer, cur, fps, layout, motion, isHome, onFrame, onLowFps }, state, delta),

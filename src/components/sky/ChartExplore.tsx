@@ -59,6 +59,7 @@ export function ChartExplore() {
     const stop = () => cancelAnimationFrame(raf.current);
     const set = (v: View) => cameraRig.setView(v);
 
+    let drag: { x: number; y: number; t: number; vx: number; vy: number } | null = null;
     // Follow the rig: controls appear at H3; leaving it (scroll up, a panel) hands back a clean view.
     const sync = () => {
       const now = atChart();
@@ -68,6 +69,7 @@ export function ChartExplore() {
       if (now) root.dataset.explore = '';
       else {
         delete root.dataset.explore;
+        drag = null;
         stop();
         if (view() !== HOME_VIEW) set(HOME_VIEW);
       }
@@ -115,7 +117,6 @@ export function ChartExplore() {
     };
 
     // Mouse / pen drag anywhere on the sky (the host and #main pass the pointer through).
-    let drag: { x: number; y: number; t: number; vx: number; vy: number } | null = null;
     const down = (e: PointerEvent) => {
       if (!live.current || e.pointerType === 'touch' || e.button !== 0) return;
       if ((e.target as Element).closest('a, button, input, textarea, select, summary, dialog, [role="group"]')) return;
@@ -125,7 +126,7 @@ export function ChartExplore() {
       root.dataset.explore = 'drag';
     };
     const move = (e: PointerEvent) => {
-      if (!drag) return;
+      if (!drag || !live.current) return;
       const dx = e.clientX - drag.x;
       const dy = e.clientY - drag.y;
       const before = view();
