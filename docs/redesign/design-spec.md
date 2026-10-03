@@ -301,7 +301,7 @@ Lenis config: `{ lerp: 0.09, wheelMultiplier: 1, touchMultiplier: 1.4, smoothWhe
 | T6 | Featured → H3 pull 2 | scroll (no scrub timeline) | fov 46 → 62, lookAt → pole star; labels and pole mark fade in at the overview | 200 vh | power2.inOut | R3F | yes | MO-4 |
 | T7 | Star → panel | click / Enter on StarMarker | sky dim 1 → 0.55; camera flies to the star and centres it in the upper middle (damped, ~500 ms); labels, lines and other content stars fade; panel column rises 12 px and fades in (120–480 ms). No shared-element morph. | 480 ms | ease-out | `<ViewTransition name="star-panel">` + startTransition(router.push) | yes | MO-5 |
 | T8 | Panel close | Close ✕ / Back to sky / Esc / click on the sky | column fades and sinks 12 px (240 ms); sky 0.55 → 1; camera flies back | 240 ms + camera | ease-out | WAAPI | yes | MO-5 |
-| T9 | Panel step ← → | keys / footer | body crossfade 200 ms; camera pans to sibling (480 ms) | 480 ms | ease-out / in-out | ViewTransition `panel-body` | yes | MO-5 |
+| T9 | Panel step ← → | keys / footer | the column cross-fades (`star-panel`); the camera flies to the sibling and centres it | 480 ms | ease-out / in-out | ViewTransition `star-panel` | yes | MO-5 |
 | T10 | Analog ↔ Digital | toggle / arrow keys | thumb translate (180 ms); out: scale 1 → .96, opacity → 0, lines undraw (0–200); in: scale .96 → 1, opacity → 1, stagger 24, timecodes type (200–520); title crossfade `va-title` | 520 ms | ease-out | `<ViewTransition name="va-toggle">` + per-card names | yes | MO-6 |
 | T11 | Still → cinema panel | click still | shared `film-still-<slug>` card → 840×473 player (0–520); chrome fade in from 200; sky dim → 0.45 | 520 ms | ease-out | ViewTransition | yes | MO-7 |
 | T12 | Cinema → theater | ⤢ or `T` | chrome out (0–200); player → 1000×563 inset (0–480); drawer x +24 → 0 (160–480); twinkle amplitude × 0.3 | 480 ms | ease-out | ViewTransition `film-still-<slug>` + GSAP | Esc reverses | MO-7 |
@@ -365,7 +365,7 @@ Mobile specifics (R3 · M-*). HUD at 24 / 64 under the status bar; the hero mask
 
 - The canvas is `aria-hidden`. Every content star has an HTML `StarMarker` (`<a>`), positioned over it, with the full label as text and `aria-describedby` to its sub-line; constellations are `<nav aria-label="Constellation of Work">` lists. Tab order: HUD → constellations in reading order (Work, Featured Build, Observer/Origins, Painter, Filmmaker) → controls. Arrow keys inside a constellation move between its stars; Enter opens; Esc closes.
 - Focus ring: 2 px `#FFFFFF` at 2 px offset on labels, pills, toggle tabs and rail ticks; never removed.
-- Panels are `role="dialog"` (non-modal since Round 5 so the header stays usable; nothing else on the page is interactive behind them), `aria-labelledby` the title, returning focus to the StarMarker on close. Sheets likewise. ← → are announced via the footer buttons (they are real buttons).
+- Panels are `role="dialog"` (non-modal since Round 5 so the header stays usable; nothing else on the page is interactive behind them), `aria-labelledby` the title, returning focus to the StarMarker on close. ← → are announced via the footer buttons (they are real buttons).
 - Reduced motion as section 7. Also honour `prefers-contrast: more` by raising `--text-dim` to `#B7BDCB` and scrims to 90%.
 - All text on the sky passes AA (section 3). Mono labels never below 10 px (9 px only on mobile sub-lines, uppercase, over scrims).
 - Video: captions where the Vimeo source has them; no autoplay; the custom scrub is a `<input type="range">` under the hood.
