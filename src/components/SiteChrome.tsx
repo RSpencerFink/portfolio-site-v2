@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import { person, resume, socials } from '@/content/site';
 import styles from './SiteChrome.module.css';
@@ -8,15 +9,16 @@ export function SiteHeader() {
       <a href="#main" className={`visually-hidden ${styles.skip}`}>
         Skip to content
       </a>
-      <Link href="/" className="label">
+      <Link href="/" className={`label ${styles.home}`}>
+        <Image src="/logo/rsf.svg" alt="" width={50} height={24} priority />
         {person.name}
       </Link>
       <nav aria-label="Primary">
         <ul className={`label ${styles.links}`}>
           <li><Link href="/#work">Work</Link></li>
           <li><Link href="/#projects">Projects</Link></li>
-          <li><Link href="/visual-arts/">Visual Arts</Link></li>
-          <li><Link href="/about/">About</Link></li>
+          <li><Link href="/visual-arts">Visual Arts</Link></li>
+          <li><Link href="/about">About</Link></li>
           <li><a href={resume.href}>Résumé</a></li>
         </ul>
       </nav>
@@ -27,8 +29,7 @@ export function SiteHeader() {
 export function SiteFooter() {
   return (
     <footer className={styles.footer}>
-      {/* eslint-disable-next-line @next/next/no-img-element -- static export */}
-      <img src="/images/logo/rsf-FFFFFF.svg" alt="RSF" width={83} height={40} />
+      <Image src="/logo/rsf.svg" alt="RSF" width={83} height={40} />
       <ul className={`label ${styles.links}`}>
         {socials.map((s) => (
           <li key={s.label}>
@@ -36,7 +37,7 @@ export function SiteFooter() {
           </li>
         ))}
         <li><a href={resume.href}>{resume.label}</a></li>
-        <li><Link href="/visual-arts/">Visual Arts Portfolio</Link></li>
+        <li><Link href="/visual-arts">Visual Arts Portfolio</Link></li>
       </ul>
     </footer>
   );

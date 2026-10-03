@@ -28,7 +28,7 @@ export function pageMeta({ title, description, path, image, type = 'website' }: 
 }
 
 export const PERSON_ID = `${SITE_URL}/#person`;
-export const orgId = (job: Job) => `${SITE_URL}/work/${job.slug}/#org`;
+export const orgId = (job: Job) => `${SITE_URL}/work/${job.slug}#org`;
 
 export const organizationLd = (job: Job) => ({
   '@type': 'Organization',

@@ -10,7 +10,7 @@ export interface Painting {
   size: string;
   widthIn: number;
   heightIn: number;
-  /** `${image}_<w>.jpg` for each IMAGE_WIDTHS entry. */
+  /** `${image}_<w>.jpg`, w in 400, 600, 800, 1100, 1500, 2000, 2500. */
   image: string;
   /** Pixel height of the 800 px master, for intrinsic sizing. */
   height800: number;

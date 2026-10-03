@@ -18,7 +18,7 @@ export function GET() {
     '## Experience',
     ...jobs.map((j) => {
       const roles = j.roles.map((r) => `${r.title} (${r.months})`).join('; ');
-      return `- [${j.company}](${absoluteUrl(`/work/${j.slug}/`)}): ${roles}.${j.description ? ` ${j.description}` : ''}`;
+      return `- [${j.company}](${absoluteUrl(`/work/${j.slug}`)}): ${roles}.${j.description ? ` ${j.description}` : ''}`;
     }),
     '',
     '## Education',
@@ -27,20 +27,20 @@ export function GET() {
     '## Projects',
     ...projects.map((p) => {
       const links = [p.repo && `repository ${p.repo}`, p.live && `live ${p.live.url}`].filter(Boolean).join(', ');
-      return `- [${p.name}](${absoluteUrl(`/projects/${p.slug}/`)}): ${p.description} Built with ${p.tech.join(', ')}. Links: ${links}.`;
+      return `- [${p.name}](${absoluteUrl(`/projects/${p.slug}`)}): ${p.description} Built with ${p.tech.join(', ')}. Links: ${links}.`;
     }),
     '',
     '## Tech',
     ...tech.map((t) => `- ${t.heading}: ${t.items.join(', ')}`),
     '',
     '## Visual arts: Analog (paintings)',
-    ...paintings.map((p) => `- [${p.title}](${absoluteUrl(`/visual-arts/analog/${p.slug}/`)}): ${p.medium}, ${p.size}`),
+    ...paintings.map((p) => `- [${p.title}](${absoluteUrl(`/visual-arts/analog/${p.slug}`)}): ${p.medium}, ${p.size}`),
     '',
     '## Visual arts: Digital (films and music videos)',
-    ...films.map((f) => `- [${f.title}](${absoluteUrl(`/visual-arts/digital/${f.slug}/`)}): ${f.roles.join(', ')}. Vimeo: ${vimeoUrl(f)}`),
+    ...films.map((f) => `- [${f.title}](${absoluteUrl(`/visual-arts/digital/${f.slug}`)}): ${f.roles.join(', ')}. Vimeo: ${vimeoUrl(f)}`),
     '',
     '## Links',
-    `- [About](${absoluteUrl('/about/')})`,
+    `- [About](${absoluteUrl('/about')})`,
     `- [Résumé (PDF)](${absoluteUrl(resume.href)})`,
     ...socials.map((s) => `- [${s.label}](${s.url})`),
     '',

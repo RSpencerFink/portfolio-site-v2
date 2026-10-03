@@ -1,10 +1,10 @@
+import Image from 'next/image';
 import type { Job } from '@/content/work';
 
 /** Company tile: rounded square, 22% radius, 1 px hairline (spec §4). */
 export function Insignia({ job, size = 44 }: { job: Job; size?: number }) {
   return (
-    // eslint-disable-next-line @next/next/no-img-element -- static export, images unoptimized
-    <img
+    <Image
       src={job.insignia.src}
       alt=""
       width={size}

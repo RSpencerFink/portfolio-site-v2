@@ -20,7 +20,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return pageMeta({
     title: `${job.company}: ${job.title}, ${job.dates}`,
     description: job.description ?? `${person.name}: ${job.title} at ${job.company}, ${job.dates}.`,
-    path: `/work/${job.slug}/`,
+    path: `/work/${job.slug}`,
   });
 }
 
@@ -82,7 +82,7 @@ export default async function WorkPage({ params }: Props) {
           </section>
         ))}
       </div>
-      <Stepper items={jobs} index={index} label="Constellation of Work" toItem={(j) => ({ href: `/work/${j.slug}/`, name: j.company })} />
+      <Stepper items={jobs} index={index} label="Constellation of Work" toItem={(j) => ({ href: `/work/${j.slug}`, name: j.company })} />
     </PanelFrame>
   );
 }

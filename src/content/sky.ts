@@ -7,12 +7,12 @@ import { films } from './films';
 
 /** Every content star, derived from the entity modules (spec §4, §5). */
 export const stars: Star[] = [
-  ...jobs.map((j) => ({ id: j.slug, name: j.company, href: `/work/${j.slug}/`, ...j.star })),
-  ...projects.map((p) => ({ id: p.slug, name: p.name, href: `/projects/${p.slug}/`, ...p.star })),
-  ...paintings.map((p) => ({ id: p.slug, name: p.title, href: `/visual-arts/analog/${p.slug}/`, ...p.star })),
-  ...films.map((f) => ({ id: f.slug, name: f.title, href: `/visual-arts/digital/${f.slug}/`, ...f.star })),
+  ...jobs.map((j) => ({ id: j.slug, name: j.company, href: `/work/${j.slug}`, ...j.star })),
+  ...projects.map((p) => ({ id: p.slug, name: p.name, href: `/projects/${p.slug}`, ...p.star })),
+  ...paintings.map((p) => ({ id: p.slug, name: p.title, href: `/visual-arts/analog/${p.slug}`, ...p.star })),
+  ...films.map((f) => ({ id: f.slug, name: f.title, href: `/visual-arts/digital/${f.slug}`, ...f.star })),
   ...education.map((e) => ({ id: e.slug, name: e.name, ...e.star })),
-  { id: 'observer', name: person.name, href: '/about/', ...person.star },
+  { id: 'observer', name: person.name, href: '/about', ...person.star },
 ];
 
 /** Pole star: plain RSF mark at chart centre (spec §5, decision 4). */

@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import { SkyLink } from '@/components/panels/SkyLink';
 import { paintings } from '@/content/paintings';
 import { pageMeta } from '@/lib/seo';
@@ -7,7 +8,7 @@ import s from '../../mirror.module.css';
 export const metadata: Metadata = pageMeta({
   title: 'The Painter: Analog',
   description: `${paintings.length} paintings by R. Spencer Fink, acrylic and acrylic on collage on canvas.`,
-  path: '/visual-arts/analog/',
+  path: '/visual-arts/analog',
   image: `${paintings[0].image}_800.jpg`,
 });
 
@@ -20,10 +21,15 @@ export default function AnalogPage() {
         <ol className={s.grid}>
           {paintings.map((p) => (
             <li key={p.slug}>
-              <SkyLink href={`/visual-arts/analog/${p.slug}/`}>
+              <SkyLink href={`/visual-arts/analog/${p.slug}`}>
                 <figure>
-                  {/* eslint-disable-next-line @next/next/no-img-element -- static export */}
-                  <img src={`${p.image}_400.jpg`} width={400} height={Math.round(p.height800 / 2)} alt="" loading="lazy" />
+                  <Image
+                    src={`${p.image}_1500.jpg`}
+                    width={400}
+                    height={Math.round(p.height800 / 2)}
+                    sizes="(max-width: 480px) 100vw, 300px"
+                    alt=""
+                  />
                   <figcaption>
                     <span className="body-strong">{p.title}</span>
                     <br />

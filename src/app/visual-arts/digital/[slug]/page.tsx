@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { PanelFrame } from '@/components/panels/PanelFrame';
 import { JsonLd } from '@/components/JsonLd';
@@ -22,7 +23,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return pageMeta({
     title: `${f.title}: film`,
     description: summary(f),
-    path: `/visual-arts/digital/${f.slug}/`,
+    path: `/visual-arts/digital/${f.slug}`,
     image: f.still,
     type: 'video.other',
   });
@@ -52,8 +53,15 @@ export default async function FilmPage({ params }: Props) {
         {/* Poster until the panels track mounts the Vimeo player on first play (spec §7 perf). */}
         <a href={vimeoUrl(f)} aria-label={`Play ${f.title} on Vimeo`}>
           {f.still ? (
-            // eslint-disable-next-line @next/next/no-img-element -- static export
-            <img className={s.media} src={f.still} width={1280} height={720} alt={`Still from ${f.title}`} />
+            <Image
+              className={s.media}
+              src={f.still}
+              width={1280}
+              height={720}
+              sizes="(max-width: 760px) 100vw, 700px"
+              priority
+              alt={`Still from ${f.title}`}
+            />
           ) : (
             <span className={`display-s ${s.card}`}>{f.title}</span>
           )}
@@ -62,7 +70,7 @@ export default async function FilmPage({ params }: Props) {
         {f.description && <p className={`body-l ${s.preLine}`}>{f.description}</p>}
         <p><a className={`label ${s.pill}`} href={vimeoUrl(f)}>Watch on Vimeo ↗</a></p>
       </div>
-      <Stepper items={films} index={index} label="The Filmmaker" toItem={(x) => ({ href: `/visual-arts/digital/${x.slug}/`, name: x.title })} />
+      <Stepper items={films} index={index} label="The Filmmaker" toItem={(x) => ({ href: `/visual-arts/digital/${x.slug}`, name: x.title })} />
     </PanelFrame>
   );
 }

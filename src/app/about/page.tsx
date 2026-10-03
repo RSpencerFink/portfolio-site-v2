@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import { PanelFrame } from '@/components/panels/PanelFrame';
 import { JsonLd } from '@/components/JsonLd';
-import { SITE_URL, person, resume, socials, srcSet } from '@/content/site';
+import { SITE_URL, person, resume, socials } from '@/content/site';
 import { pageMeta, personLd } from '@/lib/seo';
 import s from '../mirror.module.css';
 
@@ -9,29 +10,28 @@ export const metadata: Metadata = {
   ...pageMeta({
     title: 'About',
     description: `${person.name}: ${person.identities.join(' and ')}. ${person.currently}.`,
-    path: '/about/',
+    path: '/about',
     image: `${person.headshot.base}_800.jpg`,
     type: 'profile',
   }),
-  alternates: { canonical: '/about/', types: { 'application/pdf': resume.href } },
+  alternates: { canonical: '/about', types: { 'application/pdf': resume.href } },
 };
 
 export default function AboutPage() {
   const { headshot } = person;
   return (
     <PanelFrame slug="observer" title={person.name} kicker="The Observer">
-      <JsonLd data={{ '@type': 'ProfilePage', url: `${SITE_URL}/about/`, mainEntity: personLd() }} />
+      <JsonLd data={{ '@type': 'ProfilePage', url: `${SITE_URL}/about`, mainEntity: personLd() }} />
       <div className={s.stack}>
-        {/* eslint-disable-next-line @next/next/no-img-element -- static export, srcset variants pre-generated */}
-        <img
+        <Image
           className={s.media}
-          src={`${headshot.base}_800.jpg`}
-          srcSet={srcSet(headshot.base)}
+          src={`${headshot.base}_1500.jpg`}
           sizes="(max-width: 640px) 100vw, 320px"
           width={headshot.width}
           height={headshot.height}
           style={{ width: 320 }}
           alt={`Portrait of ${person.name}`}
+          priority
         />
         <p className="label">{person.identities.join(' · ')}</p>
         <p className="body-l">{person.bio}</p>

@@ -1,9 +1,17 @@
 import type { NextConfig } from 'next';
+import { paintings } from './src/content/paintings';
+import { films } from './src/content/films';
 
 const nextConfig: NextConfig = {
-  output: 'export',
-  trailingSlash: true,
-  images: { unoptimized: true },
+  // Old CRA URLs → new slugs. `permanent: true` answers 308.
+  async redirects() {
+    return [
+      { source: '/analog', destination: '/visual-arts/analog', permanent: true },
+      { source: '/digital', destination: '/visual-arts/digital', permanent: true },
+      ...paintings.map((p) => ({ source: `/analog/${p.legacyId}`, destination: `/visual-arts/analog/${p.slug}`, permanent: true })),
+      ...films.map((f) => ({ source: `/digital/${f.legacyId}`, destination: `/visual-arts/digital/${f.slug}`, permanent: true })),
+    ];
+  },
 };
 
 export default nextConfig;

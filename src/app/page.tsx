@@ -60,7 +60,7 @@ export default function Home() {
                 <li key={j.slug} className={s.row}>
                   <Insignia job={j} size={36} />
                   <div>
-                    <SkyLink href={`/work/${j.slug}/`} className="heading">{j.company}</SkyLink>
+                    <SkyLink href={`/work/${j.slug}`} className="heading">{j.company}</SkyLink>
                     <p className="label">{j.current ? 'Now · ' : ''}{j.title} · {j.dates}</p>
                     {j.description && <p className="body-l">{j.description}</p>}
                   </div>
@@ -91,7 +91,7 @@ export default function Home() {
               {projects.map((p, i) => (
                 <li key={p.slug} className={s.stack}>
                   <p className="label-s">Project {String(i + 1).padStart(2, '0')}</p>
-                  <SkyLink href={`/projects/${p.slug}/`} className="heading">{p.name}</SkyLink>
+                  <SkyLink href={`/projects/${p.slug}`} className="heading">{p.name}</SkyLink>
                   <p className="body-l">{p.description}</p>
                   <p className="mono-body">{p.tech.join(' · ')}</p>
                 </li>
@@ -104,7 +104,7 @@ export default function Home() {
       <section className={s.section} aria-labelledby="observer-title">
         <h2 id="observer-title" className="display-l">The Observer</h2>
         <p className="body-l">
-          <SkyLink href="/about/">{person.name}</SkyLink>: {person.identities.join(' · ')}. You are here.
+          <SkyLink href="/about">{person.name}</SkyLink>: {person.identities.join(' · ')}. You are here.
         </p>
       </section>
 
@@ -113,7 +113,7 @@ export default function Home() {
           <SectionHead id="painter" />
           <ul className={s.chips} style={{ marginTop: 28 }}>
             {paintings.map((p) => (
-              <li key={p.slug} className="mono-body"><SkyLink href={`/visual-arts/analog/${p.slug}/`}>{p.title}</SkyLink></li>
+              <li key={p.slug} className="mono-body"><SkyLink href={`/visual-arts/analog/${p.slug}`}>{p.title}</SkyLink></li>
             ))}
           </ul>
         </nav>
@@ -124,7 +124,7 @@ export default function Home() {
           <SectionHead id="filmmaker" />
           <ul className={s.chips} style={{ marginTop: 28 }}>
             {films.map((f) => (
-              <li key={f.slug} className="mono-body"><SkyLink href={`/visual-arts/digital/${f.slug}/`}>{f.title}</SkyLink></li>
+              <li key={f.slug} className="mono-body"><SkyLink href={`/visual-arts/digital/${f.slug}`}>{f.title}</SkyLink></li>
             ))}
           </ul>
         </nav>

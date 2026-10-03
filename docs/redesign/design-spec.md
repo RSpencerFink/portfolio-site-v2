@@ -2,7 +2,7 @@
 
 Source of truth for engineering. Frames referenced by their Paper names on page "Round 3 — Refined" (`R3 · <id> · <name>`), file "Portfolio Refresh — RSF". Copy is verbatim from `/tmp/rsf-content.md` (the later "EXPERIENCE UPDATE", "FINAL DATES", "Company icons" and "Brava description" sections win over earlier ones).
 
-Implementation target: Next.js App Router, static export. Sky in React Three Fiber. Scroll with Lenis + GSAP ScrollTrigger. Discrete state changes with React `<ViewTransition>` inside `startTransition`. Every entity has a URL; clicking in the sky opens that URL as a panel over the sky (intercepting route), a direct load renders a full page.
+Implementation target: Next.js App Router, statically generated pages on Vercel. Sky in React Three Fiber. Scroll with Lenis + GSAP ScrollTrigger. Discrete state changes with React `<ViewTransition>` inside `startTransition`. Every entity has a URL; clicking in the sky opens that URL as a panel over the sky (intercepting route), a direct load renders a full page.
 
 ---
 
@@ -390,7 +390,7 @@ Mobile specifics (R3 · M-*). HUD at 24 / 64 under the status bar; the hero mask
 ## 10. SEO / AEO
 
 - Semantic mirror: every route renders real HTML (`<main>`, `<article>`, `<h1>`), not only the canvas. The full pages (direct loads) are what crawlers see; the intercepting routes reuse them.
-- JSON-LD per page: `/` Person (name, jobTitle "Software Engineer", sameAs LinkedIn/Github/Instagram, worksFor Organization Brava) + WebSite; `/work/<slug>` Organization + the Person's `hasOccupation`/role with `startDate`/`endDate`; `/projects/<slug>` SoftwareSourceCode (codeRepository, programmingLanguage, url) or CreativeWork where there is no repo; `/visual-arts/analog/<key>` VisualArtwork (artMedium "Acrylic on Canvas", width/height in inches, image); `/visual-arts/digital/<key>` VideoObject (name, description, embedUrl Vimeo, thumbnailUrl, creator); `/about` Person + ProfilePage.
+- JSON-LD per page: `/` Person (name, jobTitle "CTO & Co-founder", sameAs LinkedIn/Github/Instagram, worksFor Organization Brava) + WebSite; `/work/<slug>` Organization + the Person's `hasOccupation`/role with `startDate`/`endDate`; `/projects/<slug>` SoftwareSourceCode (codeRepository, programmingLanguage, url) or CreativeWork where there is no repo; `/visual-arts/analog/<key>` VisualArtwork (artMedium "Acrylic on Canvas", width/height in inches, image); `/visual-arts/digital/<key>` VideoObject (name, description, embedUrl Vimeo, thumbnailUrl, creator); `/about` Person + ProfilePage.
 - Metadata: unique title/description per route; OG image per painting/film (still) and a generated sky OG for the rest; canonical URLs; `robots` allow all.
 - `sitemap.xml` from the data module (all 41 entity routes + 5 index routes); `llms.txt` at root summarising the person, roles with dates, projects with links, and the two visual-arts lists in plain text; `humans.txt` optional.
 - Headings: H1 is the entity name; the constellation names are H2 on `/`.
@@ -402,7 +402,7 @@ Mobile specifics (R3 · M-*). HUD at 24 / 64 under the status bar; the hero mask
 
 | Asset | Path | Note |
 |-------|------|------|
-| RSF logo (white / black) | `docs/redesign/assets/logo/` (aspect 2.082:1; raw path in `rsf-logo-path.txt`) | Needs rebuild as three non-overlapping per-letter paths (R, S, F) for the per-letter draw (T1) and the S-targeted mask origin; current single path self-overlaps and draws out of order. |
+| RSF logo | `public/logo/rsf.svg` (white; paths `#r`, `#f`, `#s`, S paints last) and `public/logo/rsf-mark.svg` (one merged path, for masks and icons). Source: `docs/redesign/assets/logo/rsf-letters-sf-overlap*.svg`, aspect 2.082:1 | Client-approved rebuild with the S overlapping the F. Favicons and the apple-touch icon are rendered from it. |
 | Company icons | `docs/redesign/assets/company-icons/` (brava-mark.png, hypha-apple.png, meta.svg, dbox-512.png, prizm.png) | Prizm is a 52 px LinkedIn crop; request a vector or 256 px source. |
 | Headshot | `src/assets/images/photos/about/rsf-headshot-2_800.jpg` | |
 | Paintings (17) | `src/assets/images/photos/analog/<key>_800.jpg` | Captions verbatim from the content file. |
@@ -432,7 +432,7 @@ Mobile specifics (R3 · M-*). HUD at 24 / 64 under the status bar; the hero mask
 
 Resolved (2026-10-03):
 1. Brava: display "2026 — Present" (started Sep 2026); panels may show months from the LinkedIn dates in `assets/content-reference.md` (FINAL DATES).
-2. Logo: an agent rebuilds the RSF SVG into three non-overlapping letter paths (R, S, F); the client reviews before use.
+2. Logo: approved. The rebuild with the S overlapping the F (`rsf-letters-sf-overlap.svg`) ships as `public/logo/rsf.svg`.
 3. "Visual Arts Portfolio" link star: removed. Footer keeps a plain text link.
 4. H3 pole star: plain white RSF mark (no painting collage).
 5. Project links and Vimeo IDs: in the repo's `src/data/development.js` and `src/data/digital.js`.

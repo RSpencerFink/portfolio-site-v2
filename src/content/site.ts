@@ -1,18 +1,13 @@
 import type { SpectralClass, ChartPoint } from '@/components/sky/types';
 
-/** Production origin (currently served from S3 + CloudFront). */
+/** Production origin. */
 export const SITE_URL = 'https://rspencerfink.com';
 
 export const absoluteUrl = (path: string) => new URL(path, SITE_URL).toString();
 
-/** Widths exported for every painting and the headshot (`<name>_<w>.jpg`). */
-export const IMAGE_WIDTHS = [400, 600, 800, 1100, 1500, 2000, 2500] as const;
-export const srcSet = (base: string) =>
-  IMAGE_WIDTHS.map((w) => `${base}_${w}.jpg ${w}w`).join(', ');
-
 export const person = {
   name: 'R. Spencer Fink',
-  jobTitle: 'Software Engineer',
+  jobTitle: 'CTO & Co-founder',
   identities: ['Software Engineer', 'Visual Artist'],
   currently: 'CTO & Co-founder, Brava',
   bio: 'I’m a Software Engineer with a strong background in building scalable, user-focused solutions. I specialize in developing tools that empower users, designing and optimizing algorithms, and creating efficient systems that drive business outcomes. With experience in both full-stack development and entrepreneurship, I’m passionate about solving complex problems and delivering impactful results. I enjoy collaborating with teams to bring creative and technical visions to life.',

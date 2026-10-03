@@ -16,7 +16,7 @@ export const generateStaticParams = () => projects.map((p) => ({ slug: p.slug })
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const p = projects.find((x) => x.slug === slug)!;
-  return pageMeta({ title: `${p.name}: project`, description: p.description, path: `/projects/${p.slug}/` });
+  return pageMeta({ title: `${p.name}: project`, description: p.description, path: `/projects/${p.slug}` });
 }
 
 export default async function ProjectPage({ params }: Props) {
@@ -32,7 +32,7 @@ export default async function ProjectPage({ params }: Props) {
           '@type': p.repo ? 'SoftwareSourceCode' : 'CreativeWork',
           name: p.name,
           description: p.description,
-          url: p.live?.url ?? absoluteUrl(`/projects/${p.slug}/`),
+          url: p.live?.url ?? absoluteUrl(`/projects/${p.slug}`),
           author: { '@id': PERSON_ID },
           keywords: p.tech.join(', '),
           ...(p.repo && { codeRepository: p.repo, programmingLanguage: p.tech }),
@@ -49,7 +49,7 @@ export default async function ProjectPage({ params }: Props) {
           {p.tech.map((t) => <li key={t}>{t}</li>)}
         </ul>
       </div>
-      <Stepper items={projects} index={index} label="The Builder’s Cluster" toItem={(x) => ({ href: `/projects/${x.slug}/`, name: x.name })} />
+      <Stepper items={projects} index={index} label="The Builder’s Cluster" toItem={(x) => ({ href: `/projects/${x.slug}`, name: x.name })} />
     </PanelFrame>
   );
 }
