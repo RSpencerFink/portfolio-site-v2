@@ -157,3 +157,38 @@ export const nebulaFrag = /* glsl */ `
     gl_FragColor = vec4(vec3(0.165, 0.184, 0.420) * a, 1.0);
   }
 `;
+
+/**
+ * A shooting star: one screen-space quad from the tail to just past the head.
+ * Everything is in CSS px with y down, so it ignores the camera.
+ */
+export const meteorVert = /* glsl */ `
+  uniform vec2 uRes;   // CSS px
+  uniform vec2 uHead;  // CSS px, y down
+  uniform vec2 uDir;   // unit direction of travel, y down
+  uniform float uLen;  // tail length, px
+  varying vec2 vPx;    // x: px behind the head (tail at uLen), y: px across
+  void main() {
+    float along = mix(uLen, -4.0, position.x * 0.5 + 0.5);
+    float across = position.y * 4.0;
+    vec2 px = uHead - uDir * along + vec2(-uDir.y, uDir.x) * across;
+    vPx = vec2(along, across);
+    gl_Position = vec4(px.x / uRes.x * 2.0 - 1.0, 1.0 - px.y / uRes.y * 2.0, 0.0, 1.0);
+  }
+`;
+
+/** Thin trail fading to nothing, faint blue-white tint, a small white head. */
+export const meteorFrag = /* glsl */ `
+  uniform float uLen;
+  uniform float uAlpha;
+  varying vec2 vPx;
+  void main() {
+    float t = clamp(vPx.x / uLen, 0.0, 1.0);    // 0 head, 1 tail
+    float y2 = vPx.y * vPx.y;
+    float trail = vPx.x < 0.0 ? 0.0 : pow(1.0 - t, 2.0) * (exp(-y2 / 0.8) + 0.25 * exp(-y2 / 5.0));
+    float r2 = dot(vPx, vPx);
+    float head = exp(-r2 / 3.0) + 0.3 * exp(-r2 / 16.0);
+    vec3 col = mix(vec3(0.72, 0.82, 1.0), vec3(1.0), pow(1.0 - t, 3.0)) * trail + vec3(head);
+    gl_FragColor = vec4(col * uAlpha, 1.0);
+  }
+`;
