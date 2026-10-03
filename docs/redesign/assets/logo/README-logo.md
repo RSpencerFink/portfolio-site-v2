@@ -74,3 +74,28 @@ Following the brief, the logo's own geometry is kept everywhere except the hidde
 So the glyph doesn't give a bowl edge that matches the logo, and I kept the existing R/S cut.
 
 **Silhouette.** This variant deliberately changes the silhouette. The S bowl now shows inside the F stem, outlined by the channel.
+
+## Exploration v3: R over S over F (`rsf-letters-v3.svg`)
+
+This variant keeps v2's S/F treatment and adds the R bowl overlapping the S. Paint order is f, s, r. The F path is copied unchanged from v2. Files: `rsf-letters-v3.svg`, `rsf-letters-v3-black.svg`, `compare-v3.png`, and `compare-v3-zoom.png` (the R/S junction at 3x, v2 against v3).
+
+**The R bowl.**
+- I first tried fitting only the bowl of Arial Black's R to the logo R's visible bowl top and counter. The residual RMS was 9.4 units, with up to 19 on the top curve the bowl has to join. The fitted scale was 0.529, against 0.465 for the rest of the R. That fit was poor, so I didn't use it.
+- Instead the bowl is built from the logo's own counter. The R's stroke weight measures 211.6 units at the top junction and 196.6 at the waist. The new outer curve is the right side of the counter offset outward by that weight, changing linearly from one end to the other.
+- That offset is fitted with two cubics, with a vertical tangent at the rightmost point (x ≈ 588.2). The fit error is RMS 0.3 and at most 0.7 units.
+- The tangents match the original R top curve and the waist curve exactly (0° break at both).
+- The two small notch segments at the old R/S junctions are dropped from the R.
+
+**The S.**
+- The S is completed under the R with a hidden upper-left edge that continues smoothly from its neighbouring segments. It stays inside the R bowl and never reaches the counter (its leftmost point is x ≈ 505).
+- A 9-unit channel around the R is then cut out of the S: grow the R outward by 9 units with round joins, keep only the part with y < 455, and subtract it from the S. The R-leg/S-tail slit is unchanged.
+
+**Checks.** Each letter is one closed outline, and the pairwise intersection area is 0.
+
+**Observation.** A constant-weight R bowl reaches x ≈ 588, almost exactly where the shared-edge cut sat. So the overlap reads only as the new channel, not as a larger bowl. At 33 px wide a 9-unit channel is about 0.2 px and disappears; at 125 px it is still visible.
+
+### v3 revision: clean R crotch wedge
+
+At the client's request, the short horizontal ledge at the bottom of the R's counter slit is removed. In the original these were three small segments from (264.6, 516.5) to (225.7, 505.7). The leg's inner diagonal, which is a straight line, now continues at its exact angle up and to the left until it meets the slit edge at (225.8, 450.9). Above that point the slit edge is the original curve, trimmed. The dark area between the stem and the leg is now a clean wedge.
+
+The S and F paths are byte-identical to the previous v3, which is kept as `rsf-letters-v3-prev.svg`. Checks still pass: each letter is one closed outline and the pairwise intersection area is 0. `compare-v3-rbase.png` shows the client mockup crop next to the new v3 at the same crop, plus the full mark.
