@@ -2,11 +2,11 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      nodejs: 10
+      nodejs: 22
   pre_build:
     commands:
       - echo Installing source NPM dependencies...
-      - npm install
+      - npm ci
   build:
     commands:
       - echo Build started on `date`
@@ -16,11 +16,11 @@ phases:
         if [ $CODEBUILD_BUILD_SUCCEEDING -eq 1 ]; then
           if [ "$BRANCH_NAME" = "master" ]; then
             echo "Syncing files with AWS w/ Cache Control Headers"
-            aws s3 sync build/ "s3://${BUCKET_NAME}" --exclude "*.html" --delete --cache-control max-age=31557600
-            aws s3 sync build/ "s3://${BUCKET_NAME}" --include "*.html" --cache-control max-age=0
+            aws s3 sync out/ "s3://${BUCKET_NAME}" --exclude "*.html" --exclude "*.txt" --exclude "*.xml" --delete --cache-control max-age=31557600
+            aws s3 sync out/ "s3://${BUCKET_NAME}" --exclude "*" --include "*.html" --include "*.txt" --include "*.xml" --cache-control max-age=0
           elif [ "$BRANCH_NAME" = "develop" ]; then
             echo "Syncing files with AWS"
-            aws s3 sync build/ "s3://${BUCKET_NAME}" --delete
+            aws s3 sync out/ "s3://${BUCKET_NAME}" --delete
           fi
         else
           echo "Build/Deploy failure"
