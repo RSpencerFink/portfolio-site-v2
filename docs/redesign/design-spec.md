@@ -188,7 +188,7 @@ Lines: Prizm → DBOX → Meta → Hypha → Brava; Brava → each barb.
 
 The Builder — option B "Lodestar": Section-8-Scout alone at 0.7569, 0.1889, extra bright with a four-point glint, no lines. Name "The Builder / Projects" at 0.7181, 0.26.
 
-The Student — option A "Telescope": the Observer at the eyepiece, the schools along the tube (newest nearest the objective), a flared objective end and a two-leg mount. Name at 0.0417, 0.8333.
+The Student — option A "Telescope": the Observer at the eyepiece, the schools along the tube (newest nearest the objective), a flared objective end and a two-leg mount. Name at 0.0417, 0.875 (below the Spare Key label since the rename).
 | Star | x | y |
 |------|---|---|
 | The Observer ("R. Spencer Fink / You are here · About") | 0.0583 | 0.7111 |

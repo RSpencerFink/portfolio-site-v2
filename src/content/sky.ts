@@ -53,7 +53,7 @@ export const constellations: Constellation[] = [
     id: 'origins',
     name: 'The Student',
     subline: 'Education',
-    namePosition: [0.0417, 0.8333],
+    namePosition: [0.0417, 0.875],
     stars: {
       observer: [0.0583, 0.7111],
       'emerson-college': [0.1088, 0.6696],
