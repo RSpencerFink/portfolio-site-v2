@@ -47,6 +47,70 @@ function place(el: HTMLElement | undefined, world: Vec3, f: FrameInfo, margin = 
   return [x, y] as const;
 }
 
+/*
+ * H1: the letterbox leaves the sky outside the letters at ~14 %, so a label there reads as clutter.
+ * Labels whose anchor or text ends fall outside the RSF letterforms (rsf-mark.svg at the letterbox's current
+ * transform) fade with the letterbox instead. Per-element opacity, never a CSS mask (flicker, item 4).
+ */
+const MARK_W = 1519.3;
+const MARK_H = 729.6;
+let mark: { path: Path2D; ctx: CanvasRenderingContext2D } | null = null;
+let markRequested = false;
+function loadMark() {
+  if (markRequested) return;
+  markRequested = true;
+  fetch('/logo/rsf-mark.svg')
+    .then((r) => r.text())
+    .then((text) => {
+      const d = new DOMParser().parseFromString(text, 'image/svg+xml').querySelector('path')?.getAttribute('d');
+      const ctx = document.createElement('canvas').getContext('2d');
+      if (d && ctx) mark = { path: new Path2D(d), ctx };
+    })
+    .catch(() => {});
+}
+
+/** Is screen point (x, y) inside the letters? Mirrors `.letterbox` in SkyHost.module.css. */
+function insideMark(x: number, y: number, f: FrameInfo) {
+  if (!mark) return false;
+  const markW = Math.min(f.width * 0.892, f.height * 1.395);
+  const scale = f.resolved.mask.scale;
+  const ox = f.width / 2 + markW * 0.02;
+  const oy = f.height / 2;
+  const lx = ox + (x - ox) / scale - (f.width - markW) / 2;
+  const ly = oy + (y - oy) / scale - (f.height - (markW * MARK_H) / MARK_W) / 2;
+  const k = MARK_W / markW;
+  return mark.ctx.isPointInPath(mark.path, lx * k, ly * k);
+}
+
+/** A label's text box as offsets from its anchor [left, right, middle], measured once (the text never changes). */
+const spans = new Map<HTMLElement, [number, number, number]>();
+function spanOf(el: HTMLElement) {
+  let span = spans.get(el);
+  if (!span) {
+    const a = el.getBoundingClientRect();
+    const t = el.querySelector(`.${s.text}, .${s.cname}`)?.getBoundingClientRect();
+    if (!t?.width) return [0, 0, 0] as const; // not laid out yet: the anchor alone, measure again next frame
+    span = [t.left - a.left, t.right - a.left, (t.top + t.bottom) / 2 - a.top];
+    spans.set(el, span);
+  }
+  return span;
+}
+
+const outside = new Map<HTMLElement, string>();
+/** Fade a label with the letterbox unless its anchor and both ends of its text are inside the letters. */
+function letterFade(el: HTMLElement | undefined, at: readonly [number, number] | null, f: FrameInfo, fade: string | null) {
+  if (!el) return;
+  let inside = true;
+  if (fade !== null && at) {
+    const [l, r, m] = spanOf(el);
+    inside = insideMark(at[0], at[1], f) && insideMark(at[0] + l, at[1] + m, f) && insideMark(at[0] + r, at[1] + m, f);
+  }
+  const value = inside ? '' : (fade ?? '');
+  if ((outside.get(el) ?? '') === value) return;
+  outside.set(el, value);
+  el.style.opacity = value;
+}
+
 const setAttr = (el: Element | undefined, name: string, value: string | null) => {
   if (!el) return;
   if (value === null) el.removeAttribute(name);
@@ -74,8 +138,18 @@ export function syncLabels(f: FrameInfo, chart: ChartLayout) {
   const stage = f.resolved.stage ? 'on' : 'off';
   if (stage !== last.stage) root.dataset.section = last.stage = stage;
 
-  for (const star of chart.stars) place(nodes.get(`star:${star.id}`), star.world, f);
-  for (const n of chart.names) place(nodes.get(`name:${n.id}`), n.world, f, 400);
+  // Landscape only: portrait already hides every label while the mask is up (SkyHost.module.css).
+  const masked = mask === 'on' && chart.layout !== 'portrait';
+  if (masked) loadMark();
+  const fade = masked ? (1 - f.resolved.mask.opacity).toFixed(2) : null;
+  for (const star of chart.stars) {
+    const el = nodes.get(`star:${star.id}`);
+    letterFade(el, place(el, star.world, f), f, fade);
+  }
+  for (const n of chart.names) {
+    const el = nodes.get(`name:${n.id}`);
+    letterFade(el, place(el, n.world, f, 400), f, fade);
+  }
 
   const pole = nodes.get('pole');
   if (place(pole, chart.pole, f, 400) && pole) pole.style.setProperty('--pole-w', `${(chart.poleSize[0] * ppu).toFixed(1)}px`);
@@ -135,6 +209,8 @@ function redraw(el: HTMLElement | undefined) {
 
 /** Reset cached attributes when the overlay remounts (layout change). */
 export const resetLabels = () => {
+  outside.clear();
+  spans.clear();
   last = { focus: '', focal: '', hover: '', level: '', mask: '', overview: '', stage: '' };
 };
 
