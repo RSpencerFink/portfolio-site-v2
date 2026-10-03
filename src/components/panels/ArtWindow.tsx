@@ -48,11 +48,14 @@ export function ArtWindow({ panes, current }: { panes: WindowPane[]; current: 'a
     }
 
     root.dataset.window = '';
+    const ac = new AbortController();
     let flying = false;
     const fly = () => {
       if (flying) return;
       flying = true;
       passed = true;
+      // The constellation scrolls normally from here: the window's input handlers go now.
+      ac.abort();
       const mark = el.querySelector<HTMLElement>('[data-montage]')!;
       const ease = 'cubic-bezier(0.65, 0, 0.35, 1)';
       mark.animate([{ scale: 1 }, { scale: 7 }], { duration: FLY, easing: ease, fill: 'forwards' });
@@ -80,7 +83,6 @@ export function ArtWindow({ panes, current }: { panes: WindowPane[]; current: 'a
       if (e.cancelable) e.preventDefault();
       if (y0 - e.touches[0].clientY > 24) fly();
     };
-    const ac = new AbortController();
     const o = { signal: ac.signal, passive: false };
     addEventListener('wheel', onWheel, { ...o, capture: true });
     addEventListener('keydown', onKey, { signal: ac.signal });

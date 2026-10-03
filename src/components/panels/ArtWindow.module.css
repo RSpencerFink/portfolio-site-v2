@@ -89,3 +89,10 @@
     font-size: 9px;
   }
 }
+
+/* Without JS the window always shows: the header mark stays hidden on these pages (one mark at a time). */
+@media (scripting: none) {
+  :global(body):has(.window) > :global(header) > :global(a[href='/']) {
+    visibility: hidden;
+  }
+}

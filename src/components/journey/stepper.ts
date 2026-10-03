@@ -65,7 +65,8 @@ export function stepper(stops: () => number[]) {
     const fresh = e.timeStamp - lastWheel > GAP || (!busy() && abs > 2.5 * lastAbs && abs > 24);
     lastWheel = e.timeStamp;
     lastAbs = abs;
-    if (fresh) taken = false;
+    // A gesture that starts mid-flight is swallowed whole, its inertia tail included.
+    if (fresh) taken = busy();
     if (!busy() && !taken) taken = step(e.deltaY > 0 ? 1 : -1);
     if (!taken) return;
     e.preventDefault();
@@ -74,7 +75,8 @@ export function stepper(stops: () => number[]) {
 
   const onKey = (e: KeyboardEvent) => {
     if (e.altKey || e.metaKey || e.ctrlKey || typing(e.target)) return;
-    const onControl = !!(e.target as Element | null)?.closest?.('a, button');
+    // Space activates a button; on a link it is a page scroll like anywhere else.
+    const onControl = !!(e.target as Element | null)?.closest?.('button');
     const dir =
       e.key === 'ArrowDown' || e.key === 'PageDown' || (e.key === ' ' && !e.shiftKey && !onControl)
         ? 1
