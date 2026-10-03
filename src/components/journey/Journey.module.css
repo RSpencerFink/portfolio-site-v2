@@ -253,7 +253,6 @@
   gap: var(--space-3);
   min-height: 0;
   overflow-y: auto;
-  overscroll-behavior: contain;
   scrollbar-width: none;
   --fade-top: 0px;
   --fade-bottom: 0px;
@@ -263,6 +262,11 @@
 
 .scroll[data-scrolled] {
   --fade-top: 32px;
+}
+
+/* Only a column with something to scroll keeps a swipe from chaining to the page (Brava's swipe up still leaves for the hero). */
+.scroll:is([data-scrolled], [data-more]) {
+  overscroll-behavior: contain;
 }
 
 .scroll[data-more] {
