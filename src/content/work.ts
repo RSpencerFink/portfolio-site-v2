@@ -25,7 +25,7 @@ export interface Job {
   roles: Role[];
   description?: string;
   sections: { heading?: string; bullets: Bullet[] }[];
-  insignia: { src: string; tile?: string; /** Inset as a fraction of the tile, for marks that run to the edge. */ pad?: number };
+  insignia: { src: string; tile?: string; /** Inset as a fraction of the tile, for marks that run to the edge. */ pad?: number; /** Width ÷ height, for wordmarks; default 1 (square tile). */ aspect?: number };
   star: { spectral: SpectralClass; position: ChartPoint };
 }
 
@@ -121,7 +121,7 @@ export const jobs: Job[] = [
         ],
       },
     ],
-    insignia: { src: '/images/company-icons/dbox-512.png' },
+    insignia: { src: '/images/company-icons/dbox-wordmark.svg', tile: '#000000', pad: 0.22, aspect: 2.2 },
     star: { spectral: 'K', position: [0.1906, 0.2117] },
   },
   {

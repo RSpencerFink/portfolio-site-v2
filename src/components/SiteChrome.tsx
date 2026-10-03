@@ -20,7 +20,6 @@ export function SiteHeader() {
           <li><Link href="/#projects">Projects</Link></li>
           <li><Link href="/visual-arts">Visual Arts</Link></li>
           <li><Link href="/about">About</Link></li>
-          <li><a href={resume.href}>Résumé</a></li>
         </ul>
       </nav>
     </header>

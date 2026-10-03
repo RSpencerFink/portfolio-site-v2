@@ -22,7 +22,7 @@ export const constellations: Constellation[] = [
   {
     id: 'work',
     name: 'Constellation of Work',
-    subline: 'V stars · 2016 — Present',
+    subline: '2016 — Present',
     namePosition: [0.1389, 0.3667],
     starIds: jobs.map((j) => j.slug),
     lines: [['prizm-imagery', 'dbox'], ['dbox', 'meta'], ['meta', 'hypha'], ['hypha', 'brava']],
@@ -31,7 +31,7 @@ export const constellations: Constellation[] = [
   {
     id: 'projects',
     name: 'The Builder’s Cluster',
-    subline: 'VI stars · Projects',
+    subline: 'Projects',
     namePosition: [0.6667, 0.3556],
     starIds: projects.map((p) => p.slug),
     lines: [
@@ -45,7 +45,7 @@ export const constellations: Constellation[] = [
   {
     id: 'origins',
     name: 'Origins',
-    subline: 'II stars · Education',
+    subline: 'Education',
     namePosition: [0.0278, 0.6244],
     starIds: [...education.map((e) => e.slug), 'observer'],
     lines: [['app-academy', 'emerson-college']],
@@ -54,7 +54,7 @@ export const constellations: Constellation[] = [
   {
     id: 'painter',
     name: 'The Painter',
-    subline: 'IV stars · Analog',
+    subline: 'Analog',
     namePosition: [0.625, 0.5333],
     starIds: paintings.map((p) => p.slug),
     lines: [['walter-white', 'dr-manhattan'], ['dr-manhattan', 'marilyn-monroe'], ['marilyn-monroe', 'han-solo'], ['han-solo', 'walter-white']],
@@ -62,7 +62,7 @@ export const constellations: Constellation[] = [
   {
     id: 'filmmaker',
     name: 'The Filmmaker',
-    subline: 'V stars · Digital',
+    subline: 'Digital',
     namePosition: [0.2431, 0.6444],
     starIds: films.map((f) => f.slug),
     lines: [['nightshade', 'timeflies-epk'], ['timeflies-epk', 'spare-key'], ['timeflies-epk', 'bayonet'], ['bayonet', 'montauk']],

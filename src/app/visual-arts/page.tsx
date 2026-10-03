@@ -20,11 +20,11 @@ export default function VisualArtsPage() {
       <ul className={s.list} style={{ marginTop: 32 }}>
         <li className={s.stack}>
           <Link className="heading" href="/visual-arts/analog">The Painter · Analog</Link>
-          <p className="body">{paintings.length} paintings, acrylic and acrylic on collage on canvas.</p>
+          <p className="body">Acrylic and acrylic on collage on canvas.</p>
         </li>
         <li className={s.stack}>
           <Link className="heading" href="/visual-arts/digital">The Filmmaker · Digital</Link>
-          <p className="body">{films.length} films and music videos.</p>
+          <p className="body">Films and music videos.</p>
         </li>
       </ul>
     </main>

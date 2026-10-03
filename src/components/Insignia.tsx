@@ -8,10 +8,10 @@ export function Insignia({ job, size = 44, className }: { job: Job; size?: numbe
       src={job.insignia.src}
       alt=""
       className={className}
-      width={size}
+      width={Math.round(size * (job.insignia.aspect ?? 1))}
       height={size}
       style={{
-        width: size,
+        width: size * (job.insignia.aspect ?? 1),
         height: size,
         borderRadius: size * 0.22,
         border: `1px solid ${job.slug === 'dbox' ? 'rgb(255 255 255 / 0.18)' : 'rgb(255 255 255 / 0.14)'}`,
