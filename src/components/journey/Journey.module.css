@@ -1,0 +1,718 @@
+/*
+ * Home journey (spec §1, §7, §8). Three layouts from one DOM:
+ * - static (no JS, reduced motion, R3 · RM): sections stack, plain lists.
+ * - [data-journey='pinned'] (desktop, set by HomeJourney): each stage is a
+ *   100vh pinned frame; its [data-slide] layers stack and are scrubbed.
+ * - [data-journey='mobile'] (≤ 768 px): one 100svh snap slide per star (T17, MO-9).
+ */
+.journey {
+  position: relative;
+  overflow-x: clip;
+}
+
+.motionOnly {
+  display: none !important;
+}
+
+:global(html[data-journey]) .motionOnly {
+  display: revert !important;
+}
+
+/* The canvas stand-ins disappear once the sky track draws the real thing. */
+:global(html[data-sky='live']) .fallback,
+:global(html[data-sky='live']) .focal {
+  display: none;
+}
+
+/* ---------- Hero (H1 → H2, T2) ---------- */
+
+.hero {
+  position: relative;
+  height: 100vh;
+  height: 100svh;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+}
+
+/* Ground with the RSF letterforms cut out: the sky shows only through the mark. */
+.mask {
+  position: absolute;
+  inset: 0;
+  background: var(--sky-ground);
+  --mark-w: min(90vw, 180vh);
+  -webkit-mask:
+    url('/logo/rsf-mark.svg') center / var(--mark-w) auto no-repeat,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    url('/logo/rsf-mark.svg') center / var(--mark-w) auto no-repeat exclude,
+    linear-gradient(#000 0 0);
+  transform-origin: 52% 46%;
+  will-change: transform, opacity;
+}
+
+/* Stand-in for the canvas inside the mark: the nebula core (spec §3 --sky-nebula-core). */
+.heroSky {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 55% 60% at 50% 50%, #2e3384, #1e2260 55%, #0b0d24 100%);
+}
+
+.heroText {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 18vh;
+  display: grid;
+  gap: var(--space-2);
+  justify-items: center;
+  text-align: center;
+}
+
+.heroText p {
+  margin: 0;
+  color: var(--text-3);
+}
+
+.heroName {
+  color: var(--text-hi);
+}
+
+.enter {
+  position: absolute;
+  right: var(--page-margin);
+  bottom: 28px;
+  margin: 0;
+  color: var(--text);
+  animation: pulse 4s var(--ease-sine) infinite;
+}
+
+@keyframes pulse {
+  0%, 80%, 100% { opacity: 1; }
+  90% { opacity: 0.6; }
+}
+
+@media (min-width: 769px) {
+  /* Desktop H1 has no name under the mark (spec §8); keep it for AT and crawlers. */
+  .heroText {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 768px) {
+  .mask {
+    --mark-w: min(348px, 89vw);
+    transform-origin: 52% 39%;
+    -webkit-mask-position: center 40%, 0 0;
+    mask-position: center 40%, 0 0;
+  }
+  .heroText {
+    bottom: auto;
+    top: calc(40% + 110px);
+  }
+}
+
+/* ---------- Static layout (R3 · RM): the base for every mode ---------- */
+
+.section {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: var(--space-9) var(--page-margin);
+  scroll-margin-top: var(--space-8);
+}
+
+.stage {
+  position: relative;
+  display: grid;
+  gap: var(--space-8);
+}
+
+.layer p {
+  margin: 0;
+}
+
+.complete,
+.cluster {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.complete p:last-child {
+  margin-top: var(--space-5);
+}
+
+.slides {
+  display: grid;
+}
+
+.slide {
+  padding: var(--space-7) 0;
+  border-top: 1px solid var(--line);
+}
+
+.slide:focus {
+  outline: none;
+}
+
+.content {
+  position: relative;
+  display: grid;
+  gap: var(--space-3);
+  align-content: start;
+}
+
+.title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+  font-size: 44px;
+  line-height: 46px;
+}
+
+.title a {
+  text-decoration: none;
+}
+
+.kicker {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  color: var(--text);
+}
+
+.kicker::before {
+  content: '';
+  width: 22px;
+  height: 1px;
+  background: currentColor;
+}
+
+.lede {
+  max-width: 62ch;
+  margin-top: var(--space-2) !important;
+}
+
+.columns {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--space-5) var(--space-8);
+  margin-top: var(--space-4);
+}
+
+.colHead {
+  padding-bottom: var(--space-3);
+  margin-bottom: var(--space-4);
+  border-bottom: 1px solid var(--line);
+}
+
+.bullets {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.bullets :global(.body-l) {
+  font-size: 15px;
+  line-height: 21px;
+}
+
+.stack {
+  display: grid;
+  gap: var(--space-5);
+  align-content: start;
+}
+
+.pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 0 var(--space-4);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-pill);
+  color: var(--text);
+  text-decoration: none;
+  transition: border-color var(--dur-xs) var(--ease-out), color var(--dur-xs) var(--ease-out);
+}
+
+.pill:hover,
+.pillPrimary {
+  border-color: rgb(255 255 255 / 0.7);
+  color: var(--text-hi);
+}
+
+.builtWith {
+  display: grid;
+  gap: 9px;
+  color: var(--text);
+}
+
+.origins {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.origins ul {
+  display: grid;
+  gap: var(--space-4);
+  margin-top: var(--space-3);
+}
+
+.handoff {
+  height: 200vh;
+}
+
+/* ---------- Focal star stand-in (spec §4) ---------- */
+
+.focal {
+  display: none;
+  position: absolute;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.focal::before {
+  content: '';
+  position: absolute;
+  width: 560px;
+  height: 560px;
+  left: -280px;
+  top: -280px;
+  border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--tint) 30%, transparent), transparent 60%);
+}
+
+.core {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  left: -7px;
+  top: -7px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow:
+    0 0 6px 2px #fff,
+    0 0 16px 6px color-mix(in srgb, var(--tint) 80%, transparent),
+    0 0 40px 14px color-mix(in srgb, var(--tint) 30%, transparent);
+}
+
+.reticle {
+  position: absolute;
+  width: 68px;
+  height: 68px;
+  left: -34px;
+  top: -34px;
+  border-radius: 50%;
+  border: 1px solid rgb(255 255 255 / 0.7);
+  box-shadow: 0 0 0 15px transparent, 0 0 0 16px rgb(255 255 255 / 0.12);
+}
+
+/* N/E/S/W ticks */
+.reticle::before,
+.reticle::after {
+  content: '';
+  position: absolute;
+  background: rgb(255 255 255 / 0.5);
+}
+
+.reticle::before {
+  left: 33px;
+  top: -22px;
+  width: 1px;
+  height: 110px;
+  -webkit-mask: linear-gradient(#000 0 10px, transparent 10px 100px, #000 100px);
+  mask: linear-gradient(#000 0 10px, transparent 10px 100px, #000 100px);
+}
+
+.reticle::after {
+  top: 33px;
+  left: -22px;
+  height: 1px;
+  width: 110px;
+  -webkit-mask: linear-gradient(90deg, #000 0 10px, transparent 10px 100px, #000 100px);
+  mask: linear-gradient(90deg, #000 0 10px, transparent 10px 100px, #000 100px);
+}
+
+/* ---------- Rail (spec §6 ProgressRail) ---------- */
+
+.rail ol {
+  display: grid;
+}
+
+.tick {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-4);
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--text-dim);
+  cursor: pointer;
+}
+
+.tick:hover,
+.tick[aria-current] {
+  color: var(--text-hi);
+}
+
+.mark {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 9px;
+  height: 9px;
+}
+
+.mark::before {
+  content: '';
+  width: 9px;
+  height: 1px;
+  background: currentColor;
+  transition: all var(--dur-s) var(--ease-out);
+}
+
+.tick[aria-current] .mark::before {
+  height: 9px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 8px 2px rgb(255 255 255 / 0.35);
+}
+
+.counter {
+  color: var(--text-dim);
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.hint {
+  margin: 0;
+  color: var(--text);
+}
+
+/* ======================= Desktop: pinned ======================= */
+
+:global(html[data-journey='pinned']) .section {
+  max-width: none;
+  margin: 0;
+  padding: 0;
+}
+
+:global(html[data-journey='pinned']) .stage {
+  display: grid;
+  height: 100vh;
+  gap: 0;
+  overflow: hidden;
+}
+
+/* All layers occupy the same frame; HomeJourney scrubs their opacity. */
+:global(html[data-journey='pinned']) .slides {
+  display: contents;
+}
+
+:global(html[data-journey='pinned']) .layer {
+  grid-area: 1 / 1;
+  position: relative;
+  visibility: hidden;
+}
+
+:global(html[data-journey='pinned']) .slide {
+  padding: 0;
+  border: 0;
+}
+
+:global(html[data-journey='pinned']) .focal {
+  display: block;
+  left: 40%;
+  top: 47%;
+}
+
+:global(html[data-journey='pinned']) .content {
+  position: absolute;
+  left: 48.6%;
+  top: 50%;
+  transform: translateY(-45%);
+  width: min(520px, 40vw);
+}
+
+/* Legibility scrim (spec §3): content can land on the nebula core. */
+:global(html[data-journey='pinned']) .content::before {
+  content: '';
+  position: absolute;
+  inset: -64px -96px -64px -64px;
+  z-index: -1;
+  background: radial-gradient(closest-side, rgb(4 5 10 / 0.72), rgb(4 5 10 / 0.5) 60%, transparent);
+  pointer-events: none;
+}
+
+:global(html[data-journey='pinned']) .title {
+  font-size: 96px;
+  line-height: 96px;
+}
+
+:global(html[data-journey='pinned']) .title[data-long] {
+  font-size: 72px;
+  line-height: 76px;
+}
+
+/* Dense frames (W2 Meta, P2): star top-left, two columns. */
+:global(html[data-journey='pinned']) .slide[data-dense] .focal {
+  left: 19.4%;
+  top: 27.8%;
+}
+
+:global(html[data-journey='pinned']) .slide[data-dense] .content {
+  left: 29.2%;
+  top: 22%;
+  transform: none;
+  width: min(760px, 58vw);
+}
+
+:global(html[data-journey='pinned']) .slide[data-dense] .content::before {
+  background: linear-gradient(90deg, transparent, rgb(4 5 10 / 0.72) 12%, rgb(4 5 10 / 0.72) 80%, transparent);
+}
+
+:global(html[data-journey='pinned']) .columns {
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-5) 56px;
+}
+
+:global(html[data-journey='pinned']) .complete {
+  align-self: center;
+  justify-self: start;
+  margin: 18vh 0 0 41.7%;
+}
+
+:global(html[data-journey='pinned']) .complete h2 {
+  font-size: 64px;
+}
+
+:global(html[data-journey='pinned']) .origins {
+  align-self: end;
+  justify-self: start;
+  margin: 0 0 96px var(--page-margin);
+  max-width: 360px;
+}
+
+:global(html[data-journey='pinned']) .cluster {
+  place-self: center;
+  text-align: center;
+}
+
+:global(html[data-journey='pinned']) .rail {
+  grid-area: 1 / 1;
+  position: relative;
+  z-index: 1;
+  pointer-events: none;
+}
+
+:global(html[data-journey='pinned']) .rail nav {
+  position: absolute;
+  right: 32px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: auto;
+}
+
+:global(html[data-journey='pinned']) .rail ol {
+  gap: 52px;
+  padding-right: 4px;
+  background: linear-gradient(var(--line-strong), var(--line-strong)) no-repeat calc(100% - 8px) 6px / 1px calc(100% - 12px);
+}
+
+:global(html[data-journey='pinned']) .tick {
+  width: 100%;
+  min-height: 24px;
+}
+
+:global(html[data-journey='pinned']) .counter,
+:global(html[data-journey='pinned']) .hint {
+  position: absolute;
+  bottom: 28px;
+}
+
+:global(html[data-journey='pinned']) .counter {
+  right: var(--page-margin);
+}
+
+:global(html[data-journey='pinned']) .hint {
+  left: var(--page-margin);
+}
+
+/* Pull 2: sticky frame while the camera dollies out (T6). */
+:global(html[data-journey]) .handoffInner {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: var(--space-6);
+}
+
+.pole {
+  width: 324px;
+  height: auto;
+  filter: drop-shadow(0 0 24px rgb(202 215 255 / 0.35));
+}
+
+.cartouche {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-2);
+  text-align: center;
+}
+
+.cartouche p {
+  margin: 0;
+}
+
+.explore {
+  position: absolute;
+  right: var(--page-margin);
+  bottom: 28px;
+  margin: 0;
+}
+
+/* ======================= Mobile (≤ 768 px) ======================= */
+
+:global(html[data-journey='mobile']) {
+  scroll-snap-type: y proximity;
+}
+
+:global(html[data-journey='mobile']) .section {
+  padding: 0 var(--page-margin);
+}
+
+:global(html[data-journey='mobile']) .stage {
+  gap: 0;
+}
+
+:global(html[data-journey='mobile']) .layer {
+  min-height: 100svh;
+  scroll-snap-align: start;
+  padding: 120px 0 96px;
+  border: 0;
+  position: relative;
+}
+
+:global(html[data-journey='mobile']) .complete,
+:global(html[data-journey='mobile']) .cluster,
+:global(html[data-journey='mobile']) .origins {
+  align-content: center;
+}
+
+:global(html[data-journey='mobile']) .focal {
+  display: block;
+  left: 25%;
+  top: 200px;
+}
+
+:global(html[data-journey='mobile']) .slide .content {
+  padding-top: 220px;
+}
+
+/* Vertical scrim (spec §3) */
+:global(html[data-journey='mobile']) .slide .content::before {
+  content: '';
+  position: absolute;
+  inset: 180px calc(-1 * var(--page-margin)) -32px;
+  z-index: -1;
+  background: linear-gradient(transparent, rgb(4 5 10 / 0.72) 60px);
+  pointer-events: none;
+}
+
+/* Content enter, 240 ms (T17). */
+:global(html[data-journey='mobile']) .layer > * {
+  transition: opacity 240ms var(--ease-out), translate 240ms var(--ease-out);
+}
+
+:global(html[data-journey='mobile']) .layer:not([data-active]) > * {
+  opacity: 0;
+  translate: 0 16px;
+}
+
+:global(html[data-journey='mobile']) .title {
+  font-size: 64px;
+  line-height: 64px;
+}
+
+:global(html[data-journey='mobile']) .title[data-long] {
+  font-size: 44px;
+  line-height: 46px;
+}
+
+:global(html[data-journey='mobile']) .rail {
+  position: sticky;
+  bottom: 0;
+  z-index: 1;
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin: 0 calc(-1 * var(--page-margin));
+  padding: 24px var(--page-margin) 8px;
+  white-space: nowrap;
+  background: linear-gradient(transparent, var(--sky-ground) 24px);
+}
+
+:global(html[data-journey='mobile']) .rail nav {
+  margin-left: auto;
+}
+
+:global(html[data-journey='mobile']) .rail ol {
+  display: flex;
+}
+
+:global(html[data-journey='mobile']) .tick {
+  width: 16px;
+  height: 44px;
+  justify-content: center;
+}
+
+:global(html[data-journey='mobile']) .tickLabel {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+:global(html[data-journey='mobile']) .mark::before {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--text-dim);
+}
+
+:global(html[data-journey='mobile']) .tick[aria-current] .mark::before {
+  width: 7px;
+  height: 7px;
+}
+
+:global(html[data-journey='mobile']) .handoff {
+  height: 160vh;
+}
+
+:global(html[data-journey='mobile']) .pole {
+  width: 220px;
+}
+
+@media (prefers-contrast: more) {
+  :global(html[data-journey]) .content::before {
+    opacity: 1;
+    background: rgb(4 5 10 / 0.9) !important;
+  }
+}
