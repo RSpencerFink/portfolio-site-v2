@@ -18,7 +18,7 @@ const PLANE = {
 
 // Portrait group placement in mobile-artboard px: [left, top, width] of the group's star bbox.
 const PORTRAIT_GROUPS: Record<string, [number, number, number]> = {
-  work: [40, 100, 190],
+  work: [40, 100, 170], // Brava's label keeps ≥ 24 px from the right edge (spec §8)
   projects: [214, 214, 150],
   origins: [44, 396, 96],
   painter: [226, 540, 128],
@@ -163,6 +163,12 @@ export function framePose(c: ChartLayout, ids: string[], aspect: number, fov: nu
   return focus([cx, cy, 0], h, fov, aspect, fx, fy);
 }
 
+/** The overview moved by the H3 explore view (T18): pan the look-at point, dolly in by `zoom`. */
+export function explorePose(o: Pose, v: { x: number; y: number; zoom: number }): Pose {
+  const look: Vec3 = [o.look[0] + v.x, o.look[1] + v.y, 0];
+  return { pos: [look[0], look[1], o.pos[2] / v.zoom], look, fov: o.fov };
+}
+
 export function heroPose(c: ChartLayout, aspect: number): Pose {
   // H1: the chart a little closer than H3, so the letters frame Work and the Painter.
   const o = overviewPose(c, aspect);
@@ -193,5 +199,6 @@ export function labelLevel(c: ChartLayout, ppu: number, viewportH: number): Labe
   // Normalise by the H3 scale so thresholds hold at any viewport size.
   const zoom = ppu / (viewportH / (c.plane.h * 1.02));
   if (c.layout === 'portrait') return zoom > 2.6 ? 'hidden' : zoom >= 1.6 ? 'full' : 'names';
-  return zoom > 2.3 ? 'hidden' : 'full';
+  // 2.6 keeps labels up at the 2.5× explore limit (T18) and hides them in the W/P focal views (~3×).
+  return zoom > 2.6 ? 'hidden' : 'full';
 }

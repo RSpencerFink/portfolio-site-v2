@@ -168,7 +168,11 @@ function makeChart(layout: Layout) {
   const group = new THREE.Group();
   group.add(gridLines, eclLine, solidLines, dashedLines);
   for (const o of group.children) o.renderOrder = 1;
-  return group;
+  // [material, opacity on the chart, opacity on a calm sky]: the calm sky (A3/A4, R3 · RM) keeps a faint grid, no constellations.
+  const fades = ([[solidLines, 0.35, 0], [dashedLines, 0.3, 0], [gridLines, 0.07, 0.035], [eclLine, 0.12, 0.05]] as const).map(
+    ([o, on, calm]) => [o.material as THREE.Material, on, calm] as const,
+  );
+  return { group, fades };
 }
 
 function makeContent(layout: Layout) {
@@ -199,6 +203,7 @@ type Ctx = {
   nebulaMat: THREE.ShaderMaterial;
   nebula: { current: THREE.Mesh | null };
   content: ReturnType<typeof makeContent>;
+  lines: ReturnType<typeof makeChart>;
   chart: ReturnType<typeof chartLayout>;
   pointer: { current: { tx: number; ty: number; x: number; y: number } };
   cur: { current: Pose | null };
@@ -208,8 +213,10 @@ type Ctx = {
 const ndc = new THREE.Vector3();
 
 /** One frame: camera, ambient uniforms, content-star states, then labels via onFrame. */
-function tick(ctx: Ctx, state: RootState, delta: number) {
-  const { bgMat, contentMat, nebulaMat, nebula, content, chart, pointer, cur, fps, layout, motion, isHome, onFrame, onLowFps } = ctx;
+function tick(ctx: Ctx, state: RootState, frameDelta: number) {
+  // A long gap (tab switch, a view transition holding frames) must not jump the damped camera.
+  const delta = Math.min(frameDelta, 1 / 30);
+  const { bgMat, contentMat, nebulaMat, nebula, content, lines, chart, pointer, cur, fps, layout, motion, isHome, onFrame, onLowFps } = ctx;
   const camera = state.camera as THREE.PerspectiveCamera;
   const { width, height } = state.size;
   const dpr = state.viewport.dpr;
@@ -263,11 +270,13 @@ function tick(ctx: Ctx, state: RootState, delta: number) {
   // Content stars: current 7.5 px, focal 14 px + glow, hover halo ×1.4 (spec §4, T13).
   const hover = hoverStore.get();
   const kk = motion === 'reduced' ? 1 : 1 - Math.exp(-delta * 12);
+  // Calm sky (off-home backdrop, R3 · RM below the hero): starfield, nebula and a faint grid only.
+  for (const [m, on, calm] of lines.fades) m.opacity += ((r.quiet ? calm : on) - m.opacity) * kk;
   const arr = content.state.array as Float32Array;
   content.stars.forEach((s, i) => {
     const isFocus = s.id === r.focusId;
-    const core = isFocus ? (r.focal ? 14 : 7.5) : 5.5;
-    const halo = s.id === hover ? 1.4 : 1;
+    const core = r.quiet ? 0 : isFocus ? (r.focal ? 14 : 7.5) : 5.5;
+    const halo = r.quiet ? 0 : s.id === hover ? 1.4 : 1;
     const glow = isFocus && r.focal ? 1 : 0;
     arr[i * 4] += (core + (s.id === hover ? 1 : 0) - arr[i * 4]) * kk;
     arr[i * 4 + 1] += (halo - arr[i * 4 + 1]) * kk;
@@ -358,7 +367,7 @@ export function Scene({ layout, count, motion, isHome, onFrame, onLowFps }: Scen
   const fps = useRef({ t0: 0, frames: 0, warm: false });
 
   useFrame((state, delta) =>
-    tick({ bgMat, contentMat, nebulaMat, nebula, content, chart, pointer, cur, fps, layout, motion, isHome, onFrame, onLowFps }, state, delta),
+    tick({ bgMat, contentMat, nebulaMat, nebula, content, lines, chart, pointer, cur, fps, layout, motion, isHome, onFrame, onLowFps }, state, delta),
   );
 
   return (
@@ -367,7 +376,7 @@ export function Scene({ layout, count, motion, isHome, onFrame, onLowFps }: Scen
         <planeGeometry args={[1, 1]} />
       </mesh>
       <mesh geometry={bg} material={bgMat} frustumCulled={false} renderOrder={1} />
-      <primitive object={lines} />
+      <primitive object={lines.group} />
       <mesh geometry={content.geometry} material={contentMat} frustumCulled={false} renderOrder={2} />
     </>
   );

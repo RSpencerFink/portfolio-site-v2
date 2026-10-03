@@ -3,7 +3,7 @@ import { constellations } from '@/content/sky';
 import { jobs } from '@/content/work';
 import { projects } from '@/content/projects';
 import type { CameraState, Segment, Vec3 } from './cameraRig';
-import { clamp01, easeInOut, focalH, focus, framePose, heroPose, lerp, lerpPose, overviewPose, panelPose, type ChartLayout, type Pose } from './chart';
+import { clamp01, easeInOut, explorePose, focalH, focus, framePose, heroPose, lerp, lerpPose, overviewPose, panelPose, type ChartLayout, type Pose } from './chart';
 
 /*
  * Rig state → camera pose. Uses three (CatmullRomCurve3), so it lives apart
@@ -73,7 +73,7 @@ export interface Resolved {
 
 /** Where the camera wants to be for this rig state. Pure; the scene damps toward it. */
 export function resolve(state: CameraState, c: ChartLayout, aspect: number, isHome: boolean): Resolved {
-  const overview = overviewPose(c, aspect);
+  const overview = explorePose(overviewPose(c, aspect), state.view);
   const noMask = { scale: 6.4, opacity: 0 };
   const { target } = state;
   if (target && target !== 'overview' && typeof target === 'object') {

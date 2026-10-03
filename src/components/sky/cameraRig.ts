@@ -23,9 +23,18 @@ export interface CameraState {
   ambient: number;
   /** Explicit H1 mask override; null = derived from the hero segment (T2). */
   mask: { scale: number; opacity: number } | null;
+  /** H3 explore offset (T18): pan in world units from the overview centre, zoom 1–2.5. */
+  view: View;
 }
 
-let state: CameraState = { target: null, progress: 0, segment: { id: 'hero', progress: 0 }, dim: 1, ambient: 1, mask: null };
+export interface View {
+  x: number;
+  y: number;
+  zoom: number;
+}
+export const HOME_VIEW: View = { x: 0, y: 0, zoom: 1 };
+
+let state: CameraState = { target: null, progress: 0, segment: { id: 'hero', progress: 0 }, dim: 1, ambient: 1, mask: null, view: HOME_VIEW };
 const listeners = new Set<() => void>();
 const update = (patch: Partial<CameraState>) => {
   state = { ...state, ...patch };
@@ -51,6 +60,8 @@ export const cameraRig = {
   setAmbient: (ambient: number) => update({ ambient }),
   /** Override the H1 mask (scale ≥ 1 about the S, opacity 0–1); null restores the T2 mapping. */
   setMask: (mask: CameraState['mask']) => update({ mask }),
+  /** H3 pan/zoom (T18). Applied to the overview pose only. */
+  setView: (view: View) => update({ view }),
   subscribe(listener: () => void) {
     listeners.add(listener);
     return () => {

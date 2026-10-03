@@ -7,7 +7,7 @@ import { education, person } from '@/content/site';
 import { jobs } from '@/content/work';
 import { projects } from '@/content/projects';
 import { paintings } from '@/content/paintings';
-import type { Vec3 } from './cameraRig';
+import { cameraRig, type Vec3 } from './cameraRig';
 import { labelLevel, overviewPose, pxPerUnit, type ChartLayout, type ChartStar } from './chart';
 import { hoverStore } from './hover';
 import type { FrameInfo } from './Scene';
@@ -61,7 +61,9 @@ export function syncLabels(f: FrameInfo, chart: ChartLayout) {
   const level = f.resolved.quiet ? 'hidden' : labelLevel(chart, ppu, f.height);
   const mask = f.resolved.mask.opacity > 0.01 ? 'on' : 'off';
   const overviewPpu = pxPerUnit(overviewPose(chart, f.width / f.height), f.height);
-  const overview = mask === 'off' && !f.resolved.quiet && ppu < overviewPpu * 1.3 ? 'on' : 'off';
+  // Zoomed in on H3 (T18) still counts as the chart: pole mark and ticks stay.
+  const zoomed = cameraRig.getState().view.zoom > 1;
+  const overview = mask === 'off' && !f.resolved.quiet && (zoomed || ppu < overviewPpu * 1.3) ? 'on' : 'off';
   if (level !== last.level) root.dataset.level = last.level = level;
   if (mask !== last.mask) root.dataset.mask = last.mask = mask;
   if (overview !== last.overview) root.dataset.overview = last.overview = overview;
