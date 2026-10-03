@@ -279,8 +279,9 @@ function tick(ctx: Ctx, state: RootState, frameDelta: number) {
     const isFocus = s.id === r.focusId;
     // Helpers are dimmer figure stars; the lodestar (featured build) burns brighter than its neighbours.
     const rest = s.helper ? 2.6 : s.lodestar ? 8.5 : 5.5;
-    const core = r.quiet || (r.bare && !isFocus) ? 0 : isFocus ? (r.focal ? 14 : Math.max(7.5, rest)) : rest;
-    const halo = r.quiet ? 0 : s.id === hover ? 1.4 : s.helper ? 0.45 : s.lodestar ? 1.3 : 1;
+    // H1: the current star (Brava) is the brightest in the letters, easing back to 7.5 px as the hero scrolls away.
+    const core = r.quiet || (r.bare && !isFocus) ? 0 : isFocus ? (r.focal ? 14 : Math.max(7.5 + 2.5 * r.heroGlow, rest)) : rest;
+    const halo = r.quiet ? 0 : s.id === hover ? 1.4 : s.helper ? 0.45 : s.lodestar ? 1.3 : isFocus ? 1 + 0.4 * r.heroGlow : 1;
     const glow = isFocus && r.focal ? 1 : 0;
     arr[i * 4] += (core + (s.id === hover ? 1 : 0) - arr[i * 4]) * kk;
     arr[i * 4 + 1] += (halo - arr[i * 4 + 1]) * kk;

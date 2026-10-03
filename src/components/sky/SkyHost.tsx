@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from '
 import { usePathname } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import { cameraRig } from './cameraRig';
-import { chartLayout, layoutFor } from './chart';
+import { chartLayout, layoutFor, markShare } from './chart';
 import { hoverStore } from './hover';
 import { HeroMark, skipIntro } from './HeroMark';
 import type { FrameInfo, Motion } from './Scene';
@@ -129,7 +129,7 @@ export function SkyHost() {
   );
   useEffect(() => resetLabels(), [layout]);
 
-  const markWidth = size ? Math.min(size.w * 0.892, size.h * 1.395) : 1284;
+  const markWidth = size ? size.w * markShare(size.w / size.h) : 1284;
 
   return (
     <div ref={hostRef} className={styles.host} data-home={isHome ? '' : undefined} data-calm={isHome && !homeJourney ? '' : undefined} aria-hidden="true">

@@ -182,6 +182,10 @@
   text-align: right;
 }
 
+.labels[data-mask='on'] .marker[data-focus=''][data-side='right'] .text {
+  left: 22px;
+}
+
 /* A focal star's label clears the 34 px reticle ring. */
 .marker[data-focus='focal'][data-side='right'] .text {
   left: 46px;
@@ -328,6 +332,11 @@
 
 .reticle[data-drawn] .ringDashed {
   opacity: 1;
+}
+
+/* H1: Brava burns brighter inside the letters, so its current ring opens out to clear the glow (and its label clears the ring). */
+.labels[data-mask='on'] .ringSmall {
+  r: 13px;
 }
 
 .reticle[data-variant='current'] .focal,

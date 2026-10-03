@@ -7,7 +7,7 @@ import { jobs } from '@/content/work';
 import { projects } from '@/content/projects';
 import { paintings } from '@/content/paintings';
 import { cameraRig, type Vec3 } from './cameraRig';
-import { labelLevel, overviewPose, pxPerUnit, type ChartLayout, type ChartStar } from './chart';
+import { labelLevel, markShare, overviewPose, pxPerUnit, type ChartLayout, type ChartStar } from './chart';
 import { hoverStore } from './hover';
 import type { FrameInfo } from './Scene';
 import s from './SkyHost.module.css';
@@ -54,7 +54,8 @@ function place(el: HTMLElement | undefined, world: Vec3, f: FrameInfo, margin = 
  */
 const MARK_W = 1519.3;
 const MARK_H = 729.6;
-let mark: { path: Path2D; ctx: CanvasRenderingContext2D } | null = null;
+/** The letters rasterised once at 1 px per viewBox unit (alpha); a lookup is cheap enough to test whole label boxes every frame. */
+let mark: { alpha: Uint8ClampedArray; w: number; h: number } | null = null;
 let markRequested = false;
 function loadMark() {
   if (markRequested) return;
@@ -63,8 +64,16 @@ function loadMark() {
     .then((r) => r.text())
     .then((text) => {
       const d = new DOMParser().parseFromString(text, 'image/svg+xml').querySelector('path')?.getAttribute('d');
-      const ctx = document.createElement('canvas').getContext('2d');
-      if (d && ctx) mark = { path: new Path2D(d), ctx };
+      const canvas = document.createElement('canvas');
+      const [w, h] = [Math.ceil(MARK_W), Math.ceil(MARK_H)];
+      Object.assign(canvas, { width: w, height: h });
+      const ctx = canvas.getContext('2d', { willReadFrequently: true });
+      if (!d || !ctx) return;
+      ctx.fill(new Path2D(d));
+      const rgba = ctx.getImageData(0, 0, w, h).data;
+      const alpha = new Uint8ClampedArray(w * h);
+      for (let i = 0; i < alpha.length; i++) alpha[i] = rgba[i * 4 + 3];
+      mark = { alpha, w, h };
     })
     .catch(() => {});
 }
@@ -72,38 +81,48 @@ function loadMark() {
 /** Is screen point (x, y) inside the letters? Mirrors `.letterbox` in SkyHost.module.css. */
 function insideMark(x: number, y: number, f: FrameInfo) {
   if (!mark) return false;
-  const markW = Math.min(f.width * 0.892, f.height * 1.395);
+  const markW = f.width * markShare(f.width / f.height);
   const scale = f.resolved.mask.scale;
   const ox = f.width / 2 + markW * 0.02;
   const oy = f.height / 2;
   const lx = ox + (x - ox) / scale - (f.width - markW) / 2;
   const ly = oy + (y - oy) / scale - (f.height - (markW * MARK_H) / MARK_W) / 2;
   const k = MARK_W / markW;
-  return mark.ctx.isPointInPath(mark.path, lx * k, ly * k);
+  const px = Math.floor(lx * k);
+  const py = Math.floor(ly * k);
+  return px >= 0 && py >= 0 && px < mark.w && py < mark.h && mark.alpha[py * mark.w + px] > 127;
 }
 
-/** A label's text box as offsets from its anchor [left, right, middle], measured once (the text never changes). */
-const spans = new Map<HTMLElement, [number, number, number]>();
+/** A label's text box as offsets from its anchor [left, right, top, bottom], measured once (the text never changes). */
+const spans = new Map<HTMLElement, [number, number, number, number]>();
 function spanOf(el: HTMLElement) {
   let span = spans.get(el);
   if (!span) {
     const a = el.getBoundingClientRect();
     const t = el.querySelector(`.${s.text}, .${s.cname}`)?.getBoundingClientRect();
-    if (!t?.width) return [0, 0, 0] as const; // not laid out yet: the anchor alone, measure again next frame
-    span = [t.left - a.left, t.right - a.left, (t.top + t.bottom) / 2 - a.top];
+    if (!t?.width) return [0, 0, 0, 0] as const; // not laid out yet: the anchor alone, measure again next frame
+    span = [t.left - a.left, t.right - a.left, t.top - a.top, t.bottom - a.top];
     spans.set(el, span);
   }
   return span;
 }
 
+/** The anchor and the label's whole text box (a grid every ≤ 4 px), so a label never straddles a counter or a gap. */
+function labelInside(x: number, y: number, el: HTMLElement, f: FrameInfo) {
+  if (!insideMark(x, y, f)) return false;
+  const [l, r, t, b] = spanOf(el);
+  const cols = Math.max(1, Math.ceil((r - l) / 4));
+  for (const dy of [t, (t + b) / 2, b]) for (let i = 0; i <= cols; i++) if (!insideMark(x + l + ((r - l) * i) / cols, y + dy, f)) return false;
+  return true;
+}
+
 const outside = new Map<HTMLElement, string>();
-/** Fade a label with the letterbox unless its anchor and both ends of its text are inside the letters. */
+/** Fade a label with the letterbox unless its anchor and its whole text box are inside the letters. */
 function letterFade(el: HTMLElement | undefined, at: readonly [number, number] | null, f: FrameInfo, fade: string | null) {
   if (!el) return;
   let inside = true;
   if (fade !== null && at) {
-    const [l, r, m] = spanOf(el);
-    inside = insideMark(at[0], at[1], f) && insideMark(at[0] + l, at[1] + m, f) && insideMark(at[0] + r, at[1] + m, f);
+    inside = labelInside(at[0], at[1], el, f);
   }
   const value = inside ? '' : (fade ?? '');
   if ((outside.get(el) ?? '') === value) return;

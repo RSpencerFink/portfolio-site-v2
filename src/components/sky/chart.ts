@@ -172,13 +172,18 @@ export function explorePose(o: Pose, v: { x: number; y: number; zoom: number }):
   return { pos: [look[0], look[1], o.pos[2] / v.zoom], look, fov: o.fov };
 }
 
+/** The H1 mark's width as a share of the viewport: `--mark-w: min(89.2vw, 139.5vh)` in SkyHost.module.css. */
+export const markShare = (aspect: number) => Math.min(0.892, 1.395 / aspect);
+const MARK_ASPECT = 729.6 / 1519.3;
+/** Where Brava (the current role) sits in the mark at H1, as fractions of the mark box: on the S's spine near the fly-through point, so the star and its whole label stay inside the S while the mask scales (T2). */
+const HERO_BRAVA: Record<Layout, [number, number]> = { landscape: [0.45, 0.5], portrait: [0.47, 0.5] };
+
 export function heroPose(c: ChartLayout, aspect: number): Pose {
-  // H1: the chart a little closer than H3, so the letters frame Work and the Painter.
-  const o = overviewPose(c, aspect);
-  const scale = c.layout === 'portrait' ? 0.55 : 0.84;
-  const d = o.pos[2] * scale;
-  const look: Vec3 = c.layout === 'portrait' ? [0, 2.5, 0] : [0, 1.4, 0];
-  return { pos: [look[0], look[1], d], look, fov: OVERVIEW_FOV };
+  // H1: the chart a little closer than H3, placed so Brava and its whole label sit inside a letter.
+  const h = overviewPose(c, aspect).pos[2] * 2 * tanHalf(OVERVIEW_FOV) * (c.layout === 'portrait' ? 0.55 : 0.84);
+  const [u, v] = HERO_BRAVA[c.layout];
+  const w = markShare(aspect);
+  return focus(c.byId.get('brava')!.world, h, OVERVIEW_FOV, aspect, 0.5 + (u - 0.5) * w, 0.5 + (v - 0.5) * w * aspect * MARK_ASPECT);
 }
 
 export const easeInOut = (t: number) => (t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2);
