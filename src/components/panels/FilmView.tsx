@@ -21,6 +21,16 @@ interface Props {
   children: ReactNode;
 }
 
+/**
+ * VIMEO_NATIVE_CONTROLS (default true). Vimeo only honours `controls: false`
+ * on paid plans, and the client's plan is unknown. true: the player asks for
+ * Vimeo's own controls and our play / seek / time / mute bar steps aside once
+ * the iframe is playing, so exactly one set of controls ever shows (theater
+ * and "Watch on Vimeo" stay). false: set this only if the account is on a plan
+ * that honours `controls: false`; then our custom bar is the only control set.
+ */
+export const VIMEO_NATIVE_CONTROLS = true;
+
 const clock = (s: number) => `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
 
 /**
@@ -90,7 +100,7 @@ export function FilmView({ slug, title, roles, vimeoId, vimeoUrl, still, counter
     const p = new Player(host.current!, {
       id: Number(vimeoId),
       autoplay: true,
-      controls: false,
+      controls: !VIMEO_NATIVE_CONTROLS,
       dnt: true,
       title: false,
       byline: false,
@@ -106,6 +116,8 @@ export function FilmView({ slug, title, roles, vimeoId, vimeoUrl, still, counter
   };
 
   const playPause = () => (playing ? player.current?.pause() : start());
+  // One set of controls (see VIMEO_NATIVE_CONTROLS): ours until Vimeo's take over.
+  const custom = !(VIMEO_NATIVE_CONTROLS && status === 'ready');
 
   return (
     <div className={`${styles.root} ${theater ? styles.theater : ''}`}>
@@ -143,44 +155,52 @@ export function FilmView({ slug, title, roles, vimeoId, vimeoUrl, still, counter
           </div>
         </ViewTransition>
         <div className={styles.controls}>
-          <input
-            type="range"
-            className={styles.scrub}
-            aria-label="Seek"
-            min={0}
-            max={time.duration || 1}
-            step={0.1}
-            value={time.seconds}
-            disabled={status === 'poster'}
-            style={{ '--p': `${time.duration ? (time.seconds / time.duration) * 100 : 0}%` } as React.CSSProperties}
-            onChange={(e) => {
-              const seconds = Number(e.target.value);
-              setTime((t) => ({ ...t, seconds }));
-              player.current?.setCurrentTime(seconds);
-            }}
-          />
+          {custom && (
+            <input
+              type="range"
+              className={styles.scrub}
+              aria-label="Seek"
+              min={0}
+              max={time.duration || 1}
+              step={0.1}
+              value={time.seconds}
+              disabled={status === 'poster'}
+              style={{ '--p': `${time.duration ? (time.seconds / time.duration) * 100 : 0}%` } as React.CSSProperties}
+              onChange={(e) => {
+                const seconds = Number(e.target.value);
+                setTime((t) => ({ ...t, seconds }));
+                player.current?.setCurrentTime(seconds);
+              }}
+            />
+          )}
           <div className={`label ${styles.row}`}>
-            <button type="button" className={styles.iconButton} onClick={playPause} aria-label={playing ? 'Pause' : 'Play'}>
-              <span aria-hidden="true" className={playing ? styles.pauseIcon : styles.playIcon} />
-            </button>
+            {custom && (
+              <button type="button" className={styles.iconButton} onClick={playPause} aria-label={playing ? 'Pause' : 'Play'}>
+                <span aria-hidden="true" className={playing ? styles.pauseIcon : styles.playIcon} />
+              </button>
+            )}
             {theater && (
               <span className={styles.theaterTitle} aria-hidden="true">
                 <span className={styles.theaterName}>{title}</span>
                 <span className="label">{roles.join(', ')}</span>
               </span>
             )}
-            <span className={styles.time}>
-              {clock(time.seconds)} / {time.duration ? clock(time.duration) : '—'}
-            </span>
-            <button
-              type="button"
-              className={styles.textButton}
-              disabled={status === 'poster'}
-              aria-pressed={muted}
-              onClick={() => player.current?.setVolume(muted ? 1 : 0)}
-            >
-              {muted ? 'Unmute' : 'Mute'}
-            </button>
+            {custom && (
+              <>
+                <span className={styles.time}>
+                  {clock(time.seconds)} / {time.duration ? clock(time.duration) : '—'}
+                </span>
+                <button
+                  type="button"
+                  className={styles.textButton}
+                  disabled={status === 'poster'}
+                  aria-pressed={muted}
+                  onClick={() => player.current?.setVolume(muted ? 1 : 0)}
+                >
+                  {muted ? 'Unmute' : 'Mute'}
+                </button>
+              </>
+            )}
             <a href={vimeoUrl} className={styles.vimeo}>
               Watch on Vimeo <span aria-hidden="true">↗</span>
             </a>
