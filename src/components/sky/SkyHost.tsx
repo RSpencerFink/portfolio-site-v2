@@ -75,11 +75,13 @@ export function SkyHost() {
     nav.getBattery?.().then((b) => !b.charging && b.level < 0.2 && setLowPower(true)).catch(() => {});
   }, []);
 
-  // Reduced motion has no pinned journey: the mask gives way once the hero section scrolls out (spec §7).
+  // Reduced motion has no pinned journey, and the mask is fixed while the hero scrolls: it gives way as soon as
+  // the hero starts to leave, before the Work list reaches the letters (spec §7). A ratio, not isIntersecting:
+  // a hero scrolled exactly one viewport still "intersects" at its edge.
   useEffect(() => {
     const hero = isHome && reduced ? document.querySelector('#journey > section') : null;
     if (!hero) return;
-    const io = new IntersectionObserver(([e]) => setHeroGone(!e.isIntersecting), { threshold: 0 });
+    const io = new IntersectionObserver(([e]) => setHeroGone(e.intersectionRatio < 0.9), { threshold: 0.9 });
     io.observe(hero);
     return () => io.disconnect();
   }, [isHome, reduced]);

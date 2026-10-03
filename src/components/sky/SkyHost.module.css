@@ -102,6 +102,11 @@
   mask-composite: add;
 }
 
+/* Portrait: the narrow letters would cut labels into fragments, so only stars and lines show through the mark. */
+.host[data-home] .labels[data-layout='portrait'][data-mask='on'] :is(.text, .cname) {
+  opacity: 0;
+}
+
 .anchor,
 .marker,
 .reticle {
