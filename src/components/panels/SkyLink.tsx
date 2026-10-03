@@ -37,8 +37,9 @@ export function SkyLink({ onClick, ref: outerRef, ...props }: ComponentProps<typ
         el.focus({ preventScroll: true });
         if (document.activeElement !== el) return;
         softNav.done();
-        // A keyboard close shows the focused link; after a mouse close the page stays put.
-        if (el.matches(':focus-visible')) el.scrollIntoView({ block: 'nearest' });
+        // A keyboard close shows the focused link; after a mouse close, or when the link is off screen
+        // (a journey stop far from the chart the panel was opened on), the page stays put.
+        if (onScreen && el.matches(':focus-visible')) el.scrollIntoView({ block: 'nearest' });
       };
       id = requestAnimationFrame(attempt);
     });
