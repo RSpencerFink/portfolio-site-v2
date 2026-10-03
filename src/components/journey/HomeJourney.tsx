@@ -230,7 +230,8 @@ export function HomeJourney() {
       // Hash targets: /#work the first Work stop (Brava), /#projects the featured build,
       // /#chart (a direct-loaded panel's Close) the H3 rest at the end of the document.
       const hashY: Record<string, () => number | undefined> = {
-        work: () => stageStops.work?.()[0],
+        // The first star, wherever the "Constellation of Work" layer sits in the layout.
+        work: () => (stageStops.work ? Math.min(...stageStops.work()) : undefined),
         projects: () => stageStops.projects?.()[0],
         chart: () => ScrollTrigger.maxScroll(window),
       };
@@ -275,14 +276,34 @@ export function HomeJourney() {
       document.addEventListener('click', onClick, true);
       cleanups.push(() => document.removeEventListener('click', onClick, true));
       // Arriving with a hash (direct load, header link from another page): land on the stop now,
-      // before the first paint of the journey, then correct once if Next's own anchor scroll lands later.
+      // before the first paint of the journey. For 2 s, re-land if the browser's anchor scroll or a
+      // ScrollTrigger refresh (web fonts) moves the page or the stop.
       if (location.hash && toHash(location.hash)) {
         const fix = () => {
           const y = hashY[location.hash.slice(1)]?.();
           if (y !== undefined && Math.abs(window.scrollY - y) > 2) toHash(location.hash);
         };
         const call = gsap.delayedCall(0.05, fix);
-        cleanups.push(() => call.kill());
+        ScrollTrigger.addEventListener('refresh', fix);
+        ScrollTrigger.addEventListener('scrollEnd', fix);
+        const stop = () => {
+          ScrollTrigger.removeEventListener('refresh', fix);
+          ScrollTrigger.removeEventListener('scrollEnd', fix);
+        };
+        // Any input of the visitor's own ends the correction window early.
+        const stopOnInput = () => stop();
+        addEventListener('wheel', stopOnInput, { once: true, passive: true });
+        addEventListener('touchstart', stopOnInput, { once: true, passive: true });
+        addEventListener('keydown', stopOnInput, { once: true });
+        const end = gsap.delayedCall(2, stop);
+        cleanups.push(() => {
+          call.kill();
+          end.kill();
+          stop();
+          removeEventListener('wheel', stopOnInput);
+          removeEventListener('touchstart', stopOnInput);
+          removeEventListener('keydown', stopOnInput);
+        });
       }
 
       return () => {

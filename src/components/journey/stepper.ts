@@ -131,7 +131,8 @@ export function stepper(stops: () => number[]) {
     const heading = lenis ? lenis.targetScroll : cur;
     const from = prev;
     prev = cur;
-    if (busy()) return;
+    // A jump (hash landing, scroll restoration) is not a glide: nothing to catch.
+    if (busy() || Math.abs(cur - from) > innerHeight) return;
     const ahead = heading > from ? Math.max(heading, cur) : Math.min(heading, cur);
     const crossed = stops().filter((s) => (s - from) * (s - ahead) < 0 && Math.abs(s - from) > TOL);
     if (!crossed.length) return;
