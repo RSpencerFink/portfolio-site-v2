@@ -1,4 +1,5 @@
 import type { CSSProperties } from 'react';
+import Link from 'next/link';
 import { SkyLink } from '@/components/panels/SkyLink';
 import { Insignia } from '@/components/Insignia';
 import { HALO } from '@/components/sky/types';
@@ -7,6 +8,8 @@ import { education, person, resume, tech } from '@/content/site';
 import { jobs } from '@/content/work';
 import { projects } from '@/content/projects';
 import { constellations } from '@/content/sky';
+import { paintings } from '@/content/paintings';
+import { films } from '@/content/films';
 import j from './Journey.module.css';
 
 const c = Object.fromEntries(constellations.map((k) => [k.id, k]));
@@ -72,7 +75,7 @@ export function JourneySections() {
         </p>
       </section>
 
-      <section id="work" className={j.section} aria-labelledby="work-title">
+      <section id="work" className={`${j.section} ${j.workSection}`} aria-labelledby="work-title">
         <div className={j.stage} data-stage="work" data-offset="0">
           <header className={`${j.layer} ${j.complete}`} data-slide="5" data-target="work" tabIndex={-1}>
             <h2 id="work-title" className="display-l">{c.work.name}</h2>
@@ -86,17 +89,20 @@ export function JourneySections() {
             {jobs.map((job, i) => {
               const dense = job.sections.length > 0;
               return (
-                <li key={job.slug} className={`${j.layer} ${j.slide}`} data-slide={i} data-target={job.slug} data-dense={dense || undefined} tabIndex={-1} aria-labelledby={`job-${job.slug}`}>
+                <li key={job.slug} className={`${j.layer} ${j.slide}`} data-slide={i} data-target={job.slug} data-dense={dense || undefined} data-current={job.current || undefined} tabIndex={-1} aria-labelledby={`job-${job.slug}`}>
                   <FocalStar spectral={job.star.spectral} />
                   <article className={j.content}>
-                    {!dense && <Insignia job={job} size={64} />}
+                    {/* Focal frames: 64 px above the name, or 56 px beside it in the dense frame. The static list (R3 · RM) uses the first, at 36 px. */}
+                    <Insignia job={job} size={64} className={dense ? j.rowOnly : undefined} />
                     {job.current && <p className={`label ${j.kicker}`}>Now</p>}
                     <h3 id={`job-${job.slug}`} className={`display-xl ${j.title}`}>
                       <SkyLink href={`/work/${job.slug}`}>{job.company}</SkyLink>
-                      {dense && <Insignia job={job} size={56} />}
+                      {dense && <Insignia job={job} size={56} className={j.focalOnly} />}
                     </h3>
-                    <p className="label">
-                      {job.title} · {job.dates}
+                    <p className={`label ${j.roleLine}`}>
+                      <span className={j.role}>{job.title}</span>
+                      <span className={j.sep}> · </span>
+                      <span className={j.dates}>{job.dates}</span>
                     </p>
                     {job.description && <p className={`body-l ${j.lede}`}>{job.description}</p>}
                     {dense && (
@@ -122,7 +128,7 @@ export function JourneySections() {
             })}
           </ol>
 
-          <div className={`${j.layer} ${j.origins}`} data-slide="5">
+          <div id="origins" className={`${j.layer} ${j.origins}`} data-slide="5">
             <h3 className="heading">{c.origins.name}</h3>
             <p className="label">{c.origins.subline}</p>
             <ul>
@@ -139,6 +145,18 @@ export function JourneySections() {
           </div>
 
           <Rail label={`${c.work.name}: stars`} items={jobs.map((x) => x.company)} offset={0} hint="Scroll to travel ↓" />
+
+          {/* R3 · RM: the rest of the sky, as an index beside the Work list (static layout only). */}
+          <nav className={`${j.skyIndex} ${j.staticOnly}`} aria-labelledby="sky-index-title">
+            <h3 id="sky-index-title" className="label">Sky index</h3>
+            <ul className="body-l">
+              <li><a href="#projects">{c.projects.name} · {projects.length} projects</a></li>
+              <li><Link href="/visual-arts/analog">{c.painter.name} · {paintings.length} paintings</Link></li>
+              <li><Link href="/visual-arts/digital">{c.filmmaker.name} · {films.length} films</Link></li>
+              <li><a href="#origins">{c.origins.name} · {education.length} schools</a></li>
+              <li><Link href="/about">The Observer · About</Link></li>
+            </ul>
+          </nav>
         </div>
       </section>
 
@@ -205,9 +223,6 @@ export function JourneySections() {
             <p className="display-s">{person.name}</p>
             <p className="label">{person.identities[0]}</p>
           </div>
-          <p className={`label ${j.explore}`} data-cartouche>
-            Drag to explore · Click a star
-          </p>
           <div className={j.catalogue} data-cartouche>
             {tech.map((t) => (
               <div key={t.heading}>

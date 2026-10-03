@@ -315,6 +315,118 @@
   color: var(--text-dim);
 }
 
+/* ---------- Static Work list (R3 · RM): rows with insignia, role and years, plus the sky index ---------- */
+
+:global(html[data-journey]) .staticOnly,
+:global(html[data-journey]) .rowOnly,
+:global(html:not([data-journey])) .focalOnly {
+  display: none !important;
+}
+
+:global(html:not([data-journey])) .workSection .slide {
+  padding: 18px 0;
+}
+
+:global(html:not([data-journey])) .workSection .slides {
+  border-bottom: 1px solid var(--line);
+}
+
+:global(html:not([data-journey])) .workSection .content {
+  grid-template-columns: 36px minmax(0, 1fr);
+  grid-template-areas: 'ins name' 'ins role' '. dates';
+  align-items: center;
+  gap: 2px var(--space-4);
+}
+
+:global(html:not([data-journey])) .workSection .content > img {
+  grid-area: ins;
+  width: 36px !important;
+  height: 36px !important;
+  border-radius: 8px !important;
+}
+
+:global(html:not([data-journey])) .workSection :is(.kicker, .lede, .columns, .sep) {
+  display: none;
+}
+
+:global(html:not([data-journey])) .workSection .title {
+  grid-area: name;
+  font-size: 22px;
+  line-height: 26px;
+}
+
+:global(html:not([data-journey])) .workSection .roleLine {
+  display: contents;
+}
+
+:global(html:not([data-journey])) .workSection .role {
+  grid-area: role;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 20px;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--text-2);
+}
+
+:global(html:not([data-journey])) .workSection .dates {
+  grid-area: dates;
+  font-size: 10px;
+  line-height: 12px;
+  color: var(--text-dim);
+}
+
+:global(html:not([data-journey])) .workSection .slide[data-current] .dates {
+  color: var(--text-hi);
+}
+
+.skyIndex h3 {
+  margin: 0 0 var(--space-3);
+  color: var(--text-dim);
+}
+
+.skyIndex ul {
+  display: grid;
+  gap: 2px;
+}
+
+.skyIndex a {
+  color: var(--text);
+  text-decoration: none;
+}
+
+.skyIndex a:hover {
+  color: var(--text-hi);
+  text-decoration: underline;
+}
+
+@media (min-width: 1024px) {
+  :global(html:not([data-journey])) .workSection {
+    max-width: 1376px;
+  }
+
+  :global(html:not([data-journey])) .workSection .stage {
+    grid-template-columns: minmax(0, 720px) minmax(0, 1fr);
+    column-gap: var(--space-10);
+  }
+
+  :global(html:not([data-journey])) .workSection .stage > * {
+    grid-column: 1;
+  }
+
+  :global(html:not([data-journey])) .workSection .skyIndex {
+    grid-column: 2;
+    grid-row: 1 / span 3;
+    align-self: center;
+  }
+
+  :global(html:not([data-journey])) .workSection .content {
+    grid-template-columns: 36px minmax(0, 1fr) minmax(0, 1.2fr) 132px;
+    grid-template-areas: 'ins name role dates';
+    gap: var(--space-4);
+  }
+}
+
 /* ---------- Focal star stand-in (spec §4) ---------- */
 
 .focal {
@@ -405,7 +517,11 @@
   cursor: pointer;
 }
 
-.tick:hover,
+/* Only the current tick is white with a filled dot; hover lifts the label one step, never to "current". */
+.tick:hover {
+  color: var(--text-2);
+}
+
 .tick[aria-current] {
   color: var(--text-hi);
 }
@@ -562,6 +678,10 @@
   pointer-events: none;
 }
 
+:global(html[data-journey='pinned']) .stage:not([data-live]) .rail {
+  visibility: hidden;
+}
+
 :global(html[data-journey='pinned']) .rail nav {
   position: absolute;
   right: 32px;
@@ -620,13 +740,6 @@
 }
 
 .cartouche p {
-  margin: 0;
-}
-
-.explore {
-  position: absolute;
-  right: var(--page-margin);
-  bottom: 28px;
   margin: 0;
 }
 

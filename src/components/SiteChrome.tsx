@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { person, resume, socials } from '@/content/site';
+import { MenuButton } from './MenuButton';
 import styles from './SiteChrome.module.css';
 
 export function SiteHeader() {
@@ -13,8 +14,9 @@ export function SiteHeader() {
         <Image src="/logo/rsf.svg" alt="" width={50} height={24} priority />
         {person.name}
       </Link>
-      <nav aria-label="Primary">
-        <ul className={`label ${styles.links}`}>
+      <nav aria-label="Primary" className={styles.nav}>
+        <MenuButton className={`label ${styles.menu}`} controls="primary-links" />
+        <ul id="primary-links" className={`label ${styles.links}`}>
           <li><Link href="/#work">Work</Link></li>
           <li><Link href="/#projects">Projects</Link></li>
           <li><Link href="/visual-arts">Visual Arts</Link></li>

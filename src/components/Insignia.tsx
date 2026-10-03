@@ -2,11 +2,12 @@ import Image from 'next/image';
 import type { Job } from '@/content/work';
 
 /** Company tile: rounded square, 22% radius, 1 px hairline (spec §4). */
-export function Insignia({ job, size = 44 }: { job: Job; size?: number }) {
+export function Insignia({ job, size = 44, className }: { job: Job; size?: number; className?: string }) {
   return (
     <Image
       src={job.insignia.src}
       alt=""
+      className={className}
       width={size}
       height={size}
       style={{

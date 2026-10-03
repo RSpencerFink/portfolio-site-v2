@@ -136,6 +136,9 @@ function pinnedStage(stage: HTMLElement, segment: Segment, rangeVh: number, firs
     onUpdate: (self) => {
       update(Math.min(Math.max(Math.round(self.progress * total - EDGE), 0), legs));
     },
+    // The rail is the stage's keyboard control while it is pinned. Once the pin has passed it is
+    // hidden (Journey.module.css), so Tab from the chart can't land on it and scroll back up.
+    onToggle: (self) => stage.toggleAttribute('data-live', self.isActive),
   });
 
   // Camera: 0 at the first dwell, 1 at the last (the empty lead-in/out holds the end stars).
@@ -155,6 +158,7 @@ function pinnedStage(stage: HTMLElement, segment: Segment, rangeVh: number, firs
   firstDwell.set(segment, () => st.start + ((st.end - st.start) * EDGE) / total);
   return () => {
     stage.removeEventListener('click', onClick);
+    stage.removeAttribute('data-live');
     unsnap();
   };
 }

@@ -75,3 +75,68 @@
   transition-delay: 0s, 0s, var(--dur-m);
 }
 
+
+/* Compact menu below 640 px (R3 · M-H3): one row, name left and "Menu" right. Folds only once JS has set data-menu. */
+.menu {
+  display: none;
+  min-height: 44px;
+  padding: 0 0 0 var(--space-4);
+  color: var(--text);
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+@media (max-width: 639px) {
+  .header {
+    flex-wrap: nowrap;
+    padding-block: 14px;
+  }
+
+  .nav {
+    position: relative;
+  }
+
+  .header[data-menu] .menu {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .header[data-menu] .links {
+    display: none;
+  }
+
+  .header[data-menu='open'] .links {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    display: grid;
+    gap: 0;
+    min-width: 200px;
+    padding: var(--space-2) var(--space-4);
+    background: rgb(10 12 20 / 0.96);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-panel);
+  }
+
+  .header[data-menu='open'] .links a {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+  }
+
+  /* Home H1 keeps the centred one-row menu (it fits; R3 · M-H1). */
+  :global(html:not([data-chrome='full']) body:has(#hero)) .header .menu {
+    display: none;
+  }
+
+  :global(html:not([data-chrome='full']) body:has(#hero)) .header .links {
+    position: static;
+    display: flex;
+    min-width: 0;
+    padding: 0;
+    background: none;
+    border: 0;
+    gap: var(--space-5);
+  }
+}

@@ -9,12 +9,14 @@
 
 /*
  * Home in full motion, once the sky draws: the chart presents these lists
- * (Observer, Painter, Filmmaker, catalogue), so the mirror leaves the visual
- * layer and stops covering the star markers. Screen readers keep it, and a
- * keyboard visitor tabbing into it brings it back on screen. No-JS and reduced
- * motion never set data-journey, so there it stays the page.
+ * (Work and Projects index, Observer, Painter, Filmmaker, catalogue), so the
+ * mirror leaves the visual layer and stops covering the star markers. Screen
+ * readers keep it, and a keyboard visitor tabbing into it brings it back on
+ * screen (:focus-visible, so focus handed back after a mouse close leaves the
+ * chart alone). No-JS and reduced motion never set data-journey, so there it
+ * stays the page.
  */
-:global(html[data-journey][data-sky='live']) .main:not(:focus-within) {
+:global(html[data-journey][data-sky='live']) .main:not(:has(:focus-visible)) {
   position: absolute;
   width: 1px;
   height: 1px;
@@ -22,6 +24,15 @@
   overflow: hidden;
   clip-path: inset(50%);
   white-space: nowrap;
+}
+
+/* Shown only in the desktop pinned journey (see page.tsx). */
+:global(html:not([data-journey='pinned'])) .pinnedOnly {
+  display: none;
+}
+
+.sub {
+  color: var(--text-dim);
 }
 
 .hero {
