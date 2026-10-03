@@ -46,7 +46,6 @@ export default async function FilmPage({ params }: Props) {
     <PanelFrame
       slug={f.slug}
       title={f.title}
-      kicker={f.title}
       prev={prev && { href: `/visual-arts/digital/${prev.slug}`, name: `Prev · ${prev.title}` }}
       next={next && { href: `/visual-arts/digital/${next.slug}`, name: `${next.title} · Next` }}
       counter={counter}

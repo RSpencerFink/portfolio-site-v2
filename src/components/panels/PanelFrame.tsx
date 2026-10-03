@@ -19,7 +19,7 @@ interface Props {
   slug: string;
   title: string;
   /** Breadcrumb, e.g. "Star 03 / The Engineer". */
-  kicker: string;
+  kicker?: string;
   /** Insignia or headshot above the title. */
   lead?: ReactNode;
   /** Line under the title (identities, role). */
@@ -255,7 +255,7 @@ export function PanelFrame({ slug, title, kicker, lead, subline, prev, next, cou
     </nav>
   );
 
-  const kickerLine = <p className={`label ${styles.kicker}`}>{kicker}</p>;
+  const kickerLine = kicker ? <p className={`label ${styles.kicker}`}>{kicker}</p> : null;
   const article = (
     <article aria-labelledby={titleId(slug)} className={styles.column}>
       {kickerLine}
