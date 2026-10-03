@@ -4,7 +4,6 @@ import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from '
 import { usePathname } from 'next/navigation';
 import { Canvas } from '@react-three/fiber';
 import { setConsoleFunction } from 'three';
-import { journeyProgress } from '@/components/journey/progress';
 import { cameraRig } from './cameraRig';
 import { chartLayout, layoutFor } from './chart';
 import { hoverStore } from './hover';
@@ -48,8 +47,6 @@ export function SkyHost() {
   const [lowPower, setLowPower] = useState(false);
   const [visible, setVisible] = useState(true);
   const [heroGone, setHeroGone] = useState(false);
-
-  useEffect(() => journeyProgress.subscribe(() => cameraRig.setProgress(journeyProgress.get())), []);
 
   useEffect(() => {
     const read = () => setSize({ w: window.innerWidth, h: window.innerHeight });
@@ -105,7 +102,7 @@ export function SkyHost() {
     skipIntro();
   }, [isHome]);
 
-  // Dev hook for screenshots and the journey track: window.__rsfSky.setProgress(1) etc.
+  // Dev hook for screenshots: window.__rsfSky.setTarget('meta') etc.
   useEffect(() => {
     if (process.env.NODE_ENV === 'production') return;
     (window as unknown as { __rsfSky: unknown }).__rsfSky = { ...cameraRig, hover: hoverStore.set };
@@ -122,6 +119,8 @@ export function SkyHost() {
       syncLabels(f, chart);
       const host = hostRef.current;
       if (!host) return;
+      // The canvas has drawn: the journey's CSS stand-ins step aside.
+      if (!document.documentElement.dataset.sky) document.documentElement.dataset.sky = 'live';
       const next = { scale: f.resolved.mask.scale.toFixed(4), opacity: f.resolved.mask.opacity.toFixed(3), glow: f.resolved.heroGlow.toFixed(3) };
       if (next.scale !== vars.current.scale) host.style.setProperty('--mask-scale', next.scale);
       if (next.opacity !== vars.current.opacity) host.style.setProperty('--mask-opacity', next.opacity);

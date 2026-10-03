@@ -1,7 +1,9 @@
 import { CatmullRomCurve3, Vector3 } from 'three';
 import { constellations, POLE_STAR, stars } from '@/content/sky';
 import type { CameraState, Vec3 } from './cameraRig';
-import { SEGMENTS, type Segment } from './cameraRig';
+import type { Segment } from './cameraRig';
+import { jobs } from '@/content/work';
+import { projects } from '@/content/projects';
 import type { ChartPoint, Star } from './types';
 
 /**
@@ -143,14 +145,6 @@ export function overviewPose(c: ChartLayout, aspect: number): Pose {
 
 /** Visible-height scale of the focal views: desktop ~300 px per unit, portrait ~140. */
 const focalH = (c: ChartLayout) => (c.layout === 'portrait' ? 6 : 3);
-const fxFocal = (c: ChartLayout) => (c.layout === 'portrait' ? 0.5 : 0.4);
-const fyFocal = (c: ChartLayout) => (c.layout === 'portrait' ? 0.3 : 0.47);
-
-export function starPose(c: ChartLayout, id: string, aspect: number, fov = 38): Pose | null {
-  const s = c.byId.get(id);
-  return s ? focus(s.world, focalH(c), fov, aspect, fxFocal(c), fyFocal(c)) : null;
-}
-
 /** Panel view (T7): star nudged to the left third, closer than H3. */
 export function panelPose(c: ChartLayout, id: string, aspect: number): Pose | null {
   const s = c.byId.get(id);
@@ -185,18 +179,21 @@ export function heroPose(c: ChartLayout, aspect: number): Pose {
 /* ------------------------------------------------------------------------ */
 /* Journey                                                                  */
 
-const WORK = ['brava', 'hypha', 'meta', 'dbox', 'prizm-imagery'];
-const PROJECTS = ['section-8-scout', 'freecast', 'react-dynamic-image', 'concord', 'react-2048', 'brickbreaker'];
-const total = SEGMENTS.reduce((a, [, vh]) => a + vh, 0);
+const WORK = jobs.map((j) => j.slug);
+const PROJECTS = projects.map((p) => p.slug);
+/** Stars whose W/P frame is the dense two-column layout (W2, P1/P2): star top-left. */
+const DENSE = new Set([...jobs.filter((j) => j.sections.length > 0).map((j) => j.slug), ...PROJECTS]);
 
-/** Global journey progress → segment + local 0–1 (spec §7 vh table). */
-export function segmentAt(progress: number): [Segment, number] {
-  let at = Math.min(Math.max(progress, 0), 1) * total;
-  for (const [seg, vh] of SEGMENTS) {
-    if (at <= vh) return [seg, at / vh];
-    at -= vh;
-  }
-  return ['pull2', 1];
+/**
+ * Focal star placement, matching where HomeJourney lays out the text
+ * (Journey.module.css `.focal`): desktop 40 % / 47 %, dense frames 19.4 % / 27.8 %,
+ * mobile 25 % across, 200 px down.
+ */
+function journeyStarPose(c: ChartLayout, id: string, aspect: number, fov: number): Pose {
+  const s = c.byId.get(id)!;
+  if (c.layout === 'portrait') return focus(s.world, focalH(c), fov, aspect, 0.25, 0.237);
+  const [fx, fy] = DENSE.has(id) ? [0.194, 0.278] : [0.4, 0.47];
+  return focus(s.world, focalH(c), fov, aspect, fx, fy);
 }
 
 export const easeInOut = (t: number) => (t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2);
@@ -209,7 +206,7 @@ export const lerpPose = (a: Pose, b: Pose, t: number): Pose => ({
   fov: lerp(a.fov, b.fov, t),
 });
 
-/** H1 → H2 mask (T2): scale 1 → 2.2 (0–60 vh) → 6.4 (60–140 vh); opacity 1 → 0 (187–220 vh). */
+/** H1 → H2 mask (T2): scale 1 → 2.2 (0–60 vh) → 6.4 (60–140 vh); opacity 1 → 0 (187–220 vh), as fractions of the hero pin. */
 export function heroMask(seg: Segment, t: number) {
   if (seg !== 'hero') return { scale: 6.4, opacity: 0 };
   const vh = t * 220;
@@ -218,10 +215,12 @@ export function heroMask(seg: Segment, t: number) {
 }
 
 /**
- * A star-to-star pinned sequence (T3/T4): per stop interval, content exits
- * (0–20%), the camera travels a CatmullRom path (20–70%), then holds.
+ * A star-to-star pinned sequence (T3/T4). `t` 0 is the first stop and 1 the
+ * last (HomeJourney normalises its dwells that way). Per leg the text exits
+ * over 0–22 %, the camera travels a CatmullRom path over 20–70 % and parks
+ * before the next text enters at 88 %.
  */
-function travel(poses: Pose[], ids: string[], t: number) {
+function travel(poses: Pose[], ids: (string | null)[], t: number) {
   const n = poses.length - 1;
   const i = Math.min(Math.floor(t * n), n - 1);
   const e = easeInOut(clamp01((t * n - i - 0.2) / 0.5));
@@ -231,9 +230,7 @@ function travel(poses: Pose[], ids: string[], t: number) {
   const dLook: Vec3 = [look.x - pose.look[0], look.y - pose.look[1], 0];
   return {
     pose: { ...pose, look: [look.x, look.y, 0] as Vec3, pos: [pose.pos[0] + dLook[0], pose.pos[1] + dLook[1], pose.pos[2]] as Vec3 },
-    focusId: ids[Math.min(e < 0.5 ? i : i + 1, ids.length - 1)],
-    /** 1 when parked on a stop (reticle drawn), 0 mid-travel. */
-    arrived: e < 0.05 || e > 0.95 ? 1 : 0,
+    focusId: ids[e < 0.5 ? i : i + 1],
   };
 }
 
@@ -258,6 +255,11 @@ export function resolve(state: CameraState, c: ChartLayout, aspect: number, isHo
     return { pose: { pos: target.position, look: target.lookAt, fov: 46 }, focusId: null, focal: false, mask: noMask, heroGlow: 0 };
   }
   if (typeof target === 'string' && target !== 'overview') {
+    const group = constellations.find((k) => k.id === target);
+    if (group) {
+      const ids = group.starIds.filter((id) => c.byId.has(id));
+      return { pose: framePose(c, ids, aspect, 46, 0.5, 0.5, 0.6), focusId: null, focal: false, mask: noMask, heroGlow: 0 };
+    }
     const pose = panelPose(c, target, aspect);
     if (pose) return { pose, focusId: target, focal: true, mask: noMask, heroGlow: 0 };
   }
@@ -265,32 +267,30 @@ export function resolve(state: CameraState, c: ChartLayout, aspect: number, isHo
     return { pose: overview, focusId: target ? 'brava' : null, focal: false, mask: noMask, heroGlow: 0, quiet: !target && !onHomeRoute };
   }
 
-  const [seg, t] = segmentAt(state.progress);
+  const { id: seg, progress: t } = state.segment;
   const mask = state.mask ?? heroMask(seg, t);
-  const workPoses = [
-    ...WORK.slice(0, 4).map((id) => starPose(c, id, aspect, 38)!),
-    framePose(c, WORK, aspect, 38, 0.47, 0.35, c.layout === 'portrait' ? 0.8 : 0.6),
-  ];
-  const projectPoses = PROJECTS.map((id) => starPose(c, id, aspect, 46)!);
+  const portrait = c.layout === 'portrait';
+  // Work: five stars, then "Constellation complete" (W3). Projects: the cluster title (P0), then six stars.
+  const workPoses = [...WORK.map((id) => journeyStarPose(c, id, aspect, 38)), framePose(c, WORK, aspect, 38, 0.47, 0.35, portrait ? 0.8 : 0.6)];
+  const projectPoses = [framePose(c, PROJECTS, aspect, 46, 0.5, 0.3, portrait ? 0.8 : 0.5), ...PROJECTS.map((id) => journeyStarPose(c, id, aspect, 46))];
   switch (seg) {
     case 'hero': {
       const e = easeInOut(t);
       return { pose: lerpPose(heroPose(c, aspect), workPoses[0], e), focusId: 'brava', focal: e > 0.6, mask, heroGlow: 1 - t };
     }
     case 'work': {
-      const r = travel(workPoses, WORK, t);
-      const complete = t > 0.95;
-      return { pose: r.pose, focusId: complete ? 'brava' : r.focusId, focal: !complete, mask, heroGlow: 0 };
+      const r = travel(workPoses, [...WORK, null], t);
+      return { pose: r.pose, focusId: r.focusId ?? 'brava', focal: r.focusId !== null, mask, heroGlow: 0 };
     }
     case 'pull1':
-      return { pose: lerpPose(workPoses[4], projectPoses[0], easeInOut(t)), focusId: t > 0.5 ? PROJECTS[0] : 'brava', focal: t > 0.5, mask, heroGlow: 0 };
+      return { pose: lerpPose(workPoses[WORK.length], projectPoses[0], easeInOut(t)), focusId: null, focal: false, mask, heroGlow: 0 };
     case 'projects': {
-      const r = travel(projectPoses, PROJECTS, t);
-      return { pose: r.pose, focusId: r.focusId, focal: true, mask, heroGlow: 0 };
+      const r = travel(projectPoses, [null, ...PROJECTS], t);
+      return { pose: r.pose, focusId: r.focusId, focal: r.focusId !== null, mask, heroGlow: 0 };
     }
     default: {
       const e = easeInOut(t);
-      return { pose: lerpPose(projectPoses[5], overview, e), focusId: e > 0.5 ? 'brava' : PROJECTS[5], focal: e < 0.5, mask, heroGlow: 0 };
+      return { pose: lerpPose(projectPoses[PROJECTS.length], overview, e), focusId: e > 0.5 ? 'brava' : PROJECTS.at(-1)!, focal: e < 0.5, mask, heroGlow: 0 };
     }
   }
 }

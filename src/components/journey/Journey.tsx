@@ -5,38 +5,34 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Lenis from 'lenis';
 import 'lenis/dist/lenis.css';
-import { journeyProgress } from './progress';
+
+let lenis: Lenis | null = null;
+
+/** The smooth-scroll instance, or null under reduced motion (native scroll). */
+export const getLenis = () => lenis;
 
 /**
- * Owns smooth scroll (Lenis) and ScrollTrigger. Mounted once in the root
- * layout. Under reduced motion nothing is constructed: native scroll only.
- * The scroll track replaces the single placeholder trigger with the four
- * section pins (spec §7, T2–T6).
+ * Owns smooth scroll (Lenis, spec §7 config) for the whole site. Mounted once
+ * in the root layout. Under reduced motion nothing is constructed. The home
+ * page's pinned sections are built by <HomeJourney/>, which mounts with the
+ * page so they rebuild after a soft navigation back to `/`.
  */
 export function Journey() {
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
+    ScrollTrigger.config({ ignoreMobileResize: true });
     const mm = gsap.matchMedia();
     mm.add('(prefers-reduced-motion: no-preference)', () => {
-      const lenis = new Lenis({ lerp: 0.09, wheelMultiplier: 1, touchMultiplier: 1.4, smoothWheel: true, syncTouch: false });
-      lenis.on('scroll', ScrollTrigger.update);
-      const tick = (t: number) => lenis.raf(t * 1000);
+      const l = new Lenis({ lerp: 0.09, wheelMultiplier: 1, touchMultiplier: 1.4, smoothWheel: true, syncTouch: false });
+      l.on('scroll', ScrollTrigger.update);
+      const tick = (t: number) => l.raf(t * 1000);
       gsap.ticker.add(tick);
       gsap.ticker.lagSmoothing(0);
-
-      const journey = document.getElementById('journey');
-      if (journey) {
-        ScrollTrigger.create({
-          trigger: journey,
-          start: 'top top',
-          end: 'bottom bottom',
-          onUpdate: (self) => journeyProgress.set(self.progress),
-        });
-      }
-
+      lenis = l;
       return () => {
         gsap.ticker.remove(tick);
-        lenis.destroy();
+        l.destroy();
+        lenis = null;
       };
     });
     return () => mm.revert();
