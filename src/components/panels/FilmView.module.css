@@ -1,0 +1,461 @@
+/* R3 · A5 cinema: player 840 × 473 + 262 px info column. */
+.root {
+  display: grid;
+  grid-template-columns: minmax(0, 840px) minmax(220px, 1fr);
+  gap: var(--space-7) 40px;
+}
+
+.stage {
+  display: grid;
+  gap: 0;
+  min-width: 0;
+}
+
+.frame {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: #000;
+}
+
+.host,
+.host iframe,
+.poster {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.poster {
+  display: grid;
+  place-items: center;
+  background: var(--panel);
+  transition: opacity var(--dur-s) var(--ease-out);
+}
+
+.poster[data-hidden='true'] {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.poster img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.titleCard {
+  font-size: 46px;
+  line-height: 46px;
+  font-weight: 300;
+  letter-spacing: -0.03em;
+  color: var(--text-hi);
+}
+
+.bigPlay {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border: 1px solid #fff;
+  border-radius: 50%;
+  background: rgb(4 5 10 / 0.45);
+}
+
+.bigPlay span,
+.playIcon {
+  display: block;
+  margin-left: 4px;
+  border-left: 16px solid #fff;
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+}
+
+.playIcon {
+  margin-left: 2px;
+  border-left-width: 11px;
+  border-top-width: 7px;
+  border-bottom-width: 7px;
+}
+
+.pauseIcon {
+  display: block;
+  width: 10px;
+  height: 13px;
+  border-left: 3px solid #fff;
+  border-right: 3px solid #fff;
+}
+
+.expandIcon {
+  display: block;
+  width: 16px;
+  height: 16px;
+  --c: #fff;
+  background:
+    linear-gradient(var(--c), var(--c)) top left / 5px 1.5px,
+    linear-gradient(var(--c), var(--c)) top left / 1.5px 5px,
+    linear-gradient(var(--c), var(--c)) top right / 5px 1.5px,
+    linear-gradient(var(--c), var(--c)) top right / 1.5px 5px,
+    linear-gradient(var(--c), var(--c)) bottom left / 5px 1.5px,
+    linear-gradient(var(--c), var(--c)) bottom left / 1.5px 5px,
+    linear-gradient(var(--c), var(--c)) bottom right / 5px 1.5px,
+    linear-gradient(var(--c), var(--c)) bottom right / 1.5px 5px;
+  background-repeat: no-repeat;
+}
+
+.controls {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-5) var(--space-2);
+  background: #000;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  color: var(--text);
+}
+
+.time,
+.vimeo {
+  white-space: nowrap;
+}
+
+.time {
+  margin-right: auto;
+  font-variant-numeric: tabular-nums;
+}
+
+.iconButton,
+.textButton {
+  display: inline-grid;
+  place-items: center;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.textButton:disabled,
+.scrub:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.vimeo {
+  text-decoration: none;
+}
+
+/* Custom scrub: a native range (spec §9) drawn as a 1 px line with white progress. */
+.scrub {
+  appearance: none;
+  width: 100%;
+  height: 16px;
+  margin: 0;
+  background: linear-gradient(#fff, #fff) 0 50% / var(--p, 0%) 2px no-repeat,
+    linear-gradient(var(--line-strong), var(--line-strong)) 0 50% / 100% 1px no-repeat;
+  cursor: pointer;
+}
+
+.scrub::-webkit-slider-thumb {
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #fff;
+}
+
+.scrub::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border: 0;
+  border-radius: 50%;
+  background: #fff;
+}
+
+.upNext {
+  padding-top: var(--space-7);
+}
+
+.info {
+  display: grid;
+  align-content: start;
+  min-width: 0;
+}
+
+.infoBody {
+  display: grid;
+  align-content: start;
+  gap: var(--space-4);
+}
+
+.drawerHead,
+.drawerFoot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: 4px var(--space-7);
+  color: var(--text);
+}
+
+.drawerHead {
+  border-bottom: 1px solid var(--line);
+}
+
+.drawerHead button {
+  font-family: var(--font-sans);
+  font-size: 22px;
+}
+
+.drawerFoot {
+  min-height: 52px;
+  border-top: 1px solid var(--line);
+}
+
+.drawerFoot a {
+  text-decoration: none;
+}
+
+.drawerFoot span {
+  color: var(--text-dim);
+}
+
+.theaterBar,
+.theaterTitle {
+  display: none;
+}
+
+/* R3 · A6 theater: 1000 × 563 player inset in the sky, credits drawer beside it. */
+.theater,
+.theater * {
+  visibility: visible !important;
+}
+
+.theater {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-theater);
+  grid-template-columns: minmax(0, 1000px) 336px;
+  grid-template-rows: auto auto;
+  align-content: center;
+  justify-content: center;
+  gap: 0 var(--space-5);
+  padding: 0 40px;
+  background: rgb(4 5 10 / 0.55);
+}
+
+.theater .theaterBar {
+  position: absolute;
+  top: 32px;
+  left: 40px;
+  right: 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.theater .stage {
+  grid-row: 1 / 3;
+}
+
+.theater .frame {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-panel);
+}
+
+.theater .controls {
+  padding: var(--space-6) 0 0;
+  background: none;
+}
+
+.theater .theaterTitle {
+  display: grid;
+  gap: var(--space-1);
+  margin-right: auto;
+}
+
+.theaterName {
+  font-family: var(--font-sans);
+  font-size: 32px;
+  line-height: 36px;
+  font-weight: 300;
+  letter-spacing: -0.03em;
+  text-transform: none;
+  color: var(--text-hi);
+}
+
+.theater .theaterTitle .label {
+  color: var(--text-dim);
+}
+
+.theater .time {
+  margin-right: 0;
+}
+
+.theater .upNext {
+  display: none;
+}
+
+.theater .info {
+  align-self: start;
+  max-height: calc(1000px * 9 / 16);
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-panel);
+}
+
+.theater .infoBody {
+  overflow-y: auto;
+  padding: var(--space-5) var(--space-7);
+}
+
+/* The drawer carries description and credits only; title moves under the player. */
+.theater .infoBody > :is(h1, .number, .roles) {
+  display: none;
+}
+
+@media (max-width: 1023px) {
+  .root,
+  .theater {
+    grid-template-columns: 1fr;
+  }
+
+  /* Single column: player, then title and credits, then Up next (M-A5). */
+  .stage {
+    display: contents;
+  }
+
+  .root:not(.theater) {
+    row-gap: 0;
+  }
+
+  .root:not(.theater) .info {
+    padding-top: var(--space-7);
+  }
+
+  .upNext {
+    order: 1;
+  }
+
+  .theater {
+    overflow-y: auto;
+    align-content: start;
+    padding-top: 88px;
+  }
+
+  .theater .stage {
+    grid-row: auto;
+  }
+
+  .theater .info {
+    max-height: none;
+    margin: var(--space-5) 0 var(--space-7);
+  }
+}
+
+@media (max-width: 639px) {
+  .controls {
+    padding: var(--space-2) var(--space-3);
+  }
+
+  .vimeo {
+    display: none;
+  }
+}
+
+/* Info column content, rendered by the film page. */
+.number {
+  margin: 0;
+  color: var(--text);
+}
+
+.roles {
+  margin: 0;
+}
+
+.lead {
+  margin: 0;
+  padding-bottom: var(--space-5);
+  font-size: 18px;
+  line-height: 26px;
+  font-weight: 300;
+  color: var(--text-2);
+  white-space: pre-line;
+  border-bottom: 1px solid var(--line);
+}
+
+.credits {
+  display: grid;
+  gap: var(--space-3);
+}
+
+/* Verbatim, with the original line breaks. */
+.credits p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 21px;
+  color: var(--text);
+  white-space: pre-line;
+}
+
+.next {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.next header {
+  display: flex;
+  justify-content: space-between;
+}
+
+.next ol {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+.next a {
+  display: grid;
+  gap: var(--space-2);
+  font-size: 13px;
+  line-height: 16px;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.thumb {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  font-size: 18px;
+  font-weight: 300;
+}
+
+.thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+@media (max-width: 639px) {
+  .next ol {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}

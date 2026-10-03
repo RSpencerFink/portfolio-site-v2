@@ -1,0 +1,119 @@
+/*
+ * Panels-track globals: view-transition recipes (spec §7 T7–T12) and the
+ * panel-open document state. Imported by PanelFrame. Browsers without the
+ * View Transitions API skip all of this and swap instantly.
+ */
+
+/* The panel is modal: the site header/footer must not paint through its 88 % surface. */
+html[data-panel] body > header,
+html[data-panel] body > footer {
+  visibility: hidden;
+}
+
+/* Theater (A6): only the sky (aria-hidden host) and the theater layer stay visible. */
+html[data-theater] body > :not([aria-hidden='true']) {
+  visibility: hidden;
+}
+
+/* Keep the live page clickable while a transition runs. */
+::view-transition {
+  pointer-events: none;
+}
+
+/* T7 / T8: panel shell slides in from +32 px, out to +24 px. */
+::view-transition-new(.vt-panel):only-child {
+  animation:
+    360ms var(--ease-out) 120ms both vt-fade-in,
+    var(--dur-l) var(--ease-out) both vt-panel-in;
+}
+::view-transition-old(.vt-panel):only-child {
+  animation:
+    240ms var(--ease-out) both vt-fade-out,
+    240ms var(--ease-out) both vt-panel-out;
+}
+
+/* T7 shared element: star → header dot (240 ms), and back on close. */
+::view-transition-group(.vt-morph) {
+  animation-duration: 240ms;
+  animation-timing-function: var(--ease-out);
+}
+
+/* T9 step, T10 title, crossfades. */
+::view-transition-group(.vt-fade) {
+  animation-duration: var(--dur-s);
+}
+::view-transition-old(.vt-fade) {
+  animation: var(--dur-s) var(--ease-out) both vt-fade-out;
+}
+::view-transition-new(.vt-fade) {
+  animation: var(--dur-s) var(--ease-out) both vt-fade-in;
+}
+
+/* T10: toggle thumb slides (180 ms); the works recede (0–200) and arrive (200–520). */
+::view-transition-group(.vt-thumb) {
+  animation-duration: 180ms;
+  animation-timing-function: var(--ease-out);
+}
+::view-transition-group(.vt-swap) {
+  animation: none;
+}
+::view-transition-old(.vt-swap),
+::view-transition-new(.vt-swap) {
+  height: auto;
+  object-fit: none;
+  object-position: top left;
+}
+::view-transition-old(.vt-swap) {
+  animation: var(--dur-s) var(--ease-out) both vt-recede;
+}
+::view-transition-new(.vt-swap) {
+  animation: 320ms var(--ease-out) var(--dur-s) both vt-arrive;
+}
+
+/* T11 / T12: still → player → theater frame. */
+::view-transition-group(.vt-frame) {
+  animation-duration: var(--dur-xl);
+  animation-timing-function: var(--ease-out);
+}
+
+@keyframes vt-fade-in {
+  from { opacity: 0; }
+}
+@keyframes vt-fade-out {
+  to { opacity: 0; }
+}
+@keyframes vt-panel-in {
+  from { translate: 32px 0; }
+}
+@keyframes vt-panel-out {
+  to { translate: 24px 0; }
+}
+@keyframes vt-recede {
+  to { opacity: 0; scale: 0.96; }
+}
+@keyframes vt-arrive {
+  from { opacity: 0; scale: 0.96; }
+}
+
+/* Mobile: the sheet rises from the bottom edge instead. */
+@media (max-width: 639px) {
+  @keyframes vt-panel-in {
+    from { translate: 0 100%; }
+  }
+  @keyframes vt-panel-out {
+    to { translate: 0 100%; }
+  }
+}
+
+/* Reduced motion: 200 ms crossfades in place, no flight, no slide, no stagger. */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*) {
+    animation: none !important;
+  }
+  ::view-transition-old(*) {
+    animation: var(--dur-s) linear both vt-fade-out !important;
+  }
+  ::view-transition-new(*) {
+    animation: var(--dur-s) linear both vt-fade-in !important;
+  }
+}

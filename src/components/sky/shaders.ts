@@ -21,6 +21,7 @@ export const backgroundVert = /* glsl */ `
   uniform vec2 uOffset;      // near-layer parallax/drift in px (clip-space direction)
   uniform float uTwinkleMag; // stars with mag below this twinkle
   uniform float uTwinkleCap; // amplitude cap (mobile / low power ±4%)
+  uniform float uAmbient; // twinkle multiplier (theater 0.3)
   attribute vec3 aPos;
   attribute float aMag;
   attribute vec3 aTint;
@@ -48,7 +49,7 @@ export const backgroundVert = /* glsl */ `
     vMag = m;
     vGlint = glint;
     vTint = aTint;
-    float amp = m < uTwinkleMag ? min(aTw.x, uTwinkleCap) : 0.0;
+    float amp = m < uTwinkleMag ? min(aTw.x, uTwinkleCap) * uAmbient : 0.0;
     vTw = amp * (0.6 * sin(6.2831853 * uTime / aTw.y + aTw.w) + 0.4 * sin(6.2831853 * uTime / aTw.z + aTw.w * 1.7));
   }
 `;

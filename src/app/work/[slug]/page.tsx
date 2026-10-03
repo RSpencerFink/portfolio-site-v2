@@ -3,11 +3,10 @@ import { notFound } from 'next/navigation';
 import { PanelFrame } from '@/components/panels/PanelFrame';
 import { Insignia } from '@/components/Insignia';
 import { JsonLd } from '@/components/JsonLd';
-import { Stepper } from '@/components/Stepper';
 import { jobs } from '@/content/work';
 import { person } from '@/content/site';
 import { organizationLd, pageMeta, PERSON_ID } from '@/lib/seo';
-import s from '../../mirror.module.css';
+import e from '@/components/panels/Entity.module.css';
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -30,8 +29,23 @@ export default async function WorkPage({ params }: Props) {
   if (index < 0) notFound();
   const job = jobs[index];
 
+  const pad = (n: number) => String(n).padStart(2, '0');
+  // The chart runs right to left in time: ← is the older star (A2: ← DBOX · 03 / 05 · Hypha →).
+  const older = jobs[index + 1];
+  const newer = jobs[index - 1];
+  let n = 0;
+
   return (
-    <PanelFrame slug={job.slug} title={job.company} kicker="Constellation of Work">
+    <PanelFrame
+      slug={job.slug}
+      title={job.company}
+      kicker={`Star ${pad(index + 1)} / Constellation of Work`}
+      lead={<Insignia job={job} size={56} />}
+      prev={older && { href: `/work/${older.slug}`, name: older.company }}
+      next={newer && { href: `/work/${newer.slug}`, name: newer.company }}
+      counter={`${pad(index + 1)} / ${pad(jobs.length)}`}
+      stepLabel="Constellation of Work"
+    >
       <JsonLd
         data={{
           '@graph': [
@@ -51,38 +65,36 @@ export default async function WorkPage({ params }: Props) {
           ],
         }}
       />
-      <div className={s.stack}>
-        <div className={s.row}>
-          <Insignia job={job} size={44} />
-          <div>
-            <p className="body-strong">{job.title}</p>
-            <p className="label-s">{job.dates}</p>
-          </div>
-        </div>
-        {job.roles.length > 1 && (
-          <ul className={s.stack}>
-            {job.roles.map((r) => (
-              <li key={r.title} className="label">{r.title} · {r.months}</li>
-            ))}
-          </ul>
-        )}
-        {job.roles.length === 1 && <p className="label">{job.roles[0].months}</p>}
+      <div className={e.stack}>
+        <p className={e.role}>
+          {job.title} · {job.dates}
+        </p>
+        <ul className={`label-s ${e.roles}`} aria-label="Roles">
+          {job.roles.map((r) => (
+            <li key={r.title}>
+              <span>{r.title}</span>
+              <span>{r.months}</span>
+            </li>
+          ))}
+        </ul>
         {job.description && <p className="body-l">{job.description}</p>}
         {job.sections.map((sec, i) => (
-          <section key={sec.heading ?? i} className={s.stack}>
+          <section key={sec.heading ?? i} className={e.section}>
             {sec.heading && <h2 className="heading">{sec.heading}</h2>}
-            <ul className={`body-l ${s.bullets}`}>
+            <ol className={e.items}>
               {sec.bullets.map((b) => (
                 <li key={b.text}>
-                  {b.lead && <strong className="body-strong">{b.lead}: </strong>}
-                  {b.text}
+                  <span className={`label-s ${e.num}`} aria-hidden="true">{pad(++n)}</span>
+                  <div>
+                    {b.lead && <p className="body-strong">{b.lead}</p>}
+                    <p className={e.body}>{b.text}</p>
+                  </div>
                 </li>
               ))}
-            </ul>
+            </ol>
           </section>
         ))}
       </div>
-      <Stepper items={jobs} index={index} label="Constellation of Work" toItem={(j) => ({ href: `/work/${j.slug}`, name: j.company })} />
     </PanelFrame>
   );
 }

@@ -1,13 +1,13 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
-import { PanelFrame } from '@/components/panels/PanelFrame';
+import { PanelFrame, StepLink } from '@/components/panels/PanelFrame';
 import { JsonLd } from '@/components/JsonLd';
-import { Stepper } from '@/components/Stepper';
+import { FilmView } from '@/components/panels/FilmView';
 import { films, vimeoEmbedUrl, vimeoUrl } from '@/content/films';
 import { absoluteUrl, person } from '@/content/site';
 import { pageMeta, PERSON_ID } from '@/lib/seo';
-import s from '../../../mirror.module.css';
+import v from '@/components/panels/FilmView.module.css';
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -35,8 +35,24 @@ export default async function FilmPage({ params }: Props) {
   if (index < 0) notFound();
   const f = films[index];
 
+  const pad = (n: number) => String(n).padStart(2, '0');
+  const prev = films[index - 1];
+  const next = films[index + 1];
+  const counter = `${pad(index + 1)} / ${pad(films.length)}`;
+  const [lead, ...credits] = f.description.split('\n\n');
+  const upNext = Array.from({ length: 6 }, (_, k) => (index + 1 + k) % films.length);
+
   return (
-    <PanelFrame slug={f.slug} title={f.title} kicker="The Filmmaker · Digital">
+    <PanelFrame
+      slug={f.slug}
+      title={f.title}
+      kicker={`The Filmmaker / ${f.title}`}
+      prev={prev && { href: `/visual-arts/digital/${prev.slug}`, name: `Prev · ${prev.title}` }}
+      next={next && { href: `/visual-arts/digital/${next.slug}`, name: `${next.title} · Next` }}
+      counter={counter}
+      stepLabel="The Filmmaker"
+      variant="cinema"
+    >
       <JsonLd
         data={{
           '@type': 'VideoObject',
@@ -49,28 +65,63 @@ export default async function FilmPage({ params }: Props) {
           director: { '@id': PERSON_ID },
         }}
       />
-      <div className={s.stack}>
-        {/* Poster until the panels track mounts the Vimeo player on first play (spec §7 perf). */}
-        <a href={vimeoUrl(f)} aria-label={`Play ${f.title} on Vimeo`}>
-          {f.still ? (
-            <Image
-              className={s.media}
-              src={f.still}
-              width={1280}
-              height={720}
-              sizes="(max-width: 760px) 100vw, 700px"
-              priority
-              alt={`Still from ${f.title}`}
-            />
-          ) : (
-            <span className={`display-s ${s.card}`}>{f.title}</span>
-          )}
-        </a>
-        <p className="label">{f.roles.join(' · ')}</p>
-        {f.description && <p className={`body-l ${s.preLine}`}>{f.description}</p>}
-        <p><a className={`label ${s.pill}`} href={vimeoUrl(f)}>Watch on Vimeo ↗</a></p>
-      </div>
-      <Stepper items={films} index={index} label="The Filmmaker" toItem={(x) => ({ href: `/visual-arts/digital/${x.slug}`, name: x.title })} />
+      <FilmView
+        slug={f.slug}
+        title={f.title}
+        roles={f.roles}
+        vimeoId={f.vimeoId}
+        vimeoUrl={vimeoUrl(f)}
+        still={f.still}
+        counter={counter}
+        info={
+          <>
+            <p className={`label ${v.number}`}>Film {counter}</p>
+            {/* PanelFrame's cinema variant labels the dialog with `${slug}-title`. */}
+            <h1 id={`${f.slug}-title`} className="display-s">
+              {f.title}
+            </h1>
+            <p className={`label ${v.roles}`}>{f.roles.join(', ')}</p>
+            {lead && <p className={v.lead}>{lead}</p>}
+            {credits.length > 0 && (
+              <section className={v.credits} aria-labelledby={`${f.slug}-credits`}>
+                <h2 id={`${f.slug}-credits`} className="label">
+                  Credits
+                </h2>
+                {credits.map((c) => (
+                  <p key={c}>{c}</p>
+                ))}
+              </section>
+            )}
+          </>
+        }
+      >
+        <section className={v.next} aria-labelledby={`${f.slug}-next`}>
+          <header className="label">
+            <h2 id={`${f.slug}-next`} className="label">
+              Up next in the constellation
+            </h2>
+            <span aria-hidden="true">
+              {pad(upNext[0] + 1)} — {pad(upNext[5] + 1)}
+            </span>
+          </header>
+          <ol>
+            {upNext.map((i) => {
+              const x = films[i];
+              return (
+                <li key={x.slug}>
+                  <StepLink href={`/visual-arts/digital/${x.slug}`}>
+                    <span className={v.thumb}>
+                      {x.still ? <Image src={x.still} width={320} height={180} sizes="140px" alt="" /> : x.title}
+                    </span>
+                    <span className="label-s">{pad(i + 1)}</span>
+                    <span>{x.title}</span>
+                  </StepLink>
+                </li>
+              );
+            })}
+          </ol>
+        </section>
+      </FilmView>
     </PanelFrame>
   );
 }

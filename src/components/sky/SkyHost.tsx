@@ -41,7 +41,8 @@ const starCount = (w: number, reduced: boolean) => (reduced || w < 640 ? 500 : w
  */
 export function SkyHost() {
   const hostRef = useRef<HTMLDivElement>(null);
-  const isHome = usePathname() === '/';
+  const pathname = usePathname();
+  const isHome = pathname === '/';
   const reduced = useReducedMotion();
   const [size, setSize] = useState<{ w: number; h: number } | null>(null);
   const [lowPower, setLowPower] = useState(false);
@@ -151,7 +152,7 @@ export function SkyHost() {
             <Scene layout={layout} count={starCount(size.w, reduced)} motion={motion} isHome={homeJourney} onHomeRoute={isHome} onFrame={onFrame} onLowFps={() => setLowPower(true)} />
           </Canvas>
         )}
-        <StarLabels key={layout} chart={chart} />
+        <StarLabels key={layout} chart={chart} openPath={pathname} />
       </div>
       {isHome && <HeroMark hostRef={hostRef} reduced={reduced} markWidth={markWidth} />}
     </div>

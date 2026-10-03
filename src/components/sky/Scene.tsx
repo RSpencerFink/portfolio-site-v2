@@ -238,9 +238,11 @@ function tick(ctx: Ctx, state: RootState, delta: number) {
   }
   bgMat.uniforms.uOffset.value.set(sx, -sy);
   bgMat.uniforms.uTwinkleCap.value = motion === 'full' ? 1 : motion === 'low' ? 0.04 : 0;
+  // Theater mode turns the twinkle down (cameraRig.setAmbient, T12).
+  bgMat.uniforms.uAmbient.value = rig.ambient;
   bgMat.uniforms.uTwinkleMag.value = motion === 'full' ? 0.697 : 0.566; // top 30% / top 15%
   bgMat.uniforms.uGlintRot.value = motion === 'full' ? (t * 0.5 * Math.PI) / 180 : 0;
-  contentMat.uniforms.uTwinkle.value = motion === 'reduced' ? 0 : 1;
+  contentMat.uniforms.uTwinkle.value = motion === 'reduced' ? 0 : rig.ambient;
 
   // Nebula breathing: scale 1 → 1.03 + opacity ±6% @ 14 s, centre drift @ 40 s (low power: opacity @ 20 s).
   if (nebula.current) {
@@ -307,7 +309,7 @@ export function Scene({ layout, count, motion, isHome, onHomeRoute, onFrame, onL
   const chart = chartLayout(layout);
   const bg = useMemo(() => makeBackground(layout, count), [layout, count]);
   const bgMat = useMemo(
-    () => additive(backgroundVert, backgroundFrag, { ...sharedUniforms(), uOffset: { value: new THREE.Vector2() }, uTwinkleMag: { value: 0.697 }, uTwinkleCap: { value: 1 }, uGlintRot: { value: 0 } }),
+    () => additive(backgroundVert, backgroundFrag, { ...sharedUniforms(), uOffset: { value: new THREE.Vector2() }, uTwinkleMag: { value: 0.697 }, uTwinkleCap: { value: 1 }, uAmbient: { value: 1 }, uGlintRot: { value: 0 } }),
     [],
   );
   const content = useMemo(() => makeContent(layout), [layout]);

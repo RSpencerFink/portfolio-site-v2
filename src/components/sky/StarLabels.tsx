@@ -1,5 +1,6 @@
 'use client';
 
+import { ViewTransition } from 'react';
 import { Vector3 } from 'three';
 import { Insignia } from '@/components/Insignia';
 import { SkyLink } from '@/components/panels/SkyLink';
@@ -138,8 +139,12 @@ export const resetLabels = () => {
  * RA/Dec ticks, positioned from the camera every frame. Links are pointer
  * targets only (tabIndex −1): the host is aria-hidden and the page's HTML
  * mirror carries the accessible star links.
+ *
+ * Each linked marker shares `star-<slug>` with its panel's header dot (T7).
+ * The marker for the open path unmounts in the same commit the panel mounts,
+ * so React pairs the two and the star morphs into the dot (and back on close).
  */
-export function StarLabels({ chart }: { chart: ChartLayout }) {
+export function StarLabels({ chart, openPath }: { chart: ChartLayout; openPath: string }) {
   const hover = (id: string | null) => () => hoverStore.set(id);
   return (
     <div ref={reg('root')} className={s.labels} data-layout={chart.layout}>
@@ -193,10 +198,13 @@ export function StarLabels({ chart }: { chart: ChartLayout }) {
           onPointerEnter: hover(star.id),
           onPointerLeave: hover(null),
         };
+        if (star.href === openPath) return null;
         return star.href ? (
-          <SkyLink key={star.id} href={star.href} tabIndex={-1} {...props}>
-            {inner}
-          </SkyLink>
+          <ViewTransition key={star.id} name={`star-${star.id}`} share="vt-morph" default="none">
+            <SkyLink href={star.href} tabIndex={-1} {...props}>
+              {inner}
+            </SkyLink>
+          </ViewTransition>
         ) : (
           <div key={star.id} {...props}>
             {inner}

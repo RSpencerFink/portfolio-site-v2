@@ -3,11 +3,10 @@ import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { PanelFrame } from '@/components/panels/PanelFrame';
 import { JsonLd } from '@/components/JsonLd';
-import { Stepper } from '@/components/Stepper';
 import { paintings } from '@/content/paintings';
 import { absoluteUrl } from '@/content/site';
 import { pageMeta, PERSON_ID } from '@/lib/seo';
-import s from '../../../mirror.module.css';
+import e from '@/components/panels/Entity.module.css';
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -32,8 +31,21 @@ export default async function PaintingPage({ params }: Props) {
   if (index < 0) notFound();
   const p = paintings[index];
 
+  const pad = (n: number) => String(n).padStart(2, '0');
+  const prev = paintings[index - 1];
+  const next = paintings[index + 1];
+
   return (
-    <PanelFrame slug={p.slug} title={p.title} kicker="The Painter · Analog">
+    <PanelFrame
+      slug={p.slug}
+      title={p.title}
+      kicker={`Painting ${pad(index + 1)} / The Painter`}
+      subline={<p className="label" style={{ margin: 0 }}>{p.medium} · {p.size}</p>}
+      prev={prev && { href: `/visual-arts/analog/${prev.slug}`, name: prev.title }}
+      next={next && { href: `/visual-arts/analog/${next.slug}`, name: next.title }}
+      counter={`${pad(index + 1)} / ${pad(paintings.length)}`}
+      stepLabel="The Painter"
+    >
       <JsonLd
         data={{
           '@type': 'VisualArtwork',
@@ -47,19 +59,16 @@ export default async function PaintingPage({ params }: Props) {
           creator: { '@id': PERSON_ID },
         }}
       />
-      <figure className={s.stack} style={{ margin: 0 }}>
+      <figure className={e.figure}>
         <Image
-          className={s.media}
           src={`${p.image}_1500.jpg`}
-          sizes="(max-width: 760px) 100vw, 700px"
+          sizes="(max-width: 760px) 100vw, 540px"
           width={800}
           height={p.height800}
           priority
           alt={`${p.title}, ${p.medium.toLowerCase()} by R. Spencer Fink`}
         />
-        <figcaption className="label">{p.medium} · {p.size}</figcaption>
       </figure>
-      <Stepper items={paintings} index={index} label="The Painter" toItem={(x) => ({ href: `/visual-arts/analog/${x.slug}`, name: x.title })} />
     </PanelFrame>
   );
 }
