@@ -1,14 +1,24 @@
 'use client';
 
 import Link from 'next/link';
-import type { ComponentProps } from 'react';
+import { useEffect, useRef, type ComponentProps } from 'react';
 import { softNav } from './softNav';
 
-/** A link that opens its target as a panel over the sky. Use for star links only. */
+/**
+ * A link that opens its target as a panel over the sky. Use for star links
+ * only (StarMarker, the HTML mirror, painting and still cards). When the panel
+ * closes, the SkyLink for that panel's path takes focus back.
+ */
 export function SkyLink({ onClick, ...props }: ComponentProps<typeof Link> & { href: string }) {
+  const ref = useRef<HTMLAnchorElement>(null);
+  useEffect(() => {
+    if (softNav.takeFocus(props.href)) ref.current?.focus();
+  }, [props.href]);
+
   return (
     <Link
       {...props}
+      ref={ref}
       onClick={(e) => {
         softNav.set(props.href);
         onClick?.(e);

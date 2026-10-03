@@ -1,12 +1,11 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { PanelFrame } from '@/components/panels/PanelFrame';
+import { PanelFrame, StepLink } from '@/components/panels/PanelFrame';
 import { JsonLd } from '@/components/JsonLd';
-import { Stepper } from '@/components/Stepper';
 import { projects } from '@/content/projects';
 import { absoluteUrl } from '@/content/site';
 import { pageMeta, PERSON_ID } from '@/lib/seo';
-import s from '../../mirror.module.css';
+import e from '@/components/panels/Entity.module.css';
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -25,8 +24,21 @@ export default async function ProjectPage({ params }: Props) {
   if (index < 0) notFound();
   const p = projects[index];
 
+  const pad = (n: number) => String(n).padStart(2, '0');
+  const prev = projects[index - 1];
+  const next = projects[index + 1];
+  const nearby = [prev, next].filter((x) => x !== undefined);
+
   return (
-    <PanelFrame slug={p.slug} title={p.name} kicker="The Builder’s Cluster">
+    <PanelFrame
+      slug={p.slug}
+      title={p.name}
+      kicker={`Star ${pad(index + 1)} / The Builder’s Cluster`}
+      prev={prev && { href: `/projects/${prev.slug}`, name: prev.name }}
+      next={next && { href: `/projects/${next.slug}`, name: next.name }}
+      counter={`${pad(index + 1)} / ${pad(projects.length)}`}
+      stepLabel="The Builder’s Cluster"
+    >
       <JsonLd
         data={{
           '@type': p.repo ? 'SoftwareSourceCode' : 'CreativeWork',
@@ -38,18 +50,47 @@ export default async function ProjectPage({ params }: Props) {
           ...(p.repo && { codeRepository: p.repo, programmingLanguage: p.tech }),
         }}
       />
-      <div className={s.stack}>
+      <div className={e.stack}>
         <p className="body-l">{p.description}</p>
-        <ul className={s.pills}>
-          {p.repo && <li><a className={`label ${s.pill}`} href={p.repo}>Repository ↗</a></li>}
-          {p.live && <li><a className={`label ${s.pill}`} href={p.live.url}>{p.live.label} ↗</a></li>}
+        <ul className={e.pills}>
+          {p.repo && (
+            <li>
+              <a className={`label ${e.pill}`} href={p.repo}>
+                Repository <span aria-hidden="true">↗</span>
+              </a>
+            </li>
+          )}
+          {p.live && (
+            <li>
+              <a className={`label ${e.pill}`} href={p.live.url}>
+                {p.live.label} <span aria-hidden="true">↗</span>
+              </a>
+            </li>
+          )}
         </ul>
-        <h2 className="heading">Built with</h2>
-        <ul className={`mono-body ${s.chips}`}>
-          {p.tech.map((t) => <li key={t}>{t}</li>)}
-        </ul>
+        <section className={e.section}>
+          <h2 className="heading">Built with</h2>
+          <ul className={`mono-body ${e.chips}`}>
+            {p.tech.map((t) => (
+              <li key={t}>{t}</li>
+            ))}
+          </ul>
+        </section>
+        <section className={e.section}>
+          <h2 className="heading">Nearby in the cluster</h2>
+          <ol className={e.items}>
+            {nearby.map((x) => (
+              <li key={x.slug}>
+                <span className={`label-s ${e.num}`} aria-hidden="true">{pad(projects.indexOf(x) + 1)}</span>
+                <div>
+                  <StepLink href={`/projects/${x.slug}`} className="body-strong">{x.name}</StepLink>
+                  <p className={e.body}>{x.description}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </section>
       </div>
-      <Stepper items={projects} index={index} label="The Builder’s Cluster" toItem={(x) => ({ href: `/projects/${x.slug}`, name: x.name })} />
     </PanelFrame>
   );
 }

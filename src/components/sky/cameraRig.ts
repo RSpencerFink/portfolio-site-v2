@@ -9,9 +9,11 @@ export interface CameraState {
   progress: number;
   /** Sky dim 1 (full) → 0.55 behind a panel (spec §3 opacity). */
   dim: number;
+  /** Ambient motion (twinkle) multiplier, 1 normal → 0.3 in theater mode (spec §7 T12). Added by the panels track; the sky may ignore it. */
+  ambient: number;
 }
 
-let state: CameraState = { target: 'overview', progress: 0, dim: 1 };
+let state: CameraState = { target: 'overview', progress: 0, dim: 1, ambient: 1 };
 const listeners = new Set<() => void>();
 const update = (patch: Partial<CameraState>) => {
   state = { ...state, ...patch };
@@ -27,6 +29,7 @@ export const cameraRig = {
   setTarget: (target: CameraTarget) => update({ target }),
   setProgress: (progress: number) => update({ progress }),
   setDim: (dim: number) => update({ dim }),
+  setAmbient: (ambient: number) => update({ ambient }),
   subscribe(listener: () => void) {
     listeners.add(listener);
     return () => {
