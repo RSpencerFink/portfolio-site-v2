@@ -1,9 +1,12 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
+import Link from 'next/link';
+import { ViewTransition } from 'react';
 import { SkyLink } from '@/components/panels/SkyLink';
+import { VisualArtsToggle } from '@/components/panels/VisualArtsToggle';
 import { paintings } from '@/content/paintings';
 import { pageMeta } from '@/lib/seo';
-import s from '../../mirror.module.css';
+import s from '../visual-arts.module.css';
 
 export const metadata: Metadata = pageMeta({
   title: 'The Painter: Analog',
@@ -12,35 +15,51 @@ export const metadata: Metadata = pageMeta({
   image: `${paintings[0].image}_800.jpg`,
 });
 
+const pad = (n: number) => String(n).padStart(2, '0');
+
+/** R3 · A3. Paintings are the constellation's stars; hover or focus selects one. */
 export default function AnalogPage() {
   return (
     <main id="main" className={s.main}>
-      <p className="label">Visual Arts · Analog</p>
-      <h1 className="display-s">The Painter</h1>
-      <nav aria-label="The Painter" style={{ marginTop: 32 }}>
-        <ol className={s.grid}>
-          {paintings.map((p) => (
-            <li key={p.slug}>
-              <SkyLink href={`/visual-arts/analog/${p.slug}`}>
-                <figure>
-                  <Image
-                    src={`${p.image}_1500.jpg`}
-                    width={400}
-                    height={Math.round(p.height800 / 2)}
-                    sizes="(max-width: 480px) 100vw, 300px"
-                    alt=""
-                  />
-                  <figcaption>
-                    <span className="body-strong">{p.title}</span>
-                    <br />
-                    <span className="label-s">{p.medium} · {p.size}</span>
-                  </figcaption>
-                </figure>
-              </SkyLink>
-            </li>
-          ))}
-        </ol>
-      </nav>
+      <header className={s.head}>
+        <ViewTransition name="va-title" share="vt-fade" default="none">
+          <h1 className="display-s">The Painter</h1>
+        </ViewTransition>
+        <Link href="/" className="label">
+          <span aria-hidden="true">← </span>Back to sky
+        </Link>
+        <p className="label">Analog · {paintings.length} paintings</p>
+        <VisualArtsToggle current="analog" />
+      </header>
+      <ViewTransition name="va-works" share="vt-swap" default="none">
+        <nav aria-label="The Painter">
+          <ol className={s.paintings}>
+            {paintings.map((p, i) => (
+              <li key={p.slug}>
+                <SkyLink href={`/visual-arts/analog/${p.slug}`} className={s.work}>
+                  <span className={`label ${s.selected}`} aria-hidden="true">
+                    Selected · {pad(i + 1)} / {pad(paintings.length)} · Enter to open
+                  </span>
+                  <span className={s.frame}>
+                    <Image
+                      src={`${p.image}_800.jpg`}
+                      width={800}
+                      height={p.height800}
+                      sizes="(max-width: 639px) 50vw, 280px"
+                      alt=""
+                    />
+                  </span>
+                  <span className={s.caption}>
+                    <span className={`label ${s.name}`}>{p.title}</span>
+                    <span className="label-s">{p.medium}</span>
+                    <span className="label-s">{p.size}</span>
+                  </span>
+                </SkyLink>
+              </li>
+            ))}
+          </ol>
+        </nav>
+      </ViewTransition>
     </main>
   );
 }
