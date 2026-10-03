@@ -230,7 +230,7 @@ export function HomeJourney() {
       // Hash targets: /#work the first Work stop (Brava), /#projects the featured build,
       // /#chart (a direct-loaded panel's Close) the H3 rest at the end of the document.
       const hashY: Record<string, () => number | undefined> = {
-        // The first star, wherever the "Constellation of Work" layer sits in the layout.
+        // The first star, wherever the "The Engineer" layer sits in the layout.
         work: () => (stageStops.work ? Math.min(...stageStops.work()) : undefined),
         projects: () => stageStops.projects?.()[0],
         chart: () => ScrollTrigger.maxScroll(window),

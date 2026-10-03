@@ -17,7 +17,7 @@ export const constellations: Constellation[] = [
   {
     // R4 option C "Arrow": the shaft runs through the past roles, the head lands on Brava.
     id: 'work',
-    name: 'Constellation of Work',
+    name: 'The Engineer',
     subline: '2016 — Present',
     namePosition: [0.0556, 0.4667],
     stars: {
@@ -40,7 +40,7 @@ export const constellations: Constellation[] = [
   {
     // R4 option B "Lodestar": one extra-bright star with a four-point glint, no lines.
     id: 'projects',
-    name: 'Featured Build',
+    name: 'The Builder',
     subline: 'Projects',
     namePosition: [0.7181, 0.26],
     stars: { 'section-8-scout': [0.7569, 0.1889] },
@@ -51,7 +51,7 @@ export const constellations: Constellation[] = [
     // R4 option A "Telescope": the Observer at the eyepiece, the schools along the tube
     // (newest nearest the objective), a flared objective end and a two-leg mount.
     id: 'origins',
-    name: 'Origins',
+    name: 'The Student',
     subline: 'Education',
     namePosition: [0.0417, 0.8333],
     stars: {
@@ -102,7 +102,7 @@ export const constellations: Constellation[] = [
   {
     // R4 option C "Clapperboard": the slate, and its arm hinged open from Nightshade.
     id: 'filmmaker',
-    name: 'The Filmmaker',
+    name: 'The Director',
     subline: 'Digital',
     namePosition: [0.3542, 0.7444],
     stars: {

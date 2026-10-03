@@ -18,7 +18,7 @@ interface Props {
   /** Star id (entity slug, or "observer"): the camera centres this star. */
   slug: string;
   title: string;
-  /** Breadcrumb, e.g. "Star 03 / Constellation of Work". */
+  /** Breadcrumb, e.g. "Star 03 / The Engineer". */
   kicker: string;
   /** Insignia or headshot above the title. */
   lead?: ReactNode;

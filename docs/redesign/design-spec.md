@@ -8,7 +8,7 @@ Implementation target: Next.js App Router, statically generated pages on Vercel.
 
 ## 1. Purpose and flow map
 
-The site is one continuous night sky. The visitor enters through the RSF mark, flies through the S, travels star to star through the Constellation of Work (one gesture, one stop), stops at the featured build (Section-8-Scout), and pulls back to the full chart. The chart is home base. Everything else is a star that opens.
+The site is one continuous night sky. The visitor enters through the RSF mark, flies through the S, travels star to star through the The Engineer (one gesture, one stop), stops at the featured build (Section-8-Scout), and pulls back to the full chart. The chart is home base. Everything else is a star that opens.
 
 | # | Frame | Route | What the visitor sees | Trigger to next |
 |---|-------|-------|-----------------------|-----------------|
@@ -16,17 +16,17 @@ The site is one continuous night sky. The visitor enters through the RSF mark, f
 | 2 | R3 · H2 · Flying in through the S | `/` (scroll 60–220 vh) | Mask scales to 6.4×; the S counters become soft black corners, then dissolve. Chart HUD fades in. | Scroll continues; pin releases |
 | 3 | R3 · W1 · Work scroll — Arriving at Brava | `/#work` (W pin, star 1 of 5) | Brava star with reticle, insignia, "Now", title, role line, description. Rail on the right. | Scroll 100 vh per star |
 | 4 | R3 · W2 · Work scroll — At Meta | W pin, star 3 of 5 | Dense two-column content (Rights Manager / Horizon Creator Economy) on a scrim. | Scroll |
-| 5 | R3 · W3 · Work scroll — Constellation complete | W pin, star 5 of 5 | All five stars joined, "Constellation of Work", Download Résumé. Origins (Emerson College, App Academy) dim, bottom left. | Scroll → pull 1 (MO-4) |
-| 6 | R4 · P · Featured — Section-8-Scout | `/#projects` (one stop after Work) | Focal star with reticle top-left, "Featured build" kicker, title, "Chrome extension · Live", verbatim description, "Built with", white "Visit live site ↗" pill, framed browser-window preview of the live site. | Gesture → pull 2 (MO-4) |
-| 8 | R3 · H3 · The sky chart (home) | `/` (after journey) | Full chart: five R4 constellation figures (§5) around the RSF pole mark, RA/Dec ticks, zoom, "Drag to explore · Click a star". | Click any star |
+| 5 | R3 · W3 · Work scroll — Constellation complete | W pin, star 5 of 5 | All five stars joined, "The Engineer", Download Résumé. The Student (Emerson College, App Academy) dim, bottom left. | Scroll → pull 1 (MO-4) |
+| 6 | R4 · P · Featured — Section-8-Scout | `/#projects` (one stop after Work) | Focal star with reticle top-left, "The Builder" kicker, title, "Chrome extension · Live", verbatim description, "Built with", white "Visit live site ↗" pill, framed browser-window preview of the live site. | Gesture → pull 2 (MO-4) |
+| 8 | R3 · H3 · The sky chart (home) | `/` (after journey) | Full chart: five R4 constellation figures (§5) around the RSF pole mark, faint grid (no RA/Dec labels), zoom, "Drag to explore · Click a star". | Click any star |
 | 9 | R5 · Job panel (Meta) | `/work/meta` | The camera centres Meta's star in the upper middle; the sky dims and drops labels and lines; the content reads in a centred 680 px column below. Close ✕, "← Back to sky", Esc; ← → in a quiet footer row. | Close / Esc / step |
 | 10 | R5 · Project panel (Section-8-Scout) | `/projects/section-8-scout` | The featured stop's content in the centred column, with a larger preview. | Close |
 | 11 | R3 · AB · About panel (The Observer) | `/about` | Centred panel: headshot, name, "Software Engineer · Visual Artist", verbatim bio, Currently — CTO & Co-founder, Brava; Education (Georgia Tech in progress, App Academy, Emerson); Reach: LinkedIn, Github, Instagram, Download Résumé. | Close |
 | 12 | R2 · B1 window, then R3 · A3 · The Painter (Analog) | `/visual-arts/analog` | Opens on the RSF letterforms as a window: Dr. Manhattan, Marilyn Monroe and Walter White through the R, S and F. A scroll or a 1.5 s dwell flies through the S into the constellation: paintings as stars; selected painting has corner-bracket reticle and white label; others at 50%. Analog/Digital toggle (also on the window). | Scroll / dwell / toggle (MO-6) / click painting |
-| 13 | R2 · B1 window, then R3 · A4 · The Filmmaker (Digital) | `/visual-arts/digital` | The same window with three film stills, then film stills with timecode chips; hover shows description + Play on Vimeo. No index list. | Click still (MO-7) |
+| 13 | R2 · B1 window, then R3 · A4 · The Director (Digital) | `/visual-arts/digital` | The same window with three film stills, then film stills with timecode chips; hover shows description + Play on Vimeo. No index list. | Click still (MO-7) |
 | 14 | R5 · Film selected (Nightshade) | `/visual-arts/digital/nightshade` | Centred cinema panel, media first: 16:9 player sized to the viewport, then title, roles, description, credits, then Up next. | ⤢ → theater |
 | 15 | R3 · A6 · Theater mode (Spare Key) | `/visual-arts/digital/spare-key?theater=1` | 1000×563 player inset in the sky (never edge to edge), credits drawer beside it, scrub + title below. | Esc |
-| 16 | R3 · RM · Reduced motion — Static sky + Work list | `/` with `prefers-reduced-motion` | Static sky, mark, "Constellation of Work" title, plain job list with insignia, Sky index. | Normal scrolling |
+| 16 | R3 · RM · Reduced motion — Static sky + Work list | `/` with `prefers-reduced-motion` | Static sky, mark, "The Engineer" title, plain job list with insignia, Sky index. | Normal scrolling |
 
 Mobile (390 × 844): `R3 · M-H1 · Hero`, `R3 · M-W2 · Work scroll — At Meta`, `R3 · M-H3 · Sky chart`, `R3 · M-A5 · Film selected`. Panels on mobile are the same centred view, full screen (the R3 bottom sheet is retired).
 
@@ -53,7 +53,7 @@ Motion storyboards: `R3 · MO-1` … `R3 · MO-10` (section 9).
 /visual-arts/analog/<key>           lewis-hamilton, aaron-judge, andy-warhol, barack-obama, chance-the-rapper,
                                     dr-manhattan, rorschach, ozymandias, han-solo, james-bond, jon-snow,
                                     luke-skywalker, marilyn-monroe, princess-leia, rick-grimes, tinkerbell, walter-white
-/visual-arts/digital                The Filmmaker (12)
+/visual-arts/digital                The Director (12)
 /visual-arts/digital/<key>          montauk, spare-key, zero-suds-commercial, zero-suds-info, row-home, timeflies-epk,
                                     bayonet, nightshade, likuid, timeflies-live, tritonal, graffiti6
 /visual-arts/digital/<key>?theater=1
@@ -61,7 +61,7 @@ Motion storyboards: `R3 · MO-1` … `R3 · MO-10` (section 9).
 /resume.pdf                         Download Résumé (static asset)
 ```
 
-Routing. Plain static routes, no intercepting routes (see ARCHITECTURE.md, "Panels without intercepting routes"): with JS every entity route renders as the centred panel, whether reached from a star or loaded directly; the server HTML is the full page for no-JS visitors and crawlers. Origins (Georgia Institute of Technology 2026 — Present, in progress; App Academy 2018; Emerson College 2009 — 2013) are labelled stars without routes; they open nothing.
+Routing. Plain static routes, no intercepting routes (see ARCHITECTURE.md, "Panels without intercepting routes"): with JS every entity route renders as the centred panel, whether reached from a star or loaded directly; the server HTML is the full page for no-JS visitors and crawlers. The Student (Georgia Institute of Technology 2026 — Present, in progress; App Academy 2018; Emerson College 2009 — 2013) are labelled stars without routes; they open nothing.
 
 Contact is LinkedIn, Github, Instagram and Download Résumé. No email. No form.
 
@@ -86,7 +86,7 @@ Contact is LinkedIn, Github, Instagram and Download Résumé. No email. No form.
 | `--text-2` | `#C9CDD8` | Role lines, descriptions on the sky |
 | `--text-3` | `#A3A9BA` | Panel body |
 | `--text-dim` | `#8C93A8` | Dim labels, sub-lines, breadcrumbs |
-| `--text-mute` | `#5A6075` | Non-essential ornament only (counters, class/RA flourish) |
+| `--text-mute` | `#5A6075` | Non-essential ornament only (counters, class flourish) |
 
 Spectral halos (core is always `#FFFFFF`): B `#9BB0FF` / `#AABFFF`, A `#CAD7FF`, F `#F8F7FF`, G `#FFF4EA`, K `#FFD2A1`, M `#FFB56C`.
 
@@ -101,7 +101,7 @@ Inter Tight (display, body) and JetBrains Mono (labels). No italics anywhere.
 | Style | Family / weight | Size / line | Tracking | Use |
 |-------|-----------------|-------------|----------|-----|
 | display-xl | Inter Tight 300 | 96 / 96 | −0.03em | W star title (Brava, Meta); long names drop to 72 / 76 (Section-8-Scout) |
-| display-l | Inter Tight 300 | 64 / 64 | −0.03em | W3 "Constellation of Work", mobile star title |
+| display-l | Inter Tight 300 | 64 / 64 | −0.03em | W3 "The Engineer", mobile star title |
 | display-m | Inter Tight 300 | 56 / 56 | −0.03em | Panel titles (A2, PP) |
 | display-s | Inter Tight 300 | 44–46 / 46 | −0.03em | A3/A4 section titles, About name, film title |
 | heading | Inter Tight 300 | 24 / 28 | −0.03em | Panel sections ("Rights Manager", "Built with") |
@@ -174,7 +174,7 @@ Rounded square, 22% radius, 1 px hairline `rgba(255,255,255,0.14)`, no shadow. 2
 
 Round 4 shapes (Paper "Round 4 — Constellations", the client's picks from the Options sheet). The source of truth is `src/content/sky.ts`; the tables below are a snapshot. Helper stars (h) are unlabelled and dimmer. Label side is in `StarLabels.tsx` (`LEFT`).
 
-Constellation of Work — option C "Arrow": the shaft runs through the past roles and the head lands on Brava. Name at 0.0556, 0.4667.
+The Engineer — option C "Arrow": the shaft runs through the past roles and the head lands on Brava. Name at 0.0556, 0.4667.
 | Star | x | y |
 |------|---|---|
 | Prizm Imagery | 0.0764 | 0.4111 |
@@ -186,9 +186,9 @@ Constellation of Work — option C "Arrow": the shaft runs through the past role
 
 Lines: Prizm → DBOX → Meta → Hypha → Brava; Brava → each barb.
 
-Featured Build — option B "Lodestar": Section-8-Scout alone at 0.7569, 0.1889, extra bright with a four-point glint, no lines. Name "Featured Build / Projects" at 0.7181, 0.26.
+The Builder — option B "Lodestar": Section-8-Scout alone at 0.7569, 0.1889, extra bright with a four-point glint, no lines. Name "The Builder / Projects" at 0.7181, 0.26.
 
-Origins — option A "Telescope": the Observer at the eyepiece, the schools along the tube (newest nearest the objective), a flared objective end and a two-leg mount. Name at 0.0417, 0.8333.
+The Student — option A "Telescope": the Observer at the eyepiece, the schools along the tube (newest nearest the objective), a flared objective end and a two-leg mount. Name at 0.0417, 0.8333.
 | Star | x | y |
 |------|---|---|
 | The Observer ("R. Spencer Fink / You are here · About") | 0.0583 | 0.7111 |
@@ -211,7 +211,7 @@ The Painter — option C "Brush": a handle through three paintings, a bristle ti
 
 Lines: Walter White → Dr. Manhattan → Marilyn Monroe → each bristle → Han Solo.
 
-The Filmmaker — option C "Clapperboard": the slate, its arm hinged open from Nightshade. Name inside the slate at 0.3542, 0.7444.
+The Director — option C "Clapperboard": the slate, its arm hinged open from Nightshade. Name inside the slate at 0.3542, 0.7444.
 | Star | x | y |
 |------|---|---|
 | Nightshade (label left) | 0.3125 | 0.7222 |
@@ -222,13 +222,13 @@ The Filmmaker — option C "Clapperboard": the slate, its arm hinged open from N
 
 Lines: Nightshade → Montauk → Bayonet → Spare Key → Nightshade; Nightshade → Timeflies EPK.
 
-Pole star (plain white RSF mark with soft glow — decision: no painting collage on the home sky; the collage treatment is not used): centre 0.5, 0.4778, mark 324 × 156 px. No cartouche and no star catalogue (removed). While the pole mark shows, the header hides its own mark. Zoom + / − and "Drag to explore · Click a star" bottom-right. RA ticks at 12h (left), 00h (right), 18h (top), 06h (bottom); Dec +80°…+20° along the right half of the equator line.
+Pole star (plain white RSF mark with soft glow — decision: no painting collage on the home sky; the collage treatment is not used): centre 0.5, 0.4778, mark 324 × 156 px. No cartouche and no star catalogue (removed). While the pole mark shows, the header hides its own mark. Zoom + / − and "Drag to explore · Click a star" bottom-right. No RA / Dec labels (removed); the faint grid stays.
 
 Display order for paintings and films is the content-file order (Lewis Hamilton … Walter White is 17 / 17; Montauk … Graffiti6, Nightshade is 08 / 12). The five paintings and five films shown on H3 are the first-labelled subset; A3/A4 show all.
 
 Label detail by zoom: on H3 Work stars show name + dates only; in a panel-zoomed sky (A2, PP, AB) the current star may show the full role line ("CTO & Co-founder · 2026 — Present") because the camera is closer.
 
-Mobile H3 stacks the same figures (Work top-left, Featured Build top-right, Origins mid-left, pole mark centre, Painter and Filmmaker below) with only constellation names, the Observer and the current star labelled at 1×; full labels appear at ≥ 1.6× zoom. Group boxes are `PORTRAIT_GROUPS` / `PORTRAIT_NAMES` in `chart.ts`.
+Mobile H3 stacks the same figures (Work top-left, The Builder top-right, The Student mid-left, pole mark centre, Painter and Director below) with only constellation names, the Observer and the current star labelled at 1×; full labels appear at ≥ 1.6× zoom. Group boxes are `PORTRAIT_GROUPS` / `PORTRAIT_NAMES` in `chart.ts`.
 
 ---
 
@@ -296,7 +296,7 @@ Lenis config: `{ lerp: 0.09, wheelMultiplier: 1, touchMultiplier: 1.4, smoothWhe
 | T1 | Intro draw | first paint (once per session) | one continuous timeline: R 0–750, S 300–1100, F 600–1350 ms stroke draw (stroke 0.9); fill 0 → 0.85 (850–1300); fill → 0, stroke → 0.35 and sky 0 → 1 cross-fade (1150–1900) | 1900 ms | sine.inOut | GSAP timeline | scroll / key / tap ramps timeScale to 2.5 over 300 ms: the same timeline, faster, never a jump | MO-1 |
 | T2 | H1 → H2 mask fly-through | ScrollTrigger pin `#hero`, `start: top top`, `end: +=220vh`, `scrub: 0.6`, `snap: {snapTo:[0,1], duration:0.6}` | mask scale 1 → 2.2 (0–60 vh) → 6.4 (60–140 vh); mask opacity 1 → 0 (187–220 vh); camera z 0 → −18; menu opacity 1 → 0 (0–60 vh); chart HUD 0 → 1 (120–160 vh) | 0–220 vh | linear scrub, power2.inOut on mask | GSAP + R3F uniform | yes (scrub) | MO-2 |
 | T3 | W star-to-star | pin `#work`, `end: +=500vh`, `scrub: 0.3`; one gesture = one stop (T21) instead of a snap | per 100 vh: content exit (0–20%), camera along CatmullRom (20–70%), arrive + reticle draw (70–90%), content enter (90–100%) | 100 vh per star | power2.inOut (camera), power3.out (reticle) | GSAP ScrollTrigger + R3F | yes | MO-3 |
-| T4 | Featured build stop | pin `#projects`, `end: +=100vh`, one dwell at its middle | text fades in/out as in T3; camera holds on the lodestar | 100 vh | | | | MO-3 |
+| T4 | Builder stop | pin `#projects`, `end: +=100vh`, one dwell at its middle | text fades in/out as in T3; camera holds on the lodestar | 100 vh | | | | MO-3 |
 | T5 | W3 → P1 pull 1 | ScrollTrigger between pins, `scrub: 1` | camera pan right, fov 38 → 46; Work labels full → dim; title crossfade | 120 vh | power2.inOut | GSAP + R3F | yes | MO-4 |
 | T6 | Featured → H3 pull 2 | scroll (no scrub timeline) | fov 46 → 62, lookAt → pole star; labels and pole mark fade in at the overview | 200 vh | power2.inOut | R3F | yes | MO-4 |
 | T7 | Star → panel | click / Enter on StarMarker | sky dim 1 → 0.55; camera flies to the star and centres it in the upper middle (damped, ~500 ms); labels, lines and other content stars fade; panel column rises 12 px and fades in (120–480 ms). No shared-element morph. | 480 ms | ease-out | `<ViewTransition name="star-panel">` + startTransition(router.push) | yes | MO-5 |
@@ -355,7 +355,7 @@ ViewTransition names in use: `star-panel`, `va-toggle`, `va-title`, `va-works`, 
 
 ## 8. Responsive rules
 
-Breakpoints: `sm` < 640 (mobile), `md` 640–1023 (tablet, uses mobile layouts with 48 px margins and 800 stars), `lg` 1024–1439, `xl` ≥ 1440 (design size). The sky scales to the viewport; constellation positions are normalised (section 5) and clamped so labels keep ≥ 24 px from edges; at `lg` the Featured Build and Painter shift inward by 4% to avoid the HUD.
+Breakpoints: `sm` < 640 (mobile), `md` 640–1023 (tablet, uses mobile layouts with 48 px margins and 800 stars), `lg` 1024–1439, `xl` ≥ 1440 (design size). The sky scales to the viewport; constellation positions are normalised (section 5) and clamped so labels keep ≥ 24 px from edges; at `lg` the The Builder and Painter shift inward by 4% to avoid the HUD.
 
 Mobile specifics (R3 · M-*). HUD at 24 / 64 under the status bar; the hero mask is 348 × 167 at y 340 with the name + "Software Engineer · Visual Artist" beneath (desktop has no name on H1; mobile needs it because the mark is small). Work and the featured build are 100 svh slides with a dot rail; one swipe moves one slide (T21). Panels are the same centred view, full screen; theater uses the native fullscreen API in landscape. Minimum tap target 44 px.
 
@@ -363,7 +363,7 @@ Mobile specifics (R3 · M-*). HUD at 24 / 64 under the status bar; the hero mask
 
 ## 9. Accessibility
 
-- The canvas is `aria-hidden`. Every content star has an HTML `StarMarker` (`<a>`), positioned over it, with the full label as text and `aria-describedby` to its sub-line; constellations are `<nav aria-label="Constellation of Work">` lists. Tab order: HUD → constellations in reading order (Work, Featured Build, Observer/Origins, Painter, Filmmaker) → controls. Arrow keys inside a constellation move between its stars; Enter opens; Esc closes.
+- The canvas is `aria-hidden`. Every content star has an HTML `StarMarker` (`<a>`), positioned over it, with the full label as text and `aria-describedby` to its sub-line; constellations are `<nav aria-label="The Engineer">` lists. Tab order: HUD → constellations in reading order (Work, The Builder, Observer/The Student, Painter, Director) → controls. Arrow keys inside a constellation move between its stars; Enter opens; Esc closes.
 - Focus ring: 2 px `#FFFFFF` at 2 px offset on labels, pills, toggle tabs and rail ticks; never removed.
 - Panels are `role="dialog"` (non-modal since Round 5 so the header stays usable; nothing else on the page is interactive behind them), `aria-labelledby` the title, returning focus to the StarMarker on close. ← → are announced via the footer buttons (they are real buttons).
 - Reduced motion as section 7. Also honour `prefers-contrast: more` by raising `--text-dim` to `#B7BDCB` and scrims to 90%.
@@ -404,8 +404,8 @@ Mobile specifics (R3 · M-*). HUD at 24 / 64 under the status bar; the hero mask
 1. H1: viewfinder/crosshair removed (locked).
 2. H2 rebuilt: flat SVG star circles and streak layer deleted; mask zoomed to 6.4× so the S reads as soft corners; HUD unified with the W frames.
 3. W1: Brava description added (verbatim); star title size unified at 96 px.
-4. W3: Origins name moved out of the Emerson/Prizm lane; sub-label grey raised from `#6B7186` to `#8C93A8`.
-5. H3: Builder's Cluster moved +20/+30 px and Brava sub-line shortened to "2026 — Present" to end the label collision; legend removed (catalogue only); The Observer star added near Origins with a dashed sightline from Emerson College.
+4. W3: The Student name moved out of the Emerson/Prizm lane; sub-label grey raised from `#6B7186` to `#8C93A8`.
+5. H3: Builder's Cluster moved +20/+30 px and Brava sub-line shortened to "2026 — Present" to end the label collision; legend removed (catalogue only); The Observer star added near The Student with a dashed sightline from Emerson College.
 6. A3: Observer card removed (About is a star now); selected-painting state added (corner brackets, white label, "Selected · 02 / 17 · Enter to open", others at 50%).
 7. New frames: P1, P2, PP, AB, RM, five mobile frames, ten motion storyboards.
 8. Panels: header dot is the shared element with the star; footers carry prev/counter/next consistently.
@@ -421,7 +421,7 @@ Mobile specifics (R3 · M-*). HUD at 24 / 64 under the status bar; the hero mask
 3. Projects are Section-8-Scout only. One featured stop after Work (Paper R4 · P · Featured); retired project URLs 308 to it.
 4. One gesture = one stop through Work and the featured build (T21).
 5. Intro: one continuous eased timeline, fast-forwarded (never jumped) by input; the scroll-in flash is fixed (no-JS stand-ins no longer swap out mid-intro, no per-frame CSS mask on the H1 labels, no footer fade-out on journey start).
-6. `/visual-arts` 308 → `/visual-arts/analog`; the Filmmaker's index list is gone; Visual Arts opens through the windowed RSF mark (Paper B1, T22).
+6. `/visual-arts` 308 → `/visual-arts/analog`; the Director's index list is gone; Visual Arts opens through the windowed RSF mark (Paper B1, T22).
 7. Footer: no mark, no Visual Arts link, pinned to the viewport bottom on short pages. One RSF mark on screen at a time.
 8. Header navigation is one move (T19).
 9. Round 4 constellation shapes (§5) with helper stars; the chart is plain data in `src/content/sky.ts`.
@@ -441,5 +441,5 @@ Resolved (2026-10-03):
 Still open:
 1. Résumé PDF: the client supplies a 2026 version; until then "Download Résumé" links the existing file (flag in the PR).
 2. Prizm Imagery icon: 52 px LinkedIn crop; replace if a better source turns up.
-3. Origins stars (Emerson College, App Academy): unclickable as designed unless the client asks.
+3. The Student stars (Emerson College, App Academy): unclickable as designed unless the client asks.
 4. Analytics: none for now.

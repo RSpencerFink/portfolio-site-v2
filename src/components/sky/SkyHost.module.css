@@ -254,7 +254,7 @@
   opacity: 0;
 }
 
-/* W3: the journey's HTML Origins block replaces the Origins star labels. */
+/* W3: the journey's HTML Student block replaces The Student's star labels. */
 .labels[data-section='on'] .marker[data-group='origins'] .text {
   opacity: 0;
 }
@@ -291,39 +291,6 @@
 
 
 
-
-/* RA / Dec ticks: ornament only (--text-mute). */
-.tick {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  line-height: 12px;
-  letter-spacing: 0.12em;
-  color: var(--text-mute);
-  white-space: nowrap;
-  opacity: 0;
-  transition: opacity var(--dur-s) var(--ease-sine);
-}
-
-.labels[data-overview='on'][data-layout='landscape'] .tick {
-  opacity: 1;
-}
-
-.tick span {
-  position: absolute;
-  transform: translate(-50%, -50%);
-}
-
-.tick[data-tick='ra-12'] span {
-  transform: translate(0, -50%);
-}
-
-.tick[data-tick='ra-00'] span {
-  transform: translate(-100%, -50%);
-}
-
-.tick[data-tick^='dec'] span {
-  transform: translate(-50%, 8px);
-}
 
 /* Reticles (spec §4): H3 current ring, W/P focal ring, hover ring. White only. */
 .reticle {

@@ -12,7 +12,7 @@ import s from '../visual-arts.module.css';
 import { starSlot } from '../field';
 
 export const metadata: Metadata = pageMeta({
-  title: 'The Filmmaker: Digital',
+  title: 'The Director: Digital',
   description: `${films.length} films and music videos directed by R. Spencer Fink.`,
   path: '/visual-arts/digital',
   image: films.find((f) => f.still)!.still,
@@ -30,7 +30,7 @@ export default function DigitalPage() {
       <ArtWindow pool={POOL} fallback={FALLBACK} />
       <header className={s.head}>
         <ViewTransition name="va-title" share="vt-fade" default="none">
-          <h1 className="display-s">The Filmmaker</h1>
+          <h1 className="display-s">The Director</h1>
         </ViewTransition>
         <Link href="/" className="label">
           <span aria-hidden="true">← </span>Back to sky
@@ -38,7 +38,7 @@ export default function DigitalPage() {
         <VisualArtsToggle current="digital" />
       </header>
       <ViewTransition name="va-works" share="vt-swap" default="none">
-        <nav aria-label="The Filmmaker" className={s.field}>
+        <nav aria-label="The Director" className={s.field}>
           <ConstellationLines className={s.lines} />
           <ol className={s.films}>
             {films.map((f, i) => {

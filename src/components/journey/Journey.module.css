@@ -748,7 +748,7 @@
   align-content: center;
 }
 
-/* Stops in travel order: the five stars, "Constellation of Work", Origins (the stepper follows layout order). */
+/* Stops in travel order: the five stars, "The Engineer", The Student (the stepper follows layout order). */
 :global(html[data-journey='mobile']) .complete {
   order: 1;
 }

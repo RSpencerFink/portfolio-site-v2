@@ -3,7 +3,7 @@
 import { useLayoutEffect, useRef, useState } from 'react';
 
 /**
- * Constellation lines between the works of The Painter / The Filmmaker
+ * Constellation lines between the works of The Painter / The Director
  * (R3 · A3/A4). Joins the centres of the parent's `[data-star]` elements in
  * document order. Decorative: no-JS visitors get the works without lines.
  */

@@ -16,7 +16,7 @@ export const generateStaticParams = () => projects.map((p) => ({ slug: p.slug })
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const p = projects.find((x) => x.slug === slug)!;
-  return pageMeta({ title: `${p.name}: featured build`, description: p.description, path: `/projects/${p.slug}`, image: p.preview.src });
+  return pageMeta({ title: `${p.name}: The Builder`, description: p.description, path: `/projects/${p.slug}`, image: p.preview.src });
 }
 
 /** The featured build's panel: the journey stop's content with a larger preview. */
@@ -26,7 +26,7 @@ export default async function ProjectPage({ params }: Props) {
   if (!p) notFound();
 
   return (
-    <PanelFrame slug={p.slug} title={p.name} kicker="Featured build / Projects">
+    <PanelFrame slug={p.slug} title={p.name} kicker="The Builder / Projects">
       <JsonLd
         data={{
           '@type': 'SoftwareApplication',

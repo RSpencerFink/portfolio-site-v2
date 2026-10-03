@@ -39,12 +39,12 @@ export default async function WorkPage({ params }: Props) {
     <PanelFrame
       slug={job.slug}
       title={job.company}
-      kicker={`Star ${pad(index + 1)} / Constellation of Work`}
+      kicker={`Star ${pad(index + 1)} / The Engineer`}
       lead={<Insignia job={job} size={56} />}
       prev={older && { href: `/work/${older.slug}`, name: older.company }}
       next={newer && { href: `/work/${newer.slug}`, name: newer.company }}
       counter={`${pad(index + 1)} / ${pad(jobs.length)}`}
-      stepLabel="Constellation of Work"
+      stepLabel="The Engineer"
     >
       <JsonLd
         data={{

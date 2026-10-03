@@ -110,7 +110,7 @@ export function FilmView({ slug, title, roles, vimeoId, vimeoUrl, still, counter
     <div className={`${styles.root} ${theater ? styles.theater : ''}`}>
       {theater && (
         <div className={`label ${styles.theaterBar}`}>
-          <span>The Filmmaker</span>
+          <span>The Director</span>
           <button type="button" className={styles.textButton} onClick={() => toggleTheater(false)}>
             Esc to exit theater
           </button>

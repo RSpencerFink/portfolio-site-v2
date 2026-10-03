@@ -54,7 +54,7 @@ function Rail({ label, items }: { label: string; items: string[] }) {
 }
 
 /**
- * The home journey (spec §1 rows 1–8): hero, Constellation of Work, the
+ * The home journey (spec §1 rows 1–8): hero, The Engineer, the
  * featured build, hand-off to the chart. Real HTML in every mode. Without JS or under
  * reduced motion it is the static R3 · RM layout; <HomeJourney/> sets
  * `<html data-journey="pinned|mobile">` and drives it with ScrollTrigger.
@@ -165,7 +165,7 @@ export function JourneySections() {
           <article className={`${j.layer} ${j.slide} ${j.featured}`} data-slide="0" data-target={featured.slug} tabIndex={-1} aria-labelledby="projects-title">
             <FocalStar spectral={featured.star.spectral} />
             <div className={`${j.content} ${j.stack}`}>
-              <p className={`label ${j.kicker}`}>Featured build</p>
+              <p className={`label ${j.kicker}`}>The Builder</p>
               <h2 id="projects-title" className={`display-xl ${j.title}`} data-long>
                 <SkyLink href={`/projects/${featured.slug}`}>{featured.name}</SkyLink>
               </h2>
@@ -176,7 +176,7 @@ export function JourneySections() {
             </div>
           </article>
           <p className={`label ${j.hint} ${j.motionOnly}`} aria-hidden="true">Scroll to travel ↓</p>
-          <p className={`label ${j.counter} ${j.motionOnly}`} aria-hidden="true">Featured build</p>
+          <p className={`label ${j.counter} ${j.motionOnly}`} aria-hidden="true">The Builder</p>
         </div>
       </section>
 

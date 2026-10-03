@@ -125,7 +125,7 @@ export function syncLabels(f: FrameInfo, chart: ChartLayout) {
   const level = f.resolved.quiet || f.resolved.bare ? 'hidden' : labelLevel(chart, ppu, f.height);
   const mask = f.resolved.mask.opacity > 0.01 ? 'on' : 'off';
   const overviewPpu = pxPerUnit(overviewPose(chart, f.width / f.height), f.height);
-  // Zoomed in on H3 (T18) still counts as the chart: pole mark and ticks stay.
+  // Zoomed in on H3 (T18) still counts as the chart: the pole mark stays.
   const zoomed = cameraRig.getState().view.zoom > 1;
   const overview = mask === 'off' && !f.resolved.quiet && !f.resolved.bare && (zoomed || ppu < overviewPpu * 1.3) ? 'on' : 'off';
   if (level !== last.level) root.dataset.level = last.level = level;
@@ -153,21 +153,6 @@ export function syncLabels(f: FrameInfo, chart: ChartLayout) {
 
   const pole = nodes.get('pole');
   if (place(pole, chart.pole, f, 400) && pole) pole.style.setProperty('--pole-w', `${(chart.poleSize[0] * ppu).toFixed(1)}px`);
-
-  const [px, py] = chart.pole;
-  const { w, h } = chart.plane;
-  const step = w * 0.104;
-  const ticks: [string, Vec3][] = [
-    ['ra-12', [-w / 2 + 0.3, py, 0]],
-    ['ra-00', [w / 2 - 0.3, py, 0]],
-    ['ra-18', [px, h / 2 - 0.18, 0]],
-    ['ra-06', [px, -h / 2 + 0.15, 0]],
-    ['dec-80', [px + step * 1.25, py, 0]],
-    ['dec-60', [px + step * 2.15, py, 0]],
-    ['dec-40', [px + step * 3.15, py, 0]],
-    ['dec-20', [px + step * 4.25, py, 0]],
-  ];
-  for (const [id, world] of ticks) place(nodes.get(`tick:${id}`), world, f, 0);
 
   // Focus reticle (current / focal) and hover ring. Changing star restarts the draw.
   const focus = f.resolved.focusId;
@@ -217,8 +202,8 @@ export const resetLabels = () => {
 /* ------------------------------------------------------------------------ */
 
 /**
- * HTML labels over the canvas: crisp text, insignia, reticles, pole mark and
- * RA/Dec ticks, positioned from the camera every frame. Links are pointer
+ * HTML labels over the canvas: crisp text, insignia, reticles and the pole
+ * mark, positioned from the camera every frame. Links are pointer
  * targets only (tabIndex −1): the host is aria-hidden and the page's HTML
  * mirror carries the accessible star links.
  */
@@ -239,15 +224,6 @@ export function StarLabels({ chart }: { chart: ChartLayout }) {
         {/* eslint-disable-next-line @next/next/no-img-element -- decorative SVG mark sized per frame */}
         <img src="/logo/rsf-mark.svg" alt="" className={s.poleMark} />
       </div>
-
-      {[
-        ['ra-12', 'RA 12h'], ['ra-00', 'RA 00h'], ['ra-18', 'RA 18h'], ['ra-06', 'RA 06h'],
-        ['dec-80', '+80°'], ['dec-60', '+60°'], ['dec-40', '+40°'], ['dec-20', '+20°'],
-      ].map(([id, text]) => (
-        <div key={id} ref={reg(`tick:${id}`)} className={`${s.anchor} ${s.tick}`} data-tick={id}>
-          <span>{text}</span>
-        </div>
-      ))}
 
       {chart.stars.map((star) => {
         if (star.helper) return null;
