@@ -209,13 +209,13 @@ const ndc = new THREE.Vector3();
 
 /** One frame: camera, ambient uniforms, content-star states, then labels via onFrame. */
 function tick(ctx: Ctx, state: RootState, delta: number) {
-  const { bgMat, contentMat, nebulaMat, nebula, content, chart, pointer, cur, fps, layout, motion, isHome, onHomeRoute, onFrame, onLowFps } = ctx;
+  const { bgMat, contentMat, nebulaMat, nebula, content, chart, pointer, cur, fps, layout, motion, isHome, onFrame, onLowFps } = ctx;
   const camera = state.camera as THREE.PerspectiveCamera;
   const { width, height } = state.size;
   const dpr = state.viewport.dpr;
   const t = motion === 'reduced' ? 0 : state.clock.elapsedTime;
   const rig = cameraRig.getState();
-  const r = resolve(rig, chart, width / height, isHome, onHomeRoute);
+  const r = resolve(rig, chart, width / height, isHome);
 
   // Camera: damp toward the resolved pose. Journey poses are already scrubbed, so they damp faster.
   const k = motion === 'reduced' || !cur.current ? 1 : 1 - Math.exp(-delta * (rig.target ? 5 : 10));
@@ -306,13 +306,11 @@ export interface SceneProps {
   motion: Motion;
   /** Follow the home journey (false under reduced motion once the hero has scrolled away). */
   isHome: boolean;
-  /** The route is `/` (labels stay on); off it, an untargeted sky is a quiet backdrop. */
-  onHomeRoute: boolean;
   onFrame: (f: FrameInfo) => void;
   onLowFps: () => void;
 }
 
-export function Scene({ layout, count, motion, isHome, onHomeRoute, onFrame, onLowFps }: SceneProps) {
+export function Scene({ layout, count, motion, isHome, onFrame, onLowFps }: SceneProps) {
   const { invalidate } = useThree();
   const chart = chartLayout(layout);
   const bg = useMemo(() => makeBackground(layout, count), [layout, count]);
@@ -360,7 +358,7 @@ export function Scene({ layout, count, motion, isHome, onHomeRoute, onFrame, onL
   const fps = useRef({ t0: 0, frames: 0, warm: false });
 
   useFrame((state, delta) =>
-    tick({ bgMat, contentMat, nebulaMat, nebula, content, chart, pointer, cur, fps, layout, motion, isHome, onHomeRoute, onFrame, onLowFps }, state, delta),
+    tick({ bgMat, contentMat, nebulaMat, nebula, content, chart, pointer, cur, fps, layout, motion, isHome, onFrame, onLowFps }, state, delta),
   );
 
   return (

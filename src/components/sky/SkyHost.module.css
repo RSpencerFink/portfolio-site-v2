@@ -22,6 +22,11 @@
   inset: 0;
 }
 
+/* Reduced motion below the hero (R3 · RM): a quiet, dimmer sky behind the plain lists. */
+.host[data-calm] .canvas {
+  opacity: 0.5;
+}
+
 /* ---- H1 mark ------------------------------------------------------------ */
 
 .letterbox,
@@ -224,8 +229,21 @@
 }
 
 .labels[data-level='hidden'] .cname,
-.labels[data-stage='on'] .cname {
+.labels[data-section='on'] .cname {
   opacity: 0;
+}
+
+/* W3: the journey's HTML Origins block replaces the Origins star labels. */
+.labels[data-section='on'] .marker[data-group='origins'] .text {
+  opacity: 0;
+}
+
+/* Mobile sheet: only the open star keeps its label, so nothing reads through the sheet. */
+@media (max-width: 639px) {
+  :global(html[data-panel]) .labels .marker:not([data-focus]) .text,
+  :global(html[data-panel]) .cname {
+    opacity: 0;
+  }
 }
 
 /* Pole star: plain white RSF mark with a soft glow, cartouche below (spec §5). */

@@ -66,7 +66,7 @@ export function syncLabels(f: FrameInfo, chart: ChartLayout) {
   if (mask !== last.mask) root.dataset.mask = last.mask = mask;
   if (overview !== last.overview) root.dataset.overview = last.overview = overview;
   const stage = f.resolved.stage ? 'on' : 'off';
-  if (stage !== last.stage) root.dataset.stage = last.stage = stage;
+  if (stage !== last.stage) root.dataset.section = last.stage = stage;
 
   for (const star of chart.stars) place(nodes.get(`star:${star.id}`), star.world, f);
   for (const n of chart.names) place(nodes.get(`name:${n.id}`), n.world, f, 400);
@@ -195,6 +195,7 @@ export function StarLabels({ chart, openPath }: { chart: ChartLayout; openPath: 
           className: s.marker,
           'data-side': LEFT.has(star.id) ? 'left' : 'right',
           'data-observer': star.id === 'observer' ? '' : undefined,
+          'data-group': star.group,
           onPointerEnter: hover(star.id),
           onPointerLeave: hover(null),
         };

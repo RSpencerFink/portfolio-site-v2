@@ -284,7 +284,8 @@ export function PanelFrame({ slug, title, kicker, lead, subline, prev, next, cou
               Close <span aria-hidden="true">×</span>
             </button>
           </header>
-          <div className={styles.body} data-lenis-prevent>
+          {/* Focusable so keyboard users can scroll a body with no links in it (axe scrollable-region-focusable). */}
+          <div className={styles.body} data-lenis-prevent tabIndex={0}>
             <article>
               {titleBlock}
               {children}

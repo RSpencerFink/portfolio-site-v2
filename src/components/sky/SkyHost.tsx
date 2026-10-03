@@ -130,7 +130,7 @@ export function SkyHost() {
   const markWidth = size ? Math.min(size.w * 0.892, size.h * 1.395) : 1284;
 
   return (
-    <div ref={hostRef} className={styles.host} data-home={isHome ? '' : undefined} aria-hidden="true">
+    <div ref={hostRef} className={styles.host} data-home={isHome ? '' : undefined} data-calm={isHome && !homeJourney ? '' : undefined} aria-hidden="true">
       <div className={styles.sky}>
         {size && (
           <SkyCanvas
@@ -140,7 +140,6 @@ export function SkyHost() {
             count={starCount(size.w, reduced)}
             motion={motion}
             isHome={homeJourney}
-            onHomeRoute={isHome}
             onFrame={onFrame}
             onLowFps={() => setLowPower(true)}
           />

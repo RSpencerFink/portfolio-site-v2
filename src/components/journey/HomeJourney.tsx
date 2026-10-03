@@ -237,7 +237,7 @@ export function HomeJourney() {
       cleanups.push(hero(desktop ? 220 : 140, segs));
       const ranges: Record<string, number> = { work: 500, projects: 600 };
       const firstDwell = new Map<string, () => number>();
-      document.querySelectorAll<HTMLElement>('[data-stage]').forEach((stage) => {
+      document.querySelectorAll<HTMLElement>('#journey [data-stage]').forEach((stage) => {
         const id = stage.dataset.stage as 'work' | 'projects';
         cleanups.push(desktop ? pinnedStage(stage, id, ranges[id], firstDwell, segs) : mobileStage(stage, id, segs));
       });

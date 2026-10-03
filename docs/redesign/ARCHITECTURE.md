@@ -36,3 +36,14 @@ Shared and owned by the foundation: `src/app/**` routes, `src/content/**`, `src/
 ## No-JS and reduced motion
 
 The HTML mirror is the page. Every word of content is in the server HTML. Under `prefers-reduced-motion: reduce`, `Journey` builds nothing (native scroll) and CSS transitions collapse. The sky track also has to follow the reduced-motion rules in spec §7.
+
+In full motion on `/`, once the sky draws, the home mirror (`.main` in `page.tsx`: Observer, Painter, Filmmaker, catalogue) is visually hidden because the chart presents the same stars. Screen readers still read it, and it comes back on screen when a keyboard user tabs into it. `#main` passes pointer events through to the sky's star markers except on text and controls. Under reduced motion or without JS, the mirror stays fully visible, and below the hero the sky is quiet (no labels) and dimmed.
+
+## Integration notes
+
+- Bundles: three and R3F load lazily. `SkyCanvas.tsx` (Canvas + `Scene`) is imported with `next/dynamic`, and the pose resolver that needs three lives in `resolve.ts`. `chart.ts` and `StarLabels.tsx` must not import `three`, or the ~950 KB chunk goes back into every page.
+- Header: on `/` the header shows only the centred menu. `HomeJourney` sets `<html data-chrome="hero|fly|full">` from the hero progress. The menu fades while the mask flies in, and the full header slides in from 60 % of the hero pin.
+- Attribute names: the journey selects `#journey [data-stage]`. The sky's label root uses `data-section`, `data-level`, `data-mask` and `data-overview`. Don't reuse journey attribute names on sky elements: GSAP once pinned the sky's label layer this way.
+- Vimeo: `VIMEO_NATIVE_CONTROLS` in `src/components/panels/FilmView.tsx` defaults to `true`. Vimeo only honours `controls: false` on paid plans, and the client's plan is unknown. With `true`, the player asks Vimeo for its own controls and hides our play, seek, time and mute bar once the iframe plays, so only one set of controls ever shows. Theater mode and "Watch on Vimeo" stay. Set it to `false` only if the account honours `controls: false`. Our bar is then the only control set.
+- `agentRules: false` in `next.config.ts` stops `next dev` from writing `AGENTS.md` and `CLAUDE.md`.
+- OG: pages without a painting or still use `public/og/sky.jpg`, a 1200 × 630 render of the H3 chart. To regenerate it, screenshot the end of the home journey at 1200 × 630 with the header, footer and `#chart` hidden.
