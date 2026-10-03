@@ -6,6 +6,12 @@ import s from './SkyHost.module.css';
 
 const VIEWBOX = '0 0 1519.3 729.6';
 const SESSION_KEY = 'rsf-intro';
+/** Set once any intro variant has run in this page load, so soft returns to `/` (panel close) don't fade again. */
+let introDone = false;
+/** The sky has been shown without the intro (another route loaded first). */
+export const skipIntro = () => {
+  introDone = true;
+};
 /** T1 draws the letters in reading order (R 0–450, S 350–850, F 750–1200 ms), whatever the SVG paint order. */
 const DRAW: [id: string, at: number, dur: number][] = [
   ['r', 0, 0.45],
@@ -49,19 +55,23 @@ export function HeroMark({ hostRef, reduced, markWidth }: { hostRef: RefObject<H
       gsap.set(all, settled);
       gsap.set(host, { '--sky-opacity': 1 });
     };
-    if (reduced || !paths.length) return finish();
+    if (introDone || reduced || !paths.length) return finish();
+    // Flags are set on completion so a StrictMode effect re-run (or an interrupted intro) still plays it.
+    const done = () => {
+      introDone = true;
+      sessionStorage.setItem(SESSION_KEY, '1');
+    };
     if (sessionStorage.getItem(SESSION_KEY)) {
       // Repeat visit in this session: no draw, the sky fades in (600 ms).
       gsap.set(all, settled);
-      const t = gsap.fromTo(host, { '--sky-opacity': 0 }, { '--sky-opacity': 1, duration: 0.6, ease: 'sine.inOut' });
+      const t = gsap.fromTo(host, { '--sky-opacity': 0 }, { '--sky-opacity': 1, duration: 0.6, ease: 'sine.inOut', onComplete: done });
       return () => {
         t.kill();
         finish();
       };
     }
-    sessionStorage.setItem(SESSION_KEY, '1');
 
-    const tl = gsap.timeline();
+    const tl = gsap.timeline({ onComplete: done });
     tl.set(host, { '--sky-opacity': 0 }).set(all, { strokeDasharray: 1, strokeDashoffset: 1, strokeOpacity: 0.9, fillOpacity: 0.07 });
     for (const [id, at, dur] of DRAW) {
       const el = svg.querySelector(`[data-letter="${id}"]`);

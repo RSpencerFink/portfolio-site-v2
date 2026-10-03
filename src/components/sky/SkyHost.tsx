@@ -8,7 +8,7 @@ import { journeyProgress } from '@/components/journey/progress';
 import { cameraRig } from './cameraRig';
 import { chartLayout, layoutFor } from './chart';
 import { hoverStore } from './hover';
-import { HeroMark } from './HeroMark';
+import { HeroMark, skipIntro } from './HeroMark';
 import { Scene, type FrameInfo, type Motion } from './Scene';
 import { resetLabels, StarLabels, syncLabels } from './StarLabels';
 import styles from './SkyHost.module.css';
@@ -100,7 +100,9 @@ export function SkyHost() {
 
   // Off the home route there is no intro: the sky is simply there.
   useEffect(() => {
-    if (!isHome) hostRef.current?.style.setProperty('--sky-opacity', '1');
+    if (isHome) return;
+    hostRef.current?.style.setProperty('--sky-opacity', '1');
+    skipIntro();
   }, [isHome]);
 
   // Dev hook for screenshots and the journey track: window.__rsfSky.setProgress(1) etc.
@@ -147,7 +149,7 @@ export function SkyHost() {
               scene.background = null;
             }}
           >
-            <Scene layout={layout} count={starCount(size.w, reduced)} motion={motion} isHome={homeJourney} onFrame={onFrame} onLowFps={() => setLowPower(true)} />
+            <Scene layout={layout} count={starCount(size.w, reduced)} motion={motion} isHome={homeJourney} onHomeRoute={isHome} onFrame={onFrame} onLowFps={() => setLowPower(true)} />
           </Canvas>
         )}
         <StarLabels key={layout} chart={chart} />

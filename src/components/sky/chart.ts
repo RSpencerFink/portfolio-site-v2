@@ -250,7 +250,7 @@ export interface Resolved {
 }
 
 /** Where the camera wants to be for this rig state. Pure; the scene damps toward it. */
-export function resolve(state: CameraState, c: ChartLayout, aspect: number, isHome: boolean): Resolved {
+export function resolve(state: CameraState, c: ChartLayout, aspect: number, isHome: boolean, onHomeRoute = isHome): Resolved {
   const overview = overviewPose(c, aspect);
   const noMask = { scale: 6.4, opacity: 0 };
   const { target } = state;
@@ -262,7 +262,7 @@ export function resolve(state: CameraState, c: ChartLayout, aspect: number, isHo
     if (pose) return { pose, focusId: target, focal: true, mask: noMask, heroGlow: 0 };
   }
   if (target === 'overview' || !isHome) {
-    return { pose: overview, focusId: target ? 'brava' : null, focal: false, mask: noMask, heroGlow: 0, quiet: !target };
+    return { pose: overview, focusId: target ? 'brava' : null, focal: false, mask: noMask, heroGlow: 0, quiet: !target && !onHomeRoute };
   }
 
   const [seg, t] = segmentAt(state.progress);
