@@ -43,9 +43,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className={`${interTight.variable} ${jetbrainsMono.variable}`}>
       <body>
+        <SiteHeader />
         <SkyHost />
         <Journey />
-        <SiteHeader />
         {children}
         <SiteFooter />
       </body>

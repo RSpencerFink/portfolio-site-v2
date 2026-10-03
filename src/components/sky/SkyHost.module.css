@@ -223,7 +223,8 @@
   line-height: 22px;
 }
 
-.labels[data-level='hidden'] .cname {
+.labels[data-level='hidden'] .cname,
+.labels[data-stage='on'] .cname {
   opacity: 0;
 }
 

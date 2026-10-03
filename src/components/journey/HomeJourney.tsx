@@ -247,7 +247,12 @@ export function HomeJourney() {
       const follow = () => {
         const y = window.scrollY;
         const seg = segs.findLast((s) => s.st.start <= y) ?? segs[0];
-        if (seg) cameraRig.setSegment(seg.id, seg.t(y));
+        if (!seg) return;
+        const t = seg.t(y);
+        cameraRig.setSegment(seg.id, t);
+        // Header (SiteChrome): centred menu on H1, gone while the mask flies (0–60 vh), full HUD from 130 vh (T1/T2).
+        const chrome = seg.id !== 'hero' || t > 0.6 ? 'full' : t > 0.27 ? 'fly' : 'hero';
+        if (root.dataset.chrome !== chrome) root.dataset.chrome = chrome;
       };
       gsap.ticker.add(follow);
       cleanups.push(() => gsap.ticker.remove(follow));
@@ -291,6 +296,7 @@ export function HomeJourney() {
       return () => {
         cleanups.forEach((c) => c());
         delete root.dataset.journey;
+        delete root.dataset.chrome;
         journeyProgress.set(0);
         cameraRig.setSegment('hero', 0);
       };

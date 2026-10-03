@@ -10,6 +10,18 @@
   overflow-x: clip;
 }
 
+/*
+ * Full motion: the sky's star markers sit under #main (z 0 vs 9). Only content
+ * and controls take the pointer; empty frame areas let it through to the sky.
+ */
+:global(html[data-journey]) :global(#main) {
+  pointer-events: none;
+}
+
+:global(html[data-journey]) :global(#main) :is(a, button, p, h1, h2, h3, h4, ul, [tabindex='0']) {
+  pointer-events: auto;
+}
+
 .motionOnly {
   display: none !important;
 }
@@ -18,10 +30,10 @@
   display: revert !important;
 }
 
-/* The canvas stand-ins disappear once the sky track draws the real thing. */
+/* The canvas stand-ins disappear once the sky track draws the real thing (beats the per-mode display rules below). */
 :global(html[data-sky='live']) .fallback,
 :global(html[data-sky='live']) .focal {
-  display: none;
+  display: none !important;
 }
 
 /* ---------- Hero (H1 → H2, T2) ---------- */
@@ -115,6 +127,11 @@
   .heroText {
     bottom: auto;
     top: calc(40% + 110px);
+  }
+
+  /* Once the sky draws, its mark sits at the viewport centre (89.2vw wide, 2.082:1): the name goes beneath it. */
+  :global(html[data-sky='live']) .heroText {
+    top: calc(50% + 21.4vw + 24px);
   }
 }
 
@@ -270,6 +287,32 @@
 
 .handoff {
   height: 200vh;
+  pointer-events: none;
+}
+
+/* H3 star catalogue (spec §5): bottom-left, verbatim lists. */
+.catalogue {
+  position: absolute;
+  left: var(--page-margin);
+  bottom: 34px;
+  display: grid;
+  gap: var(--space-4);
+  max-width: min(760px, 55vw);
+  margin: 0;
+}
+
+.catalogue > div {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.catalogue p {
+  margin: 0;
+  color: var(--text-2);
+}
+
+.catalogue .label {
+  color: var(--text-dim);
 }
 
 /* ---------- Focal star stand-in (spec §4) ---------- */
@@ -482,6 +525,7 @@
 
 :global(html[data-journey='pinned']) .slide[data-dense] .content::before {
   background: linear-gradient(90deg, transparent, rgb(4 5 10 / 0.72) 12%, rgb(4 5 10 / 0.72) 80%, transparent);
+  mask: linear-gradient(transparent, #000 64px, #000 calc(100% - 64px), transparent);
 }
 
 :global(html[data-journey='pinned']) .columns {
@@ -716,4 +760,9 @@
     opacity: 1;
     background: rgb(4 5 10 / 0.9) !important;
   }
+}
+
+/* Mobile H3: the catalogue stays in the HTML mirror (spec §8 collapses it to a pill; not built). */
+:global(html[data-journey='mobile']) .catalogue {
+  display: none;
 }

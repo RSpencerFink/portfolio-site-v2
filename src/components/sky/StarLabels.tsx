@@ -37,7 +37,7 @@ const reg = (key: string) => (el: HTMLElement | SVGSVGElement | null) => {
   else nodes.delete(key);
 };
 const v = new Vector3();
-let last = { focus: '' as string | null, focal: '', hover: '' as string | null, level: '', mask: '', overview: '' };
+let last = { focus: '' as string | null, focal: '', hover: '' as string | null, level: '', mask: '', overview: '', stage: '' };
 
 function place(el: HTMLElement | undefined, world: Vec3, f: FrameInfo, margin = 80) {
   if (!el) return null;
@@ -67,6 +67,8 @@ export function syncLabels(f: FrameInfo, chart: ChartLayout) {
   if (level !== last.level) root.dataset.level = last.level = level;
   if (mask !== last.mask) root.dataset.mask = last.mask = mask;
   if (overview !== last.overview) root.dataset.overview = last.overview = overview;
+  const stage = f.resolved.stage ? 'on' : 'off';
+  if (stage !== last.stage) root.dataset.stage = last.stage = stage;
 
   for (const star of chart.stars) place(nodes.get(`star:${star.id}`), star.world, f);
   for (const n of chart.names) place(nodes.get(`name:${n.id}`), n.world, f, 400);
@@ -129,7 +131,7 @@ function redraw(el: HTMLElement | undefined) {
 
 /** Reset cached attributes when the overlay remounts (layout change). */
 export const resetLabels = () => {
-  last = { focus: '', focal: '', hover: '', level: '', mask: '', overview: '' };
+  last = { focus: '', focal: '', hover: '', level: '', mask: '', overview: '', stage: '' };
 };
 
 /* ------------------------------------------------------------------------ */

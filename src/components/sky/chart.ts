@@ -23,7 +23,7 @@ const PLANE = {
 // Portrait group placement in mobile-artboard px: [left, top, width] of the group's star bbox.
 const PORTRAIT_GROUPS: Record<string, [number, number, number]> = {
   work: [40, 100, 190],
-  projects: [262, 226, 96],
+  projects: [214, 214, 150],
   origins: [44, 396, 96],
   painter: [226, 540, 128],
   filmmaker: [40, 660, 196],
@@ -32,7 +32,7 @@ const PORTRAIT_GROUPS: Record<string, [number, number, number]> = {
 // Portrait constellation-name anchors (top-left of the block) in mobile-artboard px, from R3 · M-H3.
 const PORTRAIT_NAMES: Record<string, [number, number]> = {
   work: [40, 196],
-  projects: [232, 292],
+  projects: [222, 318],
   origins: [52, 530],
   painter: [230, 482],
   filmmaker: [40, 712],
@@ -244,6 +244,8 @@ export interface Resolved {
   heroGlow: number;
   /** Backdrop only (a full page off the home route): no labels, no pole mark. */
   quiet?: boolean;
+  /** Inside the W/P stages: the journey's HTML titles replace the constellation names. */
+  stage?: boolean;
 }
 
 /** Where the camera wants to be for this rig state. Pure; the scene damps toward it. */
@@ -280,13 +282,13 @@ export function resolve(state: CameraState, c: ChartLayout, aspect: number, isHo
     }
     case 'work': {
       const r = travel(workPoses, [...WORK, null], t);
-      return { pose: r.pose, focusId: r.focusId ?? 'brava', focal: r.focusId !== null, mask, heroGlow: 0 };
+      return { pose: r.pose, focusId: r.focusId ?? 'brava', focal: r.focusId !== null, mask, heroGlow: 0, stage: true };
     }
     case 'pull1':
-      return { pose: lerpPose(workPoses[WORK.length], projectPoses[0], easeInOut(t)), focusId: null, focal: false, mask, heroGlow: 0 };
+      return { pose: lerpPose(workPoses[WORK.length], projectPoses[0], easeInOut(t)), focusId: null, focal: false, mask, heroGlow: 0, stage: true };
     case 'projects': {
       const r = travel(projectPoses, [null, ...PROJECTS], t);
-      return { pose: r.pose, focusId: r.focusId, focal: r.focusId !== null, mask, heroGlow: 0 };
+      return { pose: r.pose, focusId: r.focusId, focal: r.focusId !== null, mask, heroGlow: 0, stage: true };
     }
     default: {
       const e = easeInOut(t);

@@ -38,3 +38,34 @@
   border-top: 1px solid var(--line);
   margin-top: var(--space-10);
 }
+
+/* Home H1 (spec §1 row 1): only the centred menu, no logo/name block. */
+:global(html:not([data-chrome='full']) body:has(#hero)) .header {
+  justify-content: center;
+}
+
+:global(html:not([data-chrome='full']) body:has(#hero)) .home {
+  display: none;
+}
+
+/*
+ * Full motion (HomeJourney sets data-chrome): the header floats over the
+ * journey. The menu fades as the mask flies in (T2, 0–60 vh) and the full
+ * header slides back in once the chart HUD appears (T1 chrome step).
+ */
+:global(html[data-chrome]) .header {
+  position: fixed;
+  inset: 0 0 auto;
+  transition:
+    opacity var(--dur-m) var(--ease-out),
+    translate var(--dur-m) var(--ease-out),
+    visibility 0s;
+}
+
+:global(html[data-chrome='fly']) .header {
+  opacity: 0;
+  translate: 0 -8px;
+  visibility: hidden;
+  transition-delay: 0s, 0s, var(--dur-m);
+}
+

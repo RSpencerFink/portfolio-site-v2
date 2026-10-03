@@ -3,7 +3,7 @@ import { SkyLink } from '@/components/panels/SkyLink';
 import { Insignia } from '@/components/Insignia';
 import { HALO } from '@/components/sky/types';
 import type { SpectralClass } from '@/components/sky/types';
-import { education, person, resume } from '@/content/site';
+import { education, person, resume, tech } from '@/content/site';
 import { jobs } from '@/content/work';
 import { projects } from '@/content/projects';
 import { constellations } from '@/content/sky';
@@ -201,13 +201,21 @@ export function JourneySections() {
         <div className={j.handoffInner}>
           {/* eslint-disable-next-line @next/next/no-img-element -- decorative SVG, no optimisation needed */}
           <img src="/logo/rsf.svg" alt="" className={`${j.pole} ${j.fallback}`} data-pole />
-          <div className={j.cartouche} data-cartouche>
+          <div className={`${j.cartouche} ${j.fallback}`} data-cartouche>
             <p className="display-s">{person.name}</p>
             <p className="label">{person.identities[0]}</p>
           </div>
           <p className={`label ${j.explore}`} data-cartouche>
             Drag to explore · Click a star
           </p>
+          <div className={j.catalogue} data-cartouche>
+            {tech.map((t) => (
+              <div key={t.heading}>
+                <p className={`label-s ${j.label}`}>{t.heading}</p>
+                <p className="mono-body">{t.items.join(' · ')}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>

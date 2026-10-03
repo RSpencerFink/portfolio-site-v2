@@ -7,6 +7,23 @@
   padding: var(--space-9) var(--page-margin) 0;
 }
 
+/*
+ * Home in full motion, once the sky draws: the chart presents these lists
+ * (Observer, Painter, Filmmaker, catalogue), so the mirror leaves the visual
+ * layer and stops covering the star markers. Screen readers keep it, and a
+ * keyboard visitor tabbing into it brings it back on screen. No-JS and reduced
+ * motion never set data-journey, so there it stays the page.
+ */
+:global(html[data-journey][data-sky='live']) .main:not(:focus-within) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
 .hero {
   display: grid;
   gap: var(--space-4);
