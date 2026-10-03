@@ -32,6 +32,17 @@ html[data-theater] body > :not([aria-hidden='true']) {
     240ms var(--ease-out) both vt-panel-out;
 }
 
+/* T8 close (PanelFrame morphBack): no root cross-fade, so the live sky keeps moving under the exiting panel. */
+@media (prefers-reduced-motion: no-preference) {
+  html[data-closing]::view-transition-old(root) {
+    animation: none;
+    opacity: 0;
+  }
+  html[data-closing]::view-transition-new(root) {
+    animation: none;
+  }
+}
+
 /* T7 shared element: star → header dot (240 ms), and back on close. */
 ::view-transition-group(.vt-morph) {
   animation-duration: 240ms;

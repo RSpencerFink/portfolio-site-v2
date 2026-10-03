@@ -9,6 +9,8 @@ import { useState } from 'react';
 let arrivedPath: string | null = null;
 /** Star link to focus once the visitor is back on the page the panel opened from. */
 let returnFocus: string | null = null;
+/** The close transition in flight: focus moves once it has finished, so it can't scroll the page mid-morph. */
+let closing: Promise<unknown> = Promise.resolve();
 
 const normalize = (path: string) => path.replace(/\/+$/, '') || '/';
 
@@ -20,13 +22,20 @@ export const softNav = {
   /** Close: forget panel mode and remember which star should get focus back. */
   close(path: string) {
     arrivedPath = null;
-    returnFocus = normalize(path);
+    const p = (returnFocus = normalize(path));
+    // Unclaimed (no visible link for it on the page) after 2 s: drop it so it can't steal focus later.
+    setTimeout(() => returnFocus === p && (returnFocus = null), 2000);
   },
-  /** SkyLink calls this on mount; true once for the link that should take focus. */
-  takeFocus(href: string) {
-    if (returnFocus !== normalize(href)) return false;
+  /** Whether a link to `href` should take focus back (peek; claim it with done()). */
+  wantsFocus: (href: string) => returnFocus !== null && returnFocus === normalize(href),
+  /** PanelFrame hands over its close view transition (vt.finished). */
+  closingUntil(done: Promise<unknown>) {
+    closing = done.catch(() => {});
+  },
+  closed: () => closing,
+  /** The returning link has focus. */
+  done() {
     returnFocus = null;
-    return true;
   },
 };
 

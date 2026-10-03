@@ -41,6 +41,72 @@ const PanelMode = createContext(false);
 let stepFocus: string | null = null;
 const MOBILE = '(max-width: 639px)';
 
+const reduceMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/** The panel's own exit (T8): slide 24 px right (mobile: down), fade; 200 ms crossfade under reduced motion. */
+function slideOut(el: HTMLElement, detached = false) {
+  if (detached) {
+    // A copy of a panel React has already removed: inert, no duplicate ids, removed when done.
+    el.inert = true;
+    el.querySelectorAll('[id]').forEach((n) => n.removeAttribute('id'));
+    el.removeAttribute('aria-labelledby');
+    document.body.append(el);
+  }
+  const reduce = reduceMotion();
+  const to = reduce ? '0 0' : matchMedia(MOBILE).matches ? '0 100%' : '24px 0';
+  const out = el.animate([{}, { opacity: 0, translate: to }], { duration: reduce ? 200 : 240, easing: 'cubic-bezier(0.2, 0.8, 0.2, 1)', fill: 'forwards' });
+  return out.finished.finally(() => detached && el.remove());
+}
+
+const named = (el: HTMLElement | null | undefined, name: string, cls: string) => {
+  if (!el) return;
+  el.style.viewTransitionName = name;
+  el.style.setProperty('view-transition-class', cls);
+};
+
+/**
+ * Close as a view transition (T8, the reverse of T7). React's <ViewTransition> only animates
+ * updates it runs in startTransition, and a history traversal is committed synchronously in
+ * popstate, so this names the elements by hand: the panel exits as `star-panel` (vt-panel slide)
+ * and the header dot pairs with the star's sky marker (or the work card) as `star-<slug>` (vt-morph). The update
+ * callback resolves once React has committed the page under the panel (popstate) and its marker
+ * exists; the sky positions the marker in the frame the new snapshot is taken.
+ */
+function morphBack(dialog: HTMLDialogElement, slug: string, path: string, back: () => void) {
+  named(dialog, 'star-panel', 'vt-panel');
+  // The page underneath is not cross-faded (transitions.css): the live sky dollies back on its own.
+  document.documentElement.dataset.closing = '';
+  named(dialog.querySelector<HTMLElement>('[data-dot]'), `star-${slug}`, 'vt-morph');
+  let marker: HTMLElement | null = null;
+  const vt = document.startViewTransition(
+    () =>
+      new Promise<void>((resolve) => {
+        const settle = () => {
+          clearTimeout(safety);
+          // Let the restored page run its effects (journey pins, scroll restoration) first.
+          setTimeout(() => {
+            // The work card it was opened from (Painter / Filmmaker), else the star on the sky.
+            marker =
+              document.querySelector<HTMLElement>(`#main a[href="${path}"] [data-star]`) ??
+              document.querySelector<HTMLElement>(`[data-layout] a[href="${path}"]`);
+            named(marker, `star-${slug}`, 'vt-morph');
+            resolve();
+          }, 60);
+        };
+        const safety = setTimeout(resolve, 1500);
+        addEventListener('popstate', settle, { once: true });
+        back();
+      }),
+  );
+  softNav.closingUntil(vt.finished);
+  vt.finished.finally(() => {
+    delete document.documentElement.dataset.closing;
+    if (!marker) return;
+    marker.style.viewTransitionName = '';
+    marker.style.removeProperty('view-transition-class');
+  });
+}
+
 /**
  * Prev/next and "nearby" links. In panel mode they record the sibling as a
  * panel path and replace history, so Close (history back) always returns to
@@ -87,6 +153,7 @@ export function PanelFrame({ slug, title, kicker, lead, subline, prev, next, cou
   const ref = useRef<HTMLDialogElement>(null);
   const drag = useRef<{ y: number; t: number; v: number; top: number } | null>(null);
   const [snap, setSnap] = useState<'peek' | 'full'>('peek');
+  const closing = useRef(false);
 
   // T7 / T20: camera on this star, sky dimmed, in both modes.
   useEffect(() => {
@@ -111,24 +178,24 @@ export function PanelFrame({ slug, title, kicker, lead, subline, prev, next, cou
     stepFocus = null;
     return () => {
       delete document.documentElement.dataset.panel;
+      // Browser Back (popstate) unmounts the panel synchronously, so no view transition can
+      // snapshot it first. A detached copy slides out instead. Steps (softNav set) and Close skip this.
+      if (closing.current || softNav.get() !== null) return;
+      slideOut(dialog.cloneNode(true) as HTMLElement, true);
+      softNav.close(pathname); // focus goes back to the star's link, as with Close
     };
-  }, [asPanel, variant]);
+  }, [asPanel, variant, pathname]);
 
-  // T8. History-back navigations run synchronously in React (popstate), so no
-  // view transition fires for them; the panel animates itself out first.
-  const closing = useRef(false);
+  // T8. Close / Esc / backdrop go back in history (Back then leaves the page, as expected).
+  // Where the View Transitions API exists, the back navigation runs inside one: the panel
+  // slides out and its header dot morphs back into the star (the reverse of T7).
   const close = () => {
     if (closing.current) return;
     closing.current = true;
     softNav.close(pathname);
-    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const to = reduce ? '0 0' : matchMedia(MOBILE).matches ? '0 100%' : '24px 0';
-    const out = ref.current?.animate([{}, { opacity: 0, translate: to }], {
-      duration: reduce ? 200 : 240,
-      easing: 'cubic-bezier(0.2, 0.8, 0.2, 1)',
-      fill: 'forwards',
-    });
-    (out?.finished ?? Promise.resolve()).finally(() => router.back());
+    const dialog = ref.current;
+    if (dialog && 'startViewTransition' in document) return morphBack(dialog, slug, pathname, () => router.back());
+    (dialog ? slideOut(dialog) : Promise.resolve()).finally(() => router.back());
   };
 
   const step = (item: StepItem | undefined, rel: 'prev' | 'next') => {
@@ -140,7 +207,7 @@ export function PanelFrame({ slug, title, kicker, lead, subline, prev, next, cou
 
   const dot = (
     <ViewTransition name={`star-${slug}`} share="vt-morph" default="none">
-      <span className={styles.dot} aria-hidden="true" />
+      <span className={styles.dot} aria-hidden="true" data-dot />
     </ViewTransition>
   );
 
