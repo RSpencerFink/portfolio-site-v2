@@ -1,22 +1,158 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react';
+import { usePathname } from 'next/navigation';
 import { Canvas } from '@react-three/fiber';
+import { setConsoleFunction } from 'three';
 import { journeyProgress } from '@/components/journey/progress';
 import { cameraRig } from './cameraRig';
+import { chartLayout, layoutFor } from './chart';
+import { hoverStore } from './hover';
+import { HeroMark } from './HeroMark';
+import { Scene, type FrameInfo, type Motion } from './Scene';
+import { resetLabels, StarLabels, syncLabels } from './StarLabels';
 import styles from './SkyHost.module.css';
 
+// R3F 9.x still constructs THREE.Clock (deprecated in r183). Drop that one
+// warning; forward everything else unchanged.
+setConsoleFunction((type: 'log' | 'warn' | 'error', message: string, ...params: unknown[]) => {
+  if (typeof message === 'string' && message.includes('Clock: This module has been deprecated')) return;
+  console[type](message, ...params);
+});
+
+const reducedQuery = '(prefers-reduced-motion: reduce)';
+const useReducedMotion = () =>
+  useSyncExternalStore(
+    (cb) => {
+      const mq = window.matchMedia(reducedQuery);
+      mq.addEventListener('change', cb);
+      return () => mq.removeEventListener('change', cb);
+    },
+    () => window.matchMedia(reducedQuery).matches,
+    () => false,
+  );
+
+/** Star counts per breakpoint (spec §7): 1 200 desktop, 800 tablet, 500 mobile / reduced. */
+const starCount = (w: number, reduced: boolean) => (reduced || w < 640 ? 500 : w < 1024 ? 800 : 1200);
+
 /**
- * Mounted once in the root layout, behind {children}. Placeholder until the
- * R3F track lands: an idle canvas over the ground colour. It is decorative
- * (aria-hidden); the HTML mirror carries all content.
+ * Mounted once in the root layout, behind {children}. Decorative
+ * (aria-hidden); the HTML mirror carries all content. Reads journeyProgress
+ * and the cameraRig; never listens to scroll.
  */
 export function SkyHost() {
+  const hostRef = useRef<HTMLDivElement>(null);
+  const isHome = usePathname() === '/';
+  const reduced = useReducedMotion();
+  const [size, setSize] = useState<{ w: number; h: number } | null>(null);
+  const [lowPower, setLowPower] = useState(false);
+  const [visible, setVisible] = useState(true);
+  const [heroGone, setHeroGone] = useState(false);
+
   useEffect(() => journeyProgress.subscribe(() => cameraRig.setProgress(journeyProgress.get())), []);
 
+  useEffect(() => {
+    const read = () => setSize({ w: window.innerWidth, h: window.innerHeight });
+    read();
+    window.addEventListener('resize', read);
+    return () => window.removeEventListener('resize', read);
+  }, []);
+
+  // Pause when the tab is hidden or the canvas is fully offscreen.
+  useEffect(() => {
+    const host = hostRef.current;
+    if (!host) return;
+    let onscreen = true;
+    const update = () => setVisible(!document.hidden && onscreen);
+    const io = new IntersectionObserver(([e]) => {
+      onscreen = e.isIntersecting;
+      update();
+    }, { threshold: 0 });
+    io.observe(host);
+    document.addEventListener('visibilitychange', update);
+    return () => {
+      io.disconnect();
+      document.removeEventListener('visibilitychange', update);
+    };
+  }, []);
+
+  // Low power: battery saver (< 20%, not charging). Measured fps < 45 also flips it (Scene).
+  useEffect(() => {
+    const nav = navigator as Navigator & { getBattery?: () => Promise<{ charging: boolean; level: number }> };
+    nav.getBattery?.().then((b) => !b.charging && b.level < 0.2 && setLowPower(true)).catch(() => {});
+  }, []);
+
+  // Reduced motion has no pinned journey: the mask gives way once the hero section scrolls out (spec §7).
+  useEffect(() => {
+    const hero = isHome && reduced ? document.querySelector('#journey > section') : null;
+    if (!hero) return;
+    const io = new IntersectionObserver(([e]) => setHeroGone(!e.isIntersecting), { threshold: 0 });
+    io.observe(hero);
+    return () => io.disconnect();
+  }, [isHome, reduced]);
+
+  // Panels dim the sky (spec §3: 0.55 behind a panel). CSS transition does the easing.
+  useEffect(() => {
+    const apply = () => hostRef.current?.style.setProperty('--sky-dim', String(cameraRig.getState().dim));
+    apply();
+    return cameraRig.subscribe(apply);
+  }, []);
+
+  // Off the home route there is no intro: the sky is simply there.
+  useEffect(() => {
+    if (!isHome) hostRef.current?.style.setProperty('--sky-opacity', '1');
+  }, [isHome]);
+
+  // Dev hook for screenshots and the journey track: window.__rsfSky.setProgress(1) etc.
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'production') return;
+    (window as unknown as { __rsfSky: unknown }).__rsfSky = { ...cameraRig, hover: hoverStore.set };
+  }, []);
+
+  const layout = size ? layoutFor(size.w, size.h) : 'landscape';
+  const chart = chartLayout(layout);
+  const motion: Motion = reduced ? 'reduced' : lowPower ? 'low' : 'full';
+  const homeJourney = isHome && !(reduced && heroGone);
+
+  const vars = useRef({ scale: '', opacity: '', glow: '' });
+  const onFrame = useCallback(
+    (f: FrameInfo) => {
+      syncLabels(f, chart);
+      const host = hostRef.current;
+      if (!host) return;
+      const next = { scale: f.resolved.mask.scale.toFixed(4), opacity: f.resolved.mask.opacity.toFixed(3), glow: f.resolved.heroGlow.toFixed(3) };
+      if (next.scale !== vars.current.scale) host.style.setProperty('--mask-scale', next.scale);
+      if (next.opacity !== vars.current.opacity) host.style.setProperty('--mask-opacity', next.opacity);
+      if (next.glow !== vars.current.glow) host.style.setProperty('--hero-glow', next.glow);
+      vars.current = next;
+    },
+    [chart],
+  );
+  useEffect(() => resetLabels(), [layout]);
+
+  const markWidth = size ? Math.min(size.w * 0.892, size.h * 1.395) : 1284;
+
   return (
-    <div className={styles.host} aria-hidden="true">
-      <Canvas frameloop="never" dpr={[1, 2]} gl={{ antialias: false }} />
+    <div ref={hostRef} className={styles.host} data-home={isHome ? '' : undefined} aria-hidden="true">
+      <div className={styles.sky}>
+        {size && (
+          <Canvas
+            className={styles.canvas}
+            frameloop={!visible ? 'never' : motion === 'full' ? 'always' : 'demand'}
+            dpr={lowPower && size.w < 640 ? [1, 1.5] : [1, 2]}
+            gl={{ antialias: false, alpha: false, powerPreference: 'high-performance' }}
+            camera={{ fov: 62, near: 0.1, far: 200, position: [0, 0, 8] }}
+            onCreated={({ scene, gl }) => {
+              gl.setClearColor('#04050A');
+              scene.background = null;
+            }}
+          >
+            <Scene layout={layout} count={starCount(size.w, reduced)} motion={motion} isHome={homeJourney} onFrame={onFrame} onLowFps={() => setLowPower(true)} />
+          </Canvas>
+        )}
+        <StarLabels key={layout} chart={chart} />
+      </div>
+      {isHome && <HeroMark hostRef={hostRef} reduced={reduced} markWidth={markWidth} />}
     </div>
   );
 }
