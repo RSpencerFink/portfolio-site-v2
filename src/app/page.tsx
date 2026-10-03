@@ -4,7 +4,7 @@ import { JourneySections } from '@/components/journey/JourneySections';
 import { HomeJourney } from '@/components/journey/HomeJourney';
 import { ChartExplore } from '@/components/sky/ChartExplore';
 import { JsonLd } from '@/components/JsonLd';
-import { SITE_URL, person, tech } from '@/content/site';
+import { SITE_URL, person } from '@/content/site';
 import { paintings } from '@/content/paintings';
 import { films } from '@/content/films';
 import { jobs } from '@/content/work';
@@ -105,15 +105,6 @@ export default function Home() {
           </nav>
         </section>
 
-        <section className={s.section} aria-labelledby="catalogue-title">
-          <h2 id="catalogue-title" className="heading">Star catalogue</h2>
-          {tech.map((t) => (
-            <div key={t.heading}>
-              <h3 className="label">{t.heading}</h3>
-              <p className="mono-body">{t.items.join(' · ')}</p>
-            </div>
-          ))}
-        </section>
       </div>
       <ChartExplore />
     </main>

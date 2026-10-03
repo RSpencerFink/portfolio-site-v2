@@ -3,7 +3,7 @@
 import { useEffect, ViewTransition } from 'react';
 import { Insignia } from '@/components/Insignia';
 import { SkyLink } from '@/components/panels/SkyLink';
-import { education, person } from '@/content/site';
+import { education } from '@/content/site';
 import { jobs } from '@/content/work';
 import { projects } from '@/content/projects';
 import { paintings } from '@/content/paintings';
@@ -164,10 +164,6 @@ export function StarLabels({ chart, openPath }: { chart: ChartLayout; openPath: 
       <div ref={reg('pole')} className={`${s.anchor} ${s.pole}`}>
         {/* eslint-disable-next-line @next/next/no-img-element -- decorative SVG mark sized per frame */}
         <img src="/logo/rsf-mark.svg" alt="" className={s.poleMark} />
-        <div className={s.cartouche}>
-          <span className={s.cartoucheName}>{person.name}</span>
-          <span className="label-s">Software Engineer</span>
-        </div>
       </div>
 
       {[
