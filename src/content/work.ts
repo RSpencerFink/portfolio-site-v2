@@ -149,7 +149,7 @@ export const jobs: Job[] = [
         ],
       },
     ],
-    insignia: { src: '/images/company-icons/prizm.png' },
+    insignia: { src: '/images/company-icons/prizm.png', tile: '#FFFFFF' },
     star: { spectral: 'M' },
   },
 ];
