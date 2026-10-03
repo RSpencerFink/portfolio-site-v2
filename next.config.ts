@@ -3,6 +3,8 @@ import { paintings } from './src/content/paintings';
 import { films } from './src/content/films';
 
 const nextConfig: NextConfig = {
+  // Stop `next dev` from writing AGENTS.md / CLAUDE.md into the repo.
+  agentRules: false,
   // Old CRA URLs → new slugs. `permanent: true` answers 308.
   async redirects() {
     return [
