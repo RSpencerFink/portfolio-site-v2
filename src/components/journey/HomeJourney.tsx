@@ -246,6 +246,8 @@ export function HomeJourney() {
         cleanups.push(desktop ? pinnedStage(stage, id, ranges[id], firstDwell, segs) : mobileStage(stage, id, segs));
       });
       pulls(segs);
+      // /#chart (a direct-loaded panel's Close) lands on the H3 rest: the end of the document.
+      firstDwell.set('chart', () => ScrollTrigger.maxScroll(window));
 
       // Runs after Lenis + ScrollTrigger on every GSAP tick; setSegment ignores unchanged values.
       const follow = () => {
@@ -271,6 +273,8 @@ export function HomeJourney() {
       const toHash = (hash: string, smooth: boolean) => {
         const y = firstDwell.get(hash.slice(1))?.();
         if (y === undefined) return false;
+        // Arriving from a short page (a panel's Close): Lenis' debounced limit may still be that page's height.
+        getLenis()?.resize();
         scrollToY(y, smooth ? 0.9 : 0);
         return true;
       };

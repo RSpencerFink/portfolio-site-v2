@@ -236,3 +236,30 @@
     display: none;
   }
 }
+
+/* With JS the server's full page gives way to the panel at hydration: hide it until then
+   (shown after 3 s anyway, in case the scripts never run). T20: the panel then fades in, no slide. */
+@media (scripting: enabled) {
+  .page {
+    opacity: 0;
+    animation: page-fallback 0s 3s forwards;
+  }
+}
+
+@keyframes page-fallback {
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .panel[data-landing] {
+    animation: panel-landing 300ms var(--ease-sine);
+  }
+}
+
+@keyframes panel-landing {
+  from {
+    opacity: 0;
+  }
+}

@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, use, useEffect, useLayoutEffect, useRef, useState, ViewTransition, type ReactNode } from 'react';
+import { createContext, use, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore, ViewTransition, type ReactNode } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { cameraRig } from '@/components/sky/cameraRig';
@@ -37,10 +37,20 @@ interface Props {
 
 const titleId = (slug: string) => `${slug}-title`;
 
-const PanelMode = createContext(false);
+/** null on a full page; otherwise how the panel was reached ('direct': no sky page behind it in history). */
+const PanelMode = createContext<'sky' | 'direct' | null>(null);
 /** Which footer link to focus after a step lands (the new panel is a fresh mount). */
 let stepFocus: string | null = null;
 const MOBILE = '(max-width: 639px)';
+
+/** False for the server HTML and the hydration pass, true after: with JS, every entity route is a panel. */
+const useHydrated = () => useSyncExternalStore(noop, () => true, () => false);
+function noop() {
+  return () => {};
+}
+
+/** Where Close goes from a panel with no sky page behind it: the painting or film index, else the home sky chart. */
+const parentOf = (path: string) => (path.startsWith('/visual-arts/') ? path.slice(0, path.lastIndexOf('/')) : '/#chart');
 
 const reduceMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -111,8 +121,9 @@ function morphBack(dialog: HTMLDialogElement, slug: string, path: string, back: 
 
 /**
  * Prev/next and "nearby" links. In panel mode they record the sibling as a
- * panel path and replace history, so Close (history back) always returns to
- * the page the star was clicked on. On a full page they are plain links.
+ * panel path (keeping the panel's origin) and replace history, so Close always
+ * returns to the page the star was clicked on, or to the parent page. On a full
+ * page they are plain links.
  */
 export function StepLink({ href, rel, className, children }: { href: string; rel?: 'prev' | 'next'; className?: string; children: ReactNode }) {
   const panel = use(PanelMode);
@@ -121,11 +132,11 @@ export function StepLink({ href, rel, className, children }: { href: string; rel
       href={href}
       rel={rel}
       className={className}
-      replace={panel}
+      replace={!!panel}
       scroll={!panel}
       onClick={(e) => {
         if (!panel || isModified(e)) return;
-        softNav.set(href);
+        softNav.set(href, panel === 'direct');
         stepFocus = rel ?? null;
       }}
     >
@@ -135,34 +146,41 @@ export function StepLink({ href, rel, className, children }: { href: string; rel
 }
 
 /**
- * Renders an entity page as a panel over the sky when the visitor arrived by
- * clicking a star, and as a full page otherwise (direct load, no JS, crawler).
- * Server HTML is always the full page.
+ * Renders an entity page as a panel over the sky whenever JS runs, and as a
+ * full page in the server HTML (no JS, crawlers; hidden until hydration with JS).
  *
- * Panel mode: native modal <dialog> (focus containment, inert page, Esc),
- * Close / Esc / backdrop click go back to the page the star was on and its
- * SkyLink takes focus again, ← → step through siblings without leaving the
+ * Panel mode: native modal <dialog> (focus containment, inert page, Esc).
+ * Reached by clicking a star, Close / Esc / backdrop click go back to the page
+ * the star was on and its SkyLink takes focus again. Reached any other way
+ * (direct load, reload, a plain link), the panel appears without a slide (T20)
+ * and Close navigates to the parent page. ← → step through siblings without leaving the
  * panel. Below 640 px the panel is a draggable bottom sheet (peek 36 % / full 8 %
  * / dismiss); films stay full height.
  */
 export function PanelFrame({ slug, title, kicker, lead, subline, prev, next, counter, stepLabel, variant = 'panel', children }: Props) {
   const pathname = usePathname();
-  const asPanel = useArrivedFromSky(pathname);
+  const asPanel = useHydrated();
+  // The hydration pass rendered the full page: this panel is the first paint of a hard load (T20).
+  const [landing] = useState(!asPanel);
+  const fromSky = useArrivedFromSky(pathname);
   const router = useRouter();
   const ref = useRef<HTMLDialogElement>(null);
   const drag = useRef<{ y: number; t: number; v: number; top: number } | null>(null);
-  const [snap, setSnap] = useState<'peek' | 'full'>('peek');
+  // Mobile: a sheet opened from the sky peeks over its star; a direct load came for the content.
+  const [snap, setSnap] = useState<'peek' | 'full'>(fromSky ? 'peek' : 'full');
   const closing = useRef(false);
 
-  // T7 / T20: camera on this star, sky dimmed, in both modes.
+  // T7 / T20: camera on this star, sky dimmed. Only behind a panel: text on a full page
+  // gets the calm sky (no labels or lines), so the chart never reads through it.
   useEffect(() => {
+    if (!asPanel) return;
     cameraRig.setTarget(slug);
     cameraRig.setDim(variant === 'cinema' ? 0.45 : 0.55);
     return () => {
       cameraRig.setTarget(null);
       cameraRig.setDim(1);
     };
-  }, [slug, variant]);
+  }, [slug, variant, asPanel]);
 
   // Layout effect: the dialog must be open before React snapshots the new view.
   useLayoutEffect(() => {
@@ -188,18 +206,23 @@ export function PanelFrame({ slug, title, kicker, lead, subline, prev, next, cou
   // T8. Close / Esc / backdrop go back in history (Back then leaves the page, as expected).
   // Where the View Transitions API exists, the back navigation runs inside one: the panel
   // slides out and its header dot morphs back into the star (the reverse of T7).
+  // A panel not opened from the sky has no page behind it in history: it slides out and opens its parent.
   const close = () => {
     if (closing.current) return;
     closing.current = true;
-    softNav.close(pathname);
+    const parent = fromSky ? null : parentOf(pathname);
+    // Back on the home chart the star's mirror link would take focus and scroll the page away from H3.
+    if (parent === '/#chart') softNav.set(null);
+    else softNav.close(pathname);
     const dialog = ref.current;
+    if (parent) return void (dialog ? slideOut(dialog) : Promise.resolve()).finally(() => router.push(parent));
     if (dialog && 'startViewTransition' in document) return morphBack(dialog, slug, pathname, () => router.back());
     (dialog ? slideOut(dialog) : Promise.resolve()).finally(() => router.back());
   };
 
   const step = (item: StepItem | undefined, rel: 'prev' | 'next') => {
     if (!item) return;
-    softNav.set(item.href);
+    softNav.set(item.href, !fromSky);
     stepFocus = rel;
     router.replace(item.href, { scroll: false });
   };
@@ -294,7 +317,7 @@ export function PanelFrame({ slug, title, kicker, lead, subline, prev, next, cou
   };
 
   return (
-    <PanelMode value>
+    <PanelMode value={fromSky ? 'sky' : 'direct'}>
       <ViewTransition name="star-panel" enter="vt-panel" exit="vt-panel" share="vt-fade" default="none">
         <dialog
           ref={ref}
@@ -302,6 +325,7 @@ export function PanelFrame({ slug, title, kicker, lead, subline, prev, next, cou
           aria-modal="true"
           className={`${styles.panel} ${variant === 'cinema' ? styles.cinema : ''}`}
           data-snap={snap}
+          data-landing={landing ? '' : undefined}
           onCancel={(e) => {
             e.preventDefault();
             close();
