@@ -1,4 +1,4 @@
-import type { SpectralClass, ChartPoint } from '@/components/sky/types';
+import type { SpectralClass } from '@/components/sky/types';
 
 export interface Role {
   title: string;
@@ -26,7 +26,7 @@ export interface Job {
   description?: string;
   sections: { heading?: string; bullets: Bullet[] }[];
   insignia: { src: string; tile?: string; /** Inset as a fraction of the tile, for marks that run to the edge. */ pad?: number; /** Width ÷ height, for wordmarks; default 1 (square tile). */ aspect?: number };
-  star: { spectral: SpectralClass; position: ChartPoint };
+  star: { spectral: SpectralClass };
 }
 
 export const jobs: Job[] = [
@@ -41,7 +41,7 @@ export const jobs: Job[] = [
       'Brava is an AI-native performance management platform that replaces traditional annual review cycles with continuous, example-based performance data so managers can make faster and fairer talent decisions. Backed by Zach Weinberg from Operator Partners.',
     sections: [],
     insignia: { src: '/images/company-icons/brava-mark.png', tile: '#0E1F18', pad: 0.2 },
-    star: { spectral: 'A', position: [0.4795, 0.0983] },
+    star: { spectral: 'A' },
   },
   {
     slug: 'hypha',
@@ -66,7 +66,7 @@ export const jobs: Job[] = [
       },
     ],
     insignia: { src: '/images/company-icons/hypha-apple.png' },
-    star: { spectral: 'F', position: [0.3615, 0.1339] },
+    star: { spectral: 'F' },
   },
   {
     slug: 'meta',
@@ -110,7 +110,7 @@ export const jobs: Job[] = [
       },
     ],
     insignia: { src: '/images/company-icons/meta.svg', tile: '#FFFFFF', pad: 0.14 },
-    star: { spectral: 'B', position: [0.292, 0.2717] },
+    star: { spectral: 'B' },
   },
   {
     slug: 'dbox',
@@ -132,7 +132,7 @@ export const jobs: Job[] = [
       },
     ],
     insignia: { src: '/images/company-icons/dbox-wordmark.svg', tile: '#000000', pad: 0.22, aspect: 2.2 },
-    star: { spectral: 'K', position: [0.1906, 0.2117] },
+    star: { spectral: 'K' },
   },
   {
     slug: 'prizm-imagery',
@@ -150,6 +150,6 @@ export const jobs: Job[] = [
       },
     ],
     insignia: { src: '/images/company-icons/prizm.png' },
-    star: { spectral: 'M', position: [0.1038, 0.3328] },
+    star: { spectral: 'M' },
   },
 ];

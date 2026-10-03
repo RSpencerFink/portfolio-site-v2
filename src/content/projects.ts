@@ -1,66 +1,36 @@
-import type { SpectralClass, ChartPoint } from '@/components/sky/types';
+import type { SpectralClass } from '@/components/sky/types';
 
 export interface Project {
   slug: string;
   name: string;
+  /** "Chrome extension · Live" line under the title (Paper R4 · P · Featured). */
+  kind: string;
+  status: string;
   description: string;
-  repo?: string;
-  live?: { url: string; label: string };
+  live: { url: string; label: string };
   tech: string[];
-  star: { spectral: SpectralClass; position: ChartPoint };
+  /** Framed browser-window capture of the live site, 1.6:1. */
+  preview: { src: string; width: number; height: number; caption: string };
+  star: { spectral: SpectralClass };
 }
 
+/** One featured build. Older projects were retired from the site (their URLs redirect here). */
 export const projects: Project[] = [
   {
     slug: 'section-8-scout',
     name: 'Section-8-Scout',
+    kind: 'Chrome extension',
+    status: 'Live',
     description:
       'Streamline your Section 8 property investment research with real-time Fair Market Rent validation directly on real estate listing sites.',
-    live: { url: 'https://www.section-8-scout.com', label: 'Live Site' },
+    live: { url: 'https://www.section-8-scout.com', label: 'Visit live site' },
     tech: ['Next.JS', 'Drizzle ORM', 'Tailwind CSS', 'PostgreSQL', 'Vercel'],
-    star: { spectral: 'A', position: [0.6601, 0.1894] },
-  },
-  {
-    slug: 'freecast',
-    name: 'Freecast',
-    description:
-      'Freecast is a modern podcast discovery and analysis platform that allows users to search, explore, and extract insights from podcast content.',
-    repo: 'https://github.com/RSpencerFink/freecast',
-    live: { url: 'https://freecast.vercel.app', label: 'Live Site' },
-    tech: ['Next.JS', 'Drizzle ORM', 'Tailwind CSS', 'PostgreSQL', 'Vercel', 'OpenAI', 'AssemblyAI', 'iTunes Search API', 'python'],
-    star: { spectral: 'F', position: [0.7156, 0.2783] },
-  },
-  {
-    slug: 'react-dynamic-image',
-    name: 'react-dynamic-image',
-    description: 'A lightweight component for cleanly rendering srcSet images in react',
-    repo: 'https://github.com/RSpencerFink/react-dynamic-image',
-    live: { url: 'https://www.npmjs.com/package/react-dynamic-image', label: 'Live Site (npm)' },
-    tech: ['React.JS', 'NPM'],
-    star: { spectral: 'G', position: [0.7917, 0.1994] },
-  },
-  {
-    slug: 'concord',
-    name: 'Concord',
-    description: 'A clone of the Discord\'s text chat, built in React & Ruby on Rails. Completed in a 10-day sprint.',
-    repo: 'https://github.com/RSpencerFink/Concord',
-    tech: ['React.JS', 'Redux', 'Ruby on Rails', 'PostgreSQL', 'Heroku'],
-    star: { spectral: 'A', position: [0.8403, 0.3111] },
-  },
-  {
-    slug: 'react-2048',
-    name: 'React 2048',
-    description: 'A clone of 2048, built in React.',
-    repo: 'https://github.com/RSpencerFink/react-2048',
-    tech: ['React.JS'],
-    star: { spectral: 'F', position: [0.9097, 0.2333] },
-  },
-  {
-    slug: 'brickbreaker',
-    name: 'BrickBreaker',
-    description: 'A Pong-style brickbreaking game built with vanilla JavaScript.',
-    repo: 'https://github.com/RSpencerFink/BrickBreaker',
-    tech: ['JavaScript'],
-    star: { spectral: 'G', position: [0.875, 0.4111] },
+    preview: { src: '/images/projects/section-8-scout/desktop.jpg', width: 1600, height: 1000, caption: 'Live site · Captured Oct 2026' },
+    star: { spectral: 'A' },
   },
 ];
+
+export const featured = projects[0];
+
+/** Retired project slugs: `/projects/<slug>` answers 308 → the featured build (next.config.ts). */
+export const retiredProjects = ['freecast', 'react-dynamic-image', 'concord', 'react-2048', 'brickbreaker'];

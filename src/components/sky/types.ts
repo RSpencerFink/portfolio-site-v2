@@ -23,6 +23,8 @@ export interface Star {
   spectral: SpectralClass;
   /** Only the labelled H3 subset has a position; the rest live in A3/A4 layouts. */
   position?: ChartPoint;
+  /** Unlabelled figure-completing star (dimmer, no marker). */
+  helper?: boolean;
 }
 
 export interface Constellation {
@@ -30,7 +32,12 @@ export interface Constellation {
   name: string;
   subline: string;
   namePosition?: ChartPoint;
-  starIds: string[];
+  /** Star id → chart position. */
+  stars: Record<string, ChartPoint>;
+  /** Unlabelled helper stars that complete the figure; line segments may use their ids. */
+  helpers?: Record<string, ChartPoint>;
+  /** A star drawn extra bright with a four-point glint (the featured build). */
+  lodestar?: string;
   lines: [string, string][];
   dashed?: [string, string][];
 }

@@ -1,7 +1,7 @@
 import { CatmullRomCurve3, Vector3 } from 'three';
 import { constellations } from '@/content/sky';
 import { jobs } from '@/content/work';
-import { projects } from '@/content/projects';
+import { featured } from '@/content/projects';
 import type { CameraState, Segment, Vec3 } from './cameraRig';
 import { clamp01, easeInOut, explorePose, focalH, focus, framePose, heroPose, lerp, lerpPose, overviewPose, panelPose, type ChartLayout, type Pose } from './chart';
 
@@ -13,9 +13,9 @@ import { clamp01, easeInOut, explorePose, focalH, focus, framePose, heroPose, le
 /* Journey                                                                  */
 
 const WORK = jobs.map((j) => j.slug);
-const PROJECTS = projects.map((p) => p.slug);
-/** Stars whose W/P frame is the dense two-column layout (W2, P1/P2): star top-left. */
-const DENSE = new Set([...jobs.filter((j) => j.sections.length > 0).map((j) => j.slug), ...PROJECTS]);
+const FEATURED = featured.slug;
+/** Stars whose W/P frame puts the star top-left (W2's two columns, the featured build with its preview). */
+const DENSE = new Set([...jobs.filter((j) => j.sections.length > 0).map((j) => j.slug), FEATURED]);
 
 /**
  * Focal star placement, matching where HomeJourney lays out the text
@@ -69,6 +69,8 @@ export interface Resolved {
   quiet?: boolean;
   /** Inside the W/P stages: the journey's HTML titles replace the constellation names. */
   stage?: boolean;
+  /** Behind a panel: starfield, nebula and the focal star only (no labels, lines or other content stars). */
+  bare?: boolean;
 }
 
 /** Where the camera wants to be for this rig state. Pure; the scene damps toward it. */
@@ -82,11 +84,11 @@ export function resolve(state: CameraState, c: ChartLayout, aspect: number, isHo
   if (typeof target === 'string' && target !== 'overview') {
     const group = constellations.find((k) => k.id === target);
     if (group) {
-      const ids = group.starIds.filter((id) => c.byId.has(id));
+      const ids = Object.keys(group.stars).filter((id) => c.byId.has(id));
       return { pose: framePose(c, ids, aspect, 46, 0.5, 0.5, 0.6), focusId: null, focal: false, mask: noMask, heroGlow: 0 };
     }
     const pose = panelPose(c, target, aspect);
-    if (pose) return { pose, focusId: target, focal: true, mask: noMask, heroGlow: 0 };
+    if (pose) return { pose, focusId: target, focal: true, mask: noMask, heroGlow: 0, bare: true };
     // A panel with no star on the chart (most films): the calm sky, no focus.
     return { pose: overview, focusId: null, focal: false, mask: noMask, heroGlow: 0, quiet: true };
   }
@@ -97,9 +99,9 @@ export function resolve(state: CameraState, c: ChartLayout, aspect: number, isHo
   const { id: seg, progress: t } = state.segment;
   const mask = heroMask(seg, t);
   const portrait = c.layout === 'portrait';
-  // Work: five stars, then "Constellation complete" (W3). Projects: the cluster title (P0), then six stars.
+  // Work: five stars, then "Constellation complete" (W3). Then one featured build.
   const workPoses = [...WORK.map((id) => journeyStarPose(c, id, aspect, 38)), framePose(c, WORK, aspect, 38, 0.47, 0.35, portrait ? 0.8 : 0.6)];
-  const projectPoses = [framePose(c, PROJECTS, aspect, 46, 0.5, 0.3, portrait ? 0.8 : 0.5), ...PROJECTS.map((id) => journeyStarPose(c, id, aspect, 46))];
+  const featuredPose = journeyStarPose(c, FEATURED, aspect, 46);
   switch (seg) {
     case 'hero': {
       const e = easeInOut(t);
@@ -109,15 +111,15 @@ export function resolve(state: CameraState, c: ChartLayout, aspect: number, isHo
       const r = travel(workPoses, [...WORK, null], t);
       return { pose: r.pose, focusId: r.focusId ?? 'brava', focal: r.focusId !== null, mask, heroGlow: 0, stage: true };
     }
-    case 'pull1':
-      return { pose: lerpPose(workPoses[WORK.length], projectPoses[0], easeInOut(t)), focusId: null, focal: false, mask, heroGlow: 0, stage: true };
-    case 'projects': {
-      const r = travel(projectPoses, [null, ...PROJECTS], t);
-      return { pose: r.pose, focusId: r.focusId, focal: r.focusId !== null, mask, heroGlow: 0, stage: true };
+    case 'pull1': {
+      const e = easeInOut(t);
+      return { pose: lerpPose(workPoses[WORK.length], featuredPose, e), focusId: e > 0.5 ? FEATURED : null, focal: e > 0.5, mask, heroGlow: 0, stage: true };
     }
+    case 'projects':
+      return { pose: featuredPose, focusId: FEATURED, focal: true, mask, heroGlow: 0, stage: true };
     default: {
       const e = easeInOut(t);
-      return { pose: lerpPose(projectPoses[PROJECTS.length], overview, e), focusId: e > 0.5 ? 'brava' : PROJECTS.at(-1)!, focal: e < 0.5, mask, heroGlow: 0 };
+      return { pose: lerpPose(featuredPose, overview, e), focusId: e > 0.5 ? 'brava' : FEATURED, focal: e < 0.5, mask, heroGlow: 0 };
     }
   }
 }

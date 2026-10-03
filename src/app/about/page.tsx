@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import { PanelFrame } from '@/components/panels/PanelFrame';
 import { JsonLd } from '@/components/JsonLd';
-import { SITE_URL, person, resume, socials } from '@/content/site';
+import { SITE_URL, education, person, resume, socials } from '@/content/site';
 import { LLMS_ALTERNATE, pageMeta, personLd } from '@/lib/seo';
 import { Insignia } from '@/components/Insignia';
 import { jobs } from '@/content/work';
@@ -52,6 +52,22 @@ export default function AboutPage() {
             <Insignia job={brava} size={28} />
             {person.currently}
           </p>
+        </section>
+        <section className={e.stack} style={{ gap: 12 }}>
+          <h2 className="label">Education</h2>
+          <ul className={e.roles}>
+            {education.map((s) => (
+              <li key={s.slug}>
+                <span>
+                  {s.name}
+                  <span className="label-s" style={{ display: 'block', marginTop: 4 }}>
+                    {s.description}
+                  </span>
+                </span>
+                <span className="label-s">{s.dates}</span>
+              </li>
+            ))}
+          </ul>
         </section>
         <section className={e.stack} style={{ gap: 12 }}>
           <h2 className="label">Reach</h2>

@@ -61,8 +61,12 @@ export const personLd = () => ({
   image: absoluteUrl(`${person.headshot.base}_800.jpg`),
   sameAs: socials.map((s) => s.url),
   worksFor: jobs.filter((j) => j.current).map((j) => ({ ...role(j), worksFor: organizationLd(j) })),
+  // Enrolled, not graduated: an affiliation, never alumniOf or a credential.
+  affiliation: education
+    .filter((e) => e.inProgress)
+    .map((e) => ({ '@type': 'CollegeOrUniversity', name: e.name, description: e.description })),
   alumniOf: [
-    ...education.map((e) => ({
+    ...education.filter((e) => !e.inProgress).map((e) => ({
       '@type': e.slug === 'emerson-college' ? 'CollegeOrUniversity' : 'EducationalOrganization',
       name: e.name,
     })),

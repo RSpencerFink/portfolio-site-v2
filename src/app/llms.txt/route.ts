@@ -22,13 +22,12 @@ export function GET() {
     }),
     '',
     '## Education',
-    ...education.map((e) => `- ${e.name}, ${e.location}, ${e.dates}: ${e.description}`),
+    ...education.map((e) => `- ${[e.name, e.location, e.dates].filter(Boolean).join(', ')}: ${e.description}`),
     '',
     '## Projects',
-    ...projects.map((p) => {
-      const links = [p.repo && `repository ${p.repo}`, p.live && `live ${p.live.url}`].filter(Boolean).join(', ');
-      return `- [${p.name}](${absoluteUrl(`/projects/${p.slug}`)}): ${p.description} Built with ${p.tech.join(', ')}. Links: ${links}.`;
-    }),
+    ...projects.map(
+      (p) => `- [${p.name}](${absoluteUrl(`/projects/${p.slug}`)}): ${p.kind}, ${p.status.toLowerCase()}. ${p.description} Built with ${p.tech.join(', ')}. Live site: ${p.live.url}.`,
+    ),
     '',
     '## Tech',
     ...tech.map((t) => `- ${t.heading}: ${t.items.join(', ')}`),

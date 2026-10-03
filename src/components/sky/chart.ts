@@ -1,4 +1,4 @@
-import { constellations, POLE_STAR, stars } from '@/content/sky';
+import { constellations, helperStars, POLE_STAR, stars } from '@/content/sky';
 import type { Vec3 } from './cameraRig';
 import type { ChartPoint, Star } from './types';
 
@@ -18,25 +18,26 @@ const PLANE = {
 
 // Portrait group placement in mobile-artboard px: [left, top, width] of the group's star bbox.
 const PORTRAIT_GROUPS: Record<string, [number, number, number]> = {
-  work: [40, 100, 170], // Brava's label keeps ≥ 24 px from the right edge (spec §8)
-  projects: [214, 214, 150],
-  origins: [44, 396, 96],
-  painter: [226, 540, 128],
-  filmmaker: [40, 660, 196],
+  work: [30, 96, 210], // Brava's label keeps ≥ 24 px from the right edge (spec §8)
+  projects: [230, 262, 120],
+  origins: [24, 500, 150],
+  painter: [226, 560, 140],
+  filmmaker: [40, 676, 186],
 };
 
 // Portrait constellation-name anchors (top-left of the block) in mobile-artboard px, from R3 · M-H3.
 const PORTRAIT_NAMES: Record<string, [number, number]> = {
-  work: [40, 196],
-  projects: [222, 318],
-  origins: [52, 530],
-  painter: [230, 482],
-  filmmaker: [40, 712],
+  work: [30, 244],
+  projects: [226, 292],
+  origins: [24, 612],
+  painter: [236, 520],
+  filmmaker: [40, 642],
 };
 
-const positioned = stars.filter((s): s is Star & { position: ChartPoint } => !!s.position);
+const positioned = [...stars.filter((s): s is Star & { position: ChartPoint } => !!s.position), ...helperStars];
 const groupOf = new Map<string, string>();
-for (const c of constellations) for (const id of c.starIds) groupOf.set(id, c.id);
+const lodestars = new Set(constellations.map((c) => c.lodestar));
+for (const c of constellations) for (const id of [...Object.keys(c.stars), ...Object.keys(c.helpers ?? {})]) groupOf.set(id, c.id);
 
 function portraitTransform(group: string) {
   const pts = positioned.filter((s) => groupOf.get(s.id) === group).map((s) => s.position);
@@ -45,8 +46,10 @@ function portraitTransform(group: string) {
   const [left, top, width] = PORTRAIT_GROUPS[group];
   const minX = Math.min(...xs);
   const minY = Math.min(...ys);
-  const s = width / (Math.max(...xs) - minX);
-  return (p: ChartPoint): [number, number] => [left + (p[0] * 1440 - minX) * s, top + (p[1] * 900 - minY) * s];
+  const span = Math.max(...xs) - minX;
+  // A one-star group (the featured build) sits at the centre of its box.
+  const s = span ? width / span : 0;
+  return (p: ChartPoint): [number, number] => [left + (span ? (p[0] * 1440 - minX) * s : width / 2), top + (p[1] * 900 - minY) * s];
 }
 const portraitFns = Object.fromEntries(Object.keys(PORTRAIT_GROUPS).map((g) => [g, portraitTransform(g)]));
 
@@ -65,6 +68,8 @@ export function toWorld(p: ChartPoint, layout: Layout, group?: string): Vec3 {
 export interface ChartStar extends Star {
   world: Vec3;
   group: string;
+  /** Extra bright, with a four-point glint (constellation `lodestar`). */
+  lodestar?: boolean;
 }
 
 export interface ChartLayout {
@@ -84,7 +89,7 @@ export function chartLayout(layout: Layout): ChartLayout {
   if (hit) return hit;
   const list = positioned.map((s) => {
     const group = groupOf.get(s.id) ?? '';
-    return { ...s, group, world: toWorld(s.position, layout, group) };
+    return { ...s, group, world: toWorld(s.position, layout, group), lodestar: lodestars.has(s.id) };
   });
   const out: ChartLayout = {
     layout,
@@ -141,13 +146,11 @@ export function overviewPose(c: ChartLayout, aspect: number): Pose {
 
 /** Visible-height scale of the focal views: desktop ~300 px per unit, portrait ~140. */
 export const focalH = (c: ChartLayout) => (c.layout === 'portrait' ? 6 : 3);
-/** Panel view (T7): star nudged to the left third, closer than H3. */
+/** Panel view (T7): the star centred in the upper middle, above the reading column, closer than H3. */
 export function panelPose(c: ChartLayout, id: string, aspect: number): Pose | null {
   const s = c.byId.get(id);
   if (!s) return null;
-  return c.layout === 'portrait'
-    ? focus(s.world, 9, 46, aspect, 0.5, 0.22)
-    : focus(s.world, 5.2, 46, aspect, 0.3, 0.5);
+  return c.layout === 'portrait' ? focus(s.world, 9, 46, aspect, 0.5, 0.15) : focus(s.world, 5.2, 46, aspect, 0.5, 0.2);
 }
 
 /** Frame a set of stars inside a viewport box (fx, fy = box centre, frac = share of width). */

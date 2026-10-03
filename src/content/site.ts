@@ -1,4 +1,4 @@
-import type { SpectralClass, ChartPoint } from '@/components/sky/types';
+import type { SpectralClass } from '@/components/sky/types';
 
 /** Production origin. */
 export const SITE_URL = 'https://rspencerfink.com';
@@ -13,7 +13,7 @@ export const person = {
   bio: 'I’m a Software Engineer with a strong background in building scalable, user-focused solutions. I specialize in developing tools that empower users, designing and optimizing algorithms, and creating efficient systems that drive business outcomes. With experience in both full-stack development and entrepreneurship, I’m passionate about solving complex problems and delivering impactful results. I enjoy collaborating with teams to bring creative and technical visions to life.',
   headshot: { base: '/images/headshot/rsf-headshot-2', width: 800, height: 1200 },
   /** The Observer star (About). */
-  star: { spectral: 'G' as SpectralClass, position: [0.0847, 0.4578] as ChartPoint },
+  star: { spectral: 'G' as SpectralClass },
 };
 
 export const socials = [
@@ -39,21 +39,31 @@ export const tech = [
 export interface School {
   slug: string;
   name: string;
-  location: string;
+  location?: string;
   dates: string;
   description: string;
-  star: { spectral: SpectralClass; position: ChartPoint };
+  /** Still enrolled: shown as in progress, never as a completed degree. */
+  inProgress?: boolean;
+  star: { spectral: SpectralClass };
 }
 
-/** Origins: labelled stars without routes (spec §2). */
+/** Origins: labelled stars without routes (spec §2). Newest first. */
 export const education: School[] = [
+  {
+    slug: 'georgia-tech',
+    name: 'Georgia Institute of Technology',
+    dates: '2026 — Present',
+    description: 'Master of Science (MS), Computer Science. In progress, since Jan 2026.',
+    inProgress: true,
+    star: { spectral: 'B' },
+  },
   {
     slug: 'app-academy',
     name: 'App Academy',
     location: 'New York, NY',
     dates: '2018',
     description: '1000+ hour software engineering bootcamp with a less than 3% acceptance rate.',
-    star: { spectral: 'G', position: [0.1833, 0.5156] },
+    star: { spectral: 'G' },
   },
   {
     slug: 'emerson-college',
@@ -61,6 +71,6 @@ export const education: School[] = [
     location: 'Boston, MA',
     dates: '2009 — 2013',
     description: 'BA - Film Production',
-    star: { spectral: 'G', position: [0.0837, 0.5783] },
+    star: { spectral: 'G' },
   },
 ];

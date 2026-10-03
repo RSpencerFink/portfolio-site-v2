@@ -1,6 +1,7 @@
 import type { NextConfig } from 'next';
 import { paintings } from './src/content/paintings';
 import { films } from './src/content/films';
+import { featured, retiredProjects } from './src/content/projects';
 
 const nextConfig: NextConfig = {
   // Stop `next dev` from writing AGENTS.md / CLAUDE.md into the repo.
@@ -8,6 +9,10 @@ const nextConfig: NextConfig = {
   // Old CRA URLs → new slugs. `permanent: true` answers 308.
   async redirects() {
     return [
+      // The hub page is gone: Visual Arts opens on the Painter.
+      { source: '/visual-arts', destination: '/visual-arts/analog', permanent: true },
+      // Retired projects point at the one featured build.
+      ...retiredProjects.map((slug) => ({ source: `/projects/${slug}`, destination: `/projects/${featured.slug}`, permanent: true })),
       { source: '/analog', destination: '/visual-arts/analog', permanent: true },
       { source: '/digital', destination: '/visual-arts/digital', permanent: true },
       ...paintings.map((p) => ({ source: `/analog/${p.legacyId}`, destination: `/visual-arts/analog/${p.slug}`, permanent: true })),

@@ -1,0 +1,90 @@
+/* Featured build (Paper R4 · P · Featured — Section-8-Scout): shared by the journey stop and the project panel. */
+.kind {
+  margin: 0;
+  color: var(--text-2);
+}
+
+.lede {
+  margin: 0;
+  font-size: 20px;
+  line-height: 30px;
+  font-weight: 300;
+  color: var(--text);
+}
+
+.built {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.built p {
+  margin: 0;
+}
+
+.built :global(.mono-body) {
+  color: var(--text);
+}
+
+/* The one primary action: a white pill. */
+.visit {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 44px;
+  padding: 0 var(--space-5);
+  color: #04050a;
+  background: #fff;
+  border-radius: var(--radius-pill);
+  text-decoration: none;
+  transition: background-color var(--dur-xs) var(--ease-out);
+}
+
+.visit:hover {
+  color: #04050a;
+  background: var(--text-2);
+}
+
+.preview {
+  display: grid;
+  gap: var(--space-3);
+  margin: 0;
+}
+
+.window {
+  overflow: hidden;
+  background: #0b0c12;
+  border: 1px solid var(--line-strong);
+  border-radius: 10px;
+  box-shadow: 0 24px 80px rgb(0 0 0 / 0.5);
+}
+
+.window img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.chrome {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  height: 36px;
+  padding: 0 var(--space-4);
+  color: var(--text-dim);
+  text-transform: none;
+  border-bottom: 1px solid var(--line);
+}
+
+/* Three window dots, grey: no accent hue. */
+.dots {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--text-mute);
+  box-shadow: 14px 0 var(--text-mute), 28px 0 var(--text-mute);
+  margin-right: 28px;
+}
+
+.preview figcaption {
+  color: var(--text-dim);
+}

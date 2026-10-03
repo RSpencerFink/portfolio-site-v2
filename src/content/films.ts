@@ -1,4 +1,4 @@
-import type { SpectralClass, ChartPoint } from '@/components/sky/types';
+import type { SpectralClass } from '@/components/sky/types';
 
 export interface Film {
   slug: string;
@@ -11,7 +11,7 @@ export interface Film {
   vimeoId: string;
   /** Montauk has no still: typographic card. */
   still?: string;
-  star: { spectral: SpectralClass; position?: ChartPoint };
+  star: { spectral: SpectralClass };
 }
 
 const DCE = ['Director', 'Cinematographer', 'Editor'];
@@ -112,20 +112,11 @@ const rows: Omit<Film, 'star' | 'still'>[] = [
   },
 ];
 
-/** The Filmmaker's H3 subset (spec §5). */
-const chart: Record<string, ChartPoint> = {
-  nightshade: [0.0764, 0.7778],
-  'timeflies-epk': [0.1667, 0.7222],
-  'spare-key': [0.2288, 0.805],
-  bayonet: [0.3892, 0.7283],
-  montauk: [0.4865, 0.8117],
-};
-
 export const films: Film[] = rows.map((f, i) => ({
   ...f,
   still: f.slug === 'montauk' ? undefined : `/images/film-stills/${f.slug}.jpg`,
   // Alternate B / A in content-file order, starting B (spec §4).
-  star: { spectral: i % 2 === 0 ? 'B' : 'A', position: chart[f.slug] },
+  star: { spectral: i % 2 === 0 ? 'B' : 'A' },
 }));
 
 export const vimeoUrl = (f: Film) => `https://vimeo.com/${f.vimeoId}`;

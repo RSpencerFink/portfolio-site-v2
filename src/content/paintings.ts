@@ -1,4 +1,4 @@
-import type { SpectralClass, ChartPoint } from '@/components/sky/types';
+import type { SpectralClass } from '@/components/sky/types';
 
 export interface Painting {
   slug: string;
@@ -14,7 +14,7 @@ export interface Painting {
   image: string;
   /** Pixel height of the 800 px master, for intrinsic sizing. */
   height800: number;
-  star: { spectral: SpectralClass; position?: ChartPoint };
+  star: { spectral: SpectralClass };
 }
 
 // Content-file order (spec §5). [title, medium, size, height800]
@@ -38,14 +38,6 @@ const rows: [string, string, string, number][] = [
   ['Walter White', 'Acrylic on Collage on Canvas', '36" x 36"', 802],
 ];
 
-/** The Painter's H3 subset (spec §5). */
-const chart: Record<string, ChartPoint> = {
-  'walter-white': [0.625, 0.6889],
-  'dr-manhattan': [0.7156, 0.6228],
-  'marilyn-monroe': [0.8125, 0.6778],
-  'han-solo': [0.7288, 0.7994],
-};
-
 export const paintings: Painting[] = rows.map(([title, medium, size, height800], i) => {
   const slug = title.toLowerCase().replace(/\./g, '').replace(/\s+/g, '-');
   const [widthIn, heightIn] = size.match(/\d+/g)!.map(Number);
@@ -60,6 +52,6 @@ export const paintings: Painting[] = rows.map(([title, medium, size, height800],
     image: `/images/paintings/${slug}`,
     height800,
     // Alternate K / G in content-file order, starting K (spec §4).
-    star: { spectral: i % 2 === 0 ? 'K' : 'G', position: chart[slug] },
+    star: { spectral: i % 2 === 0 ? 'K' : 'G' },
   };
 });

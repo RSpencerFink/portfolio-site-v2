@@ -11,7 +11,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const paths = [
     '/',
     '/about',
-    '/visual-arts',
     '/visual-arts/analog',
     '/visual-arts/digital',
     ...jobs.map((j) => `/work/${j.slug}`),
