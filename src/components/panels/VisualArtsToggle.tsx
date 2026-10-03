@@ -19,7 +19,8 @@ let refocus = false;
  * JS; ← → swap segments. The thumb carries `va-toggle` and slides between
  * the two routes; the pages pair `va-title` and `va-works`.
  */
-export function VisualArtsToggle({ current }: { current: 'analog' | 'digital' }) {
+/** `transitionName` false: a second toggle on screen (the window's) must not reuse `va-toggle`. */
+export function VisualArtsToggle({ current, transitionName = true }: { current: 'analog' | 'digital'; transitionName?: boolean }) {
   const router = useRouter();
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -40,9 +41,13 @@ export function VisualArtsToggle({ current }: { current: 'analog' | 'digital' })
         router.push(to.href);
       }}
     >
-      <ViewTransition name="va-toggle" share="vt-thumb" default="none">
+      {transitionName ? (
+        <ViewTransition name="va-toggle" share="vt-thumb" default="none">
+          <span className={styles.thumb} data-pos={current} aria-hidden="true" />
+        </ViewTransition>
+      ) : (
         <span className={styles.thumb} data-pos={current} aria-hidden="true" />
-      </ViewTransition>
+      )}
       {tabs.map((t) => (
         <Link
           key={t.id}

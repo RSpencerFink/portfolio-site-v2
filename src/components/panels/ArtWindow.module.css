@@ -1,0 +1,91 @@
+/* Visual Arts entry: works seen through the RSF letterforms (Paper B1). */
+.window {
+  --mark-w: min(89vw, 139vh - 150px);
+  position: relative;
+  grid-column: 1 / -1;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: var(--space-6);
+  padding: var(--space-6) var(--page-margin) var(--space-8);
+}
+
+/* Full motion with JS: a fixed layer over the constellation until the visitor flies through it. */
+@media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+  .window {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    padding-top: 72px;
+    background: var(--sky-ground);
+    /* If the scripts never run, the works are still reachable. */
+    animation: window-fallback 0s 8s forwards;
+  }
+}
+
+@keyframes window-fallback {
+  to {
+    visibility: hidden;
+  }
+}
+
+.stage {
+  display: grid;
+  gap: var(--space-4);
+  width: var(--mark-w);
+}
+
+/* One continuous mask over the three panes. Pane widths follow the letters (R 40 %, S 28 %, F 32 %). */
+.montage {
+  position: relative;
+  display: grid;
+  grid-template-columns: 40fr 28fr 32fr;
+  aspect-ratio: 1519.3 / 729.6;
+  mask: url('/logo/rsf-mark.svg') center / 100% 100% no-repeat;
+  transform-origin: 52% 50%;
+  will-change: scale;
+}
+
+.pane {
+  position: relative;
+}
+
+.pane img {
+  object-fit: cover;
+}
+
+.captions {
+  display: grid;
+  grid-template-columns: 40fr 28fr 32fr;
+  color: var(--text-dim);
+}
+
+.captions li {
+  padding-left: 2%;
+}
+
+.foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-5);
+  width: var(--mark-w);
+}
+
+.hint {
+  margin: 0;
+  color: var(--text);
+}
+
+@media (scripting: none), (prefers-reduced-motion: reduce) {
+  .hint {
+    display: none;
+  }
+}
+
+@media (max-width: 639px) {
+  .captions li {
+    padding-left: 0;
+    font-size: 9px;
+  }
+}
