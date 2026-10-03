@@ -9,7 +9,6 @@ import { paintings } from '@/content/paintings';
 import { pageMeta } from '@/lib/seo';
 import s from '../visual-arts.module.css';
 import { starSlot } from '../field';
-import { pad } from '@/lib/format';
 
 export const metadata: Metadata = pageMeta({
   title: 'The Painter: Analog',
@@ -29,7 +28,6 @@ export default function AnalogPage() {
         <Link href="/" className="label">
           <span aria-hidden="true">← </span>Back to sky
         </Link>
-        <p className="label">Analog · {paintings.length} paintings</p>
         <VisualArtsToggle current="analog" />
       </header>
       <ViewTransition name="va-works" share="vt-swap" default="none">
@@ -40,7 +38,7 @@ export default function AnalogPage() {
               <li key={p.slug} style={starSlot(i, p.widthIn / 48) as CSSProperties}>
                 <SkyLink href={`/visual-arts/analog/${p.slug}`} className={s.work}>
                   <span className={`label ${s.selected}`} aria-hidden="true">
-                    Selected · {pad(i + 1)} / {pad(paintings.length)} · Enter to open
+                    Enter to open
                   </span>
                   <span className={s.frame} data-star>
                     <Image

@@ -29,7 +29,6 @@ export default function DigitalPage() {
         <Link href="/" className="label">
           <span aria-hidden="true">← </span>Back to sky
         </Link>
-        <p className="label">Digital · {films.length} films &amp; music videos</p>
         <VisualArtsToggle current="digital" />
       </header>
       <ViewTransition name="va-works" share="vt-swap" default="none">
