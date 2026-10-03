@@ -27,6 +27,12 @@
 }
 
 /* Shown only in the desktop pinned journey (see page.tsx). */
+/* Revealed over the live chart: a scrim (spec §3) keeps the index legible over stars and labels. */
+:global(html[data-journey][data-sky='live']) .main:has(:focus-visible) {
+  background: rgb(4 5 10 / 0.9);
+  border-radius: var(--radius-panel);
+}
+
 :global(html:not([data-journey='pinned'])) .pinnedOnly {
   display: none;
 }

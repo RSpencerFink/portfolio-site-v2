@@ -60,7 +60,8 @@ export default function Home() {
           { id: 'work', items: jobs.map((x) => ({ href: `/work/${x.slug}`, name: x.company, sub: x.dates })) },
           { id: 'projects', items: projects.map((x) => ({ href: `/projects/${x.slug}`, name: x.name, sub: undefined })) },
         ].map(({ id, items }) => (
-          <section key={id} className={`${s.section} ${s.pinnedOnly}`} aria-labelledby={`index-${id}-title`}>
+          // A plain div: the journey's #work / #projects sections already own these region names.
+          <div key={id} className={`${s.section} ${s.pinnedOnly}`}>
             <nav aria-label={c[id].name}>
               <SectionHead id={id} titleId={`index-${id}-title`} />
               <ul className={s.chips} style={{ marginTop: 28 }}>
@@ -72,7 +73,7 @@ export default function Home() {
                 ))}
               </ul>
             </nav>
-          </section>
+          </div>
         ))}
 
         <section className={s.section} aria-labelledby="observer-title">
