@@ -721,7 +721,7 @@
 }
 
 :global(html[data-journey='mobile']) .tick {
-  width: 16px;
+  width: 24px;
   height: 44px;
   justify-content: center;
 }

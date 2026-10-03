@@ -40,6 +40,12 @@
 }
 
 /* Home H1 (spec §1 row 1): only the centred menu, no logo/name block. */
+/* Out of flow on home, so the hero starts at the top in every mode (no shift when data-chrome lands). */
+:global(body:has(#hero)) .header {
+  position: absolute;
+  inset: 0 0 auto;
+}
+
 :global(html:not([data-chrome='full']) body:has(#hero)) .header {
   justify-content: center;
 }
@@ -53,7 +59,7 @@
  * journey. The menu fades as the mask flies in (T2, 0–60 vh) and the full
  * header slides back in once the chart HUD appears (T1 chrome step).
  */
-:global(html[data-chrome]) .header {
+:global(html[data-chrome] body:has(#hero)) .header {
   position: fixed;
   inset: 0 0 auto;
   transition:
@@ -62,7 +68,7 @@
     visibility 0s;
 }
 
-:global(html[data-chrome='fly']) .header {
+:global(html[data-chrome='fly'] body:has(#hero)) .header {
   opacity: 0;
   translate: 0 -8px;
   visibility: hidden;
