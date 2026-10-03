@@ -25,7 +25,7 @@ export interface Job {
   roles: Role[];
   description?: string;
   sections: { heading?: string; bullets: Bullet[] }[];
-  insignia: { src: string; tile?: string };
+  insignia: { src: string; tile?: string; /** Inset as a fraction of the tile, for marks that run to the edge. */ pad?: number };
   star: { spectral: SpectralClass; position: ChartPoint };
 }
 
@@ -40,7 +40,7 @@ export const jobs: Job[] = [
     description:
       'Brava is an AI-native performance management platform that replaces traditional annual review cycles with continuous, example-based performance data so managers can make faster and fairer talent decisions. Backed by Zach Weinberg from Operator Partners.',
     sections: [],
-    insignia: { src: '/images/company-icons/brava-mark.png', tile: '#0E1F18' },
+    insignia: { src: '/images/company-icons/brava-mark.png', tile: '#0E1F18', pad: 0.2 },
     star: { spectral: 'A', position: [0.4795, 0.0983] },
   },
   {
@@ -99,7 +99,7 @@ export const jobs: Job[] = [
         ],
       },
     ],
-    insignia: { src: '/images/company-icons/meta.svg', tile: '#FFFFFF' },
+    insignia: { src: '/images/company-icons/meta.svg', tile: '#FFFFFF', pad: 0.14 },
     star: { spectral: 'B', position: [0.292, 0.2717] },
   },
   {

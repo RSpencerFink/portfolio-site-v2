@@ -17,6 +17,8 @@ export function Insignia({ job, size = 44, className }: { job: Job; size?: numbe
         border: `1px solid ${job.slug === 'dbox' ? 'rgb(255 255 255 / 0.18)' : 'rgb(255 255 255 / 0.14)'}`,
         background: job.insignia.tile,
         objectFit: 'contain',
+        boxSizing: 'border-box',
+        padding: size * (job.insignia.pad ?? 0),
         flexShrink: 0,
       }}
     />
