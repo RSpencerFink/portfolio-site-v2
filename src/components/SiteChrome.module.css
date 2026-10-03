@@ -1,0 +1,34 @@
+.header,
+.footer {
+  position: relative;
+  z-index: var(--z-hud);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: 28px var(--page-margin);
+}
+
+.header a,
+.footer a {
+  text-decoration: none;
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-5);
+}
+
+.skip:focus {
+  position: static;
+  width: auto;
+  height: auto;
+  clip-path: none;
+}
+
+.footer {
+  border-top: 1px solid var(--line);
+  margin-top: var(--space-10);
+}
