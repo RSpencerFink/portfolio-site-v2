@@ -10,9 +10,8 @@ export function SiteHeader() {
       <a href="#main" className={`visually-hidden ${styles.skip}`}>
         Skip to content
       </a>
-      <Link href="/" className={`label ${styles.home}`}>
+      <Link href="/" className={`label ${styles.home}`} aria-label={`${person.name}, home`}>
         <Image src="/logo/rsf.svg" alt="" width={50} height={24} priority />
-        {person.name}
       </Link>
       <nav aria-label="Primary" className={styles.nav}>
         <MenuButton className={`label ${styles.menu}`} controls="primary-links" />
