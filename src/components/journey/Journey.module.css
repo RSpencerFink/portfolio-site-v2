@@ -667,7 +667,8 @@
   max-height: calc(78vh - 96px);
 }
 
-:global(html[data-journey='pinned']) .featured .content {
+/* Doubled class: must outrank the shared :is(.slide[data-dense], .featured) rule above, or the text runs under the preview. */
+:global(html[data-journey='pinned']) .featured.featured .content {
   width: min(470px, 32vw);
 }
 
