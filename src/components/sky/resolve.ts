@@ -101,8 +101,8 @@ export function resolve(state: CameraState, c: ChartLayout, aspect: number, isHo
   const portrait = c.layout === 'portrait';
   // Work: five stars, then "Constellation complete" (W3). Then one featured build.
   // W3 "complete": the whole arrow at 1.3–1.6× the H3 scale (pole mark and, on mobile, the star labels stay off),
-  // between the Student block and the title on desktop, above the text on mobile.
-  const complete = portrait ? framePose(c, WORK, aspect, 38, 0.355, 0.2, 0.382) : framePose(c, WORK, aspect, 38, 0.49, 0.3, 0.6);
+  // between the Student block and the title on desktop; on mobile in the sky band between the header and the title.
+  const complete = portrait ? framePose(c, WORK, aspect, 38, 0.355, 0.23, 0.35) : framePose(c, WORK, aspect, 38, 0.49, 0.3, 0.6);
   const workPoses = [...WORK.map((id) => journeyStarPose(c, id, aspect, 38)), complete];
   const featuredPose = journeyStarPose(c, FEATURED, aspect, 46);
   switch (seg) {

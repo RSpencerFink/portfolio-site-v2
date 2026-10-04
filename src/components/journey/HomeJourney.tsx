@@ -168,6 +168,9 @@ function mobileStage(stage: HTMLElement, segment: Segment, segs: CameraSegment[]
   );
   const st = ScrollTrigger.create({ trigger: stage, start: 'top 60%', end: 'bottom 40%' });
   segs.push({ id: segment, st, t: () => cam.t });
+  // The rail shows while a job is current, so it fades before The Engineer and never rides up with the stage's end.
+  const slides = stage.querySelector('ol');
+  if (slides) ScrollTrigger.create({ trigger: slides, start: 'top 35%', end: 'bottom 35%', onToggle: (self) => stage.toggleAttribute('data-live', self.isActive) });
   const top = (el: HTMLElement) => el.getBoundingClientRect().top + window.scrollY;
   const stops = () => groups.map((els) => top(els[0]));
 
@@ -182,9 +185,33 @@ function mobileStage(stage: HTMLElement, segment: Segment, segs: CameraSegment[]
   stage.addEventListener('click', onClick);
   cleanups.push(() => {
     stage.removeEventListener('click', onClick);
+    stage.removeAttribute('data-live');
     gsap.killTweensOf(cam);
   });
   return stops;
+}
+
+/**
+ * Phones: the sky is fixed and the text scrolls over it. While any stop's text is in the band of sky above the
+ * 35 % line (where the camera puts the star), `<html data-reading>` is set and the sky drops its reticle
+ * (SkyHost.module.css), so nothing of the sky's own marks ever sits on the words.
+ */
+function readingBand(): Cleanup {
+  const root = document.documentElement;
+  const over = new Set<Element>();
+  document.querySelectorAll('#journey [data-stage] [data-slide] > :not([aria-hidden])').forEach((el) =>
+    ScrollTrigger.create({
+      trigger: el,
+      start: 'top 35%',
+      end: 'bottom top',
+      onToggle: (self) => {
+        if (self.isActive) over.add(el);
+        else over.delete(el);
+        root.toggleAttribute('data-reading', over.size > 0);
+      },
+    }),
+  );
+  return () => root.removeAttribute('data-reading');
 }
 
 /** A long stop's text column: marks whether there is more above (`data-scrolled`) and below (`data-more`, "More ↓"). */
@@ -254,6 +281,7 @@ export function HomeJourney() {
       const stops = () => [...(stageStops.work?.() ?? []), ...(stageStops.projects?.() ?? [])].sort((a, b) => a - b);
       // Desktop: one gesture = one stop, long stops scroll their column. Phones scroll natively.
       if (desktop) cleanups.push(stepper(stops), columnEdges());
+      else cleanups.push(readingBand());
 
       // Hash targets: /#work the first Work stop (Brava), /#projects the featured build,
       // /#chart (a direct-loaded panel's Close) the H3 rest at the end of the document.

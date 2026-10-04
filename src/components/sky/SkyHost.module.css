@@ -287,6 +287,28 @@
   opacity: 0;
 }
 
+/*
+ * Phones (T17): the sky is fixed and the journey's text scrolls over it, and the HTML titles carry each stop, so
+ * star labels, names, insignia, glints and their tap targets wait for the H3 rest (data-explore). The "current"
+ * ring waits too (in the pull to H3 it crosses the header); the focal reticle steps aside while text is in the
+ * star's band (data-reading, HomeJourney).
+ */
+:global(html[data-journey='mobile']:not([data-explore])) .labels :is(.text, .cname),
+:global(html[data-journey='mobile']:not([data-explore])) .labels .hit::before,
+:global(html[data-journey='mobile']:not([data-explore])) .labels .hit::after,
+:global(html[data-journey='mobile']:not([data-explore])) .reticle[data-variant='current'],
+:global(html[data-journey='mobile'][data-reading]) .reticle {
+  opacity: 0;
+}
+
+:global(html[data-journey='mobile']:not([data-explore])) .labels .marker {
+  pointer-events: none;
+}
+
+:global(html[data-journey='mobile']) .reticle {
+  transition: opacity var(--dur-s) var(--ease-sine);
+}
+
 /* Mobile sheet: only the open star keeps its label, so nothing reads through the sheet. */
 @media (max-width: 639px) {
   :global(html[data-panel]) .labels .marker:not([data-focus]) .text,

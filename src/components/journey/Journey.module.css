@@ -830,7 +830,8 @@
 }
 
 :global(html[data-journey='mobile']) .more,
-:global(html[data-journey='mobile']) .stage > :is(.hint, .counter) {
+:global(html[data-journey='mobile']) .hint,
+:global(html[data-journey='mobile']) .stage > .counter {
   display: none !important;
 }
 
@@ -842,6 +843,25 @@
   z-index: -1;
   background: linear-gradient(transparent, rgb(4 5 10 / 0.72) 60px, rgb(4 5 10 / 0.72) calc(100% - 32px), transparent);
   pointer-events: none;
+}
+
+/* The same scrim behind "The Engineer" and The Student: one band over both (they abut), faded only at its ends. */
+:global(html[data-journey='mobile']) :is(.complete, .origins)::before {
+  content: '';
+  position: absolute;
+  inset: 0 calc(-1 * var(--page-margin));
+  z-index: -1;
+  background: rgb(4 5 10 / 0.72);
+  pointer-events: none;
+}
+
+:global(html[data-journey='mobile']) .complete::before {
+  top: calc(40svh - 40px);
+  background: linear-gradient(transparent, rgb(4 5 10 / 0.72) 60px);
+}
+
+:global(html[data-journey='mobile']) .origins::before {
+  background: linear-gradient(rgb(4 5 10 / 0.72) calc(100% - 64px), transparent);
 }
 
 /*
@@ -887,6 +907,18 @@
   padding: 24px var(--page-margin) 8px;
   white-space: nowrap;
   background: linear-gradient(transparent, var(--sky-ground) 24px);
+  transition:
+    opacity var(--dur-s) var(--ease-sine),
+    visibility 0s;
+}
+
+/* Shown while a job is current (HomeJourney mobileStage): it fades before The Engineer, so it never rides up mid-screen. */
+:global(html[data-journey='mobile']) .stage:not([data-live]) .rail {
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity var(--dur-s) var(--ease-sine),
+    visibility 0s var(--dur-s);
 }
 
 :global(html[data-journey='mobile']) .rail nav {
@@ -933,7 +965,8 @@
 }
 
 @media (prefers-contrast: more) {
-  :global(html[data-journey]) .content::before {
+  :global(html[data-journey]) .content::before,
+  :global(html[data-journey='mobile']) :is(.complete, .origins)::before {
     opacity: 1;
     background: rgb(4 5 10 / 0.9) !important;
   }
