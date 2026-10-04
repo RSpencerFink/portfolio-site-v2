@@ -18,12 +18,12 @@ export const metadata: Metadata = pageMeta({
   image: films.find((f) => f.still)!.still,
 });
 
-/** R3 · A4. Film stills; hover or focus shows the logline. */
 /** The window's pool: every film with a still, a random three per visit; the server HTML shows FALLBACK. */
 const work = (f: (typeof films)[number]) => ({ src: f.still!, name: f.title });
 const POOL = films.filter((f) => f.still).map(work);
 const FALLBACK = ['nightshade', 'spare-key', 'bayonet'].map((slug) => work(films.find((f) => f.slug === slug)!));
 
+/** R3 · A4. Film stills; hover or focus shows the logline. */
 export default function DigitalPage() {
   return (
     <main id="main" className={s.main}>

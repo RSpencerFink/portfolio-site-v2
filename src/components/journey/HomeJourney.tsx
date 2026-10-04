@@ -302,6 +302,10 @@ export function HomeJourney() {
       };
       document.addEventListener('click', onClick, true);
       cleanups.push(() => document.removeEventListener('click', onClick, true));
+      // Same-page hash changes not made by a link click (address bar, history): land on the stop too.
+      const onHash = () => void toHash(location.hash);
+      addEventListener('hashchange', onHash);
+      cleanups.push(() => removeEventListener('hashchange', onHash));
       // Arriving with a hash (direct load, header link from another page): land on the stop now,
       // before the first paint of the journey. For 2 s, re-land if the browser's anchor scroll or a
       // ScrollTrigger refresh (web fonts) moves the page or the stop.

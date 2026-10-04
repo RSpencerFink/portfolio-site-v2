@@ -18,12 +18,12 @@ export const metadata: Metadata = pageMeta({
   image: `${paintings[0].image}_800.jpg`,
 });
 
-/** R3 · A3. Paintings float at star positions, sized by real canvas width, joined by constellation lines; hover or focus selects one. */
 /** The window's pool: every painting, a random three per visit; the server HTML shows FALLBACK. */
 const work = (p: (typeof paintings)[number]) => ({ src: `${p.image}_800.jpg`, name: p.title });
 const POOL = paintings.map(work);
 const FALLBACK = ['dr-manhattan', 'marilyn-monroe', 'walter-white'].map((slug) => work(paintings.find((p) => p.slug === slug)!));
 
+/** R3 · A3. Paintings float at star positions, sized by real canvas width, joined by constellation lines; hover or focus selects one. */
 export default function AnalogPage() {
   return (
     <main id="main" className={s.main}>

@@ -182,8 +182,8 @@ let markD: Promise<string | null> | null = null;
 /** The filled mark's path data (rsf-mark.svg), fetched once for the H1 letterbox and the label test; a failed fetch is retried on the next call. */
 export const markPath = () =>
   (markD ??= fetch('/logo/rsf-mark.svg')
-    .then((r) => r.text())
-    .then((text) => new DOMParser().parseFromString(text, 'image/svg+xml').querySelector('path')?.getAttribute('d') ?? null)
+    .then((r) => (r.ok ? r.text() : Promise.reject()))
+    .then((text) => new DOMParser().parseFromString(text, 'image/svg+xml').querySelector('path')?.getAttribute('d') ?? Promise.reject())
     .catch(() => (markD = null)));
 /** Where Brava (the current role) sits in the mark at H1, as fractions of the mark box: on the S's spine near the fly-through point, so the star and its whole label stay inside the S while the mask scales (T2). */
 const HERO_BRAVA: Record<Layout, [number, number]> = { landscape: [0.45, 0.5], portrait: [0.47, 0.5] };
