@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useEffect, type ReactNode, type Ref } from 'react';
+import { useEffect, type FocusEvent, type ReactNode, type Ref } from 'react';
 import { door } from '@/content/sky';
 import { isModified } from '@/lib/events';
 import { cameraRig } from './cameraRig';
@@ -134,9 +134,10 @@ export function useDoor(pathname: string) {
 /** A link through the door: the sky's own marker (tabIndex −1) and the HTML mirror's, the last stop in the chart's tab order. */
 export function DoorLink({ className, tabIndex, ref, children }: { className?: string; tabIndex?: number; ref?: Ref<HTMLAnchorElement>; children?: ReactNode }) {
   const router = useRouter();
-  const focused = (v: boolean) => () => {
-    doorInput.focused = v;
-    doorStore.set(v || doorInput.flying);
+  // Keyboard focus finds the door; focus a mouse click leaves on the sky marker does not (it would stay lit on return).
+  const focused = (v: boolean) => (e: FocusEvent<HTMLAnchorElement>) => {
+    doorInput.focused = v && e.currentTarget.matches(':focus-visible');
+    doorStore.set(doorInput.focused || doorInput.flying);
   };
   return (
     <Link
