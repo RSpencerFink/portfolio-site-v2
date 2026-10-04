@@ -10,7 +10,7 @@ export const person = {
   jobTitle: 'CTO & Co-founder',
   identities: ['Engineering Leader', 'Visual Artist'],
   currently: 'CTO & Co-founder, Brava',
-  bio: 'I’m a Software Engineer with a strong background in building scalable, user-focused solutions. I specialize in developing tools that empower users, designing and optimizing algorithms, and creating efficient systems that drive business outcomes. With experience in both full-stack development and entrepreneurship, I’m passionate about solving complex problems and delivering impactful results. I enjoy collaborating with teams to bring creative and technical visions to life.',
+  bio: 'I’m the CTO and co-founder of Brava, where we’re replacing annual performance reviews with continuous, example-based feedback. Before that I led engineering at Hypha and spent five years at Meta building rights-management and creator-economy systems, including matching algorithms that cut annual hardware costs by more than $10M. I came to software from film: I studied production at Emerson, ran a photography and cinematography business, and still paint and make films. I’m currently working on an MS in Computer Science at Georgia Tech.',
   headshot: { base: '/images/headshot/rsf-headshot-2', width: 800, height: 1200 },
   /** The Observer star (About). */
   star: { spectral: 'G' as SpectralClass },
