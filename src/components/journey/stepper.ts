@@ -200,6 +200,8 @@ export function stepper(stops: () => number[]) {
 
   // Free scroll may not cross a stop: catch it at the first one between here and where it is heading.
   let prev = y();
+  /** Where the page last came to rest: the stop a glide leaves is not caught. */
+  let rest = prev;
   let idle = 0;
   /**
    * Scrolling stopped between two stops (a scrollbar drag, a resize), or, on touch, in the lead-in just above
@@ -208,8 +210,8 @@ export function stepper(stops: () => number[]) {
   const settle = () => {
     if (busy()) return;
     const s = stops();
-    const cur = y();
-    if (!s.length || (touched ? !inZone(s) : cur <= s[0] + TOL) || cur >= s.at(-1)! - TOL || s.some((v) => Math.abs(v - cur) <= TOL)) return;
+    const cur = (rest = y());
+    if (!s.length || (touched ? !inZone(s) : cur <= s[0] + TOL) || cur >= s.at(-1)! - TOL || s.some((v) => Math.abs(v - cur) < 0.5)) return;
     goTo(s.reduce((a, b) => (Math.abs(b - cur) < Math.abs(a - cur) ? b : a)), 0.6);
   };
   const onScroll = () => {
@@ -220,18 +222,21 @@ export function stepper(stops: () => number[]) {
     const heading = lenis ? lenis.targetScroll : cur;
     const from = prev;
     prev = cur;
+    if (busy()) return void (rest = cur);
     // A jump (hash landing, scroll restoration) is not a glide: nothing to catch.
-    if (busy() || Math.abs(cur - from) > innerHeight) return;
+    if (Math.abs(cur - from) > innerHeight) return;
     const ahead = heading > from ? Math.max(heading, cur) : Math.min(heading, cur);
-    const crossed = stops().filter((s) => (s - from) * (s - ahead) < 0 && Math.abs(s - from) > TOL);
+    // A stop the glide reaches or passes, other than the one it left (a frame can land exactly on a stop mid-glide).
+    const crossed = stops().filter((s) => (s - from) * (s - ahead) <= 0 && s !== ahead && Math.abs(s - rest) > 0.5);
     if (!crossed.length) return;
-    // A native touch fling (into the zone from the hero, or back up from below the last stop) would carry on under
-    // the flight and push it off the stop: the root stops being scrollable for two frames, which ends the fling.
-    if (touched) {
-      document.documentElement.style.overflow = 'hidden';
-      requestAnimationFrame(() => requestAnimationFrame(() => (document.documentElement.style.overflow = '')));
-    }
     goTo(heading > from ? crossed[0] : crossed.at(-1)!, 0.6);
+    // A native touch fling (into the zone from the hero, or back up from below the last stop) would carry on under
+    // the flight and push it off the stop: the root is not user-scrollable until the flight lands, which ends it.
+    if (touched) {
+      const html = document.documentElement;
+      html.style.overflow = 'hidden';
+      setTimeout(() => (html.style.overflow = ''), busyUntil - performance.now());
+    }
   };
 
   const ac = new AbortController();
