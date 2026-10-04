@@ -41,8 +41,9 @@ export function goTo(y: number, duration = FLIGHT) {
 const typing = (t: EventTarget | null) => !!(t as Element | null)?.closest?.('input, textarea, select, [contenteditable], dialog, [role="group"]');
 
 /**
- * One gesture = one stop (item 3). Inside the stepping zone (the Work stops
- * and the featured build) a wheel flick, a trackpad swipe, a touch swipe or
+ * One gesture = one stop (item 3), desktop only (the phone journey is native
+ * scroll). Inside the stepping zone (the Work stops and the featured build) a
+ * wheel flick, a trackpad swipe or
  * ↑ ↓ PageUp PageDown Space moves exactly one stop and then holds: input is
  * swallowed until the flight lands, and a trackpad's inertia tail counts as
  * the same gesture. At the first and last stop the next gesture is let
@@ -132,45 +133,17 @@ export function stepper(stops: () => number[]) {
     if (step(dir as 1 | -1)) e.preventDefault();
   };
 
-  // Touch: decide on the first real move whether the swipe is ours (then the page doesn't scroll natively).
-  // A swipe that starts with the stop's column able to scroll scrolls it instead: natively (with momentum) when the
-  // finger is on the column, by hand otherwise. Either way it ends at the column's edge (overscroll-behavior: contain).
-  let touch: { y: number; last: number; dir: 0 | 1 | -1; inner?: HTMLElement } | null = null;
-  const onTouchStart = (e: TouchEvent) => {
-    touch = e.touches.length === 1 && !typing(e.target) ? { y: e.touches[0].clientY, last: e.touches[0].clientY, dir: 0 } : null;
-  };
-  const onTouchMove = (e: TouchEvent) => {
-    if (!touch) return;
-    const at = e.touches[0].clientY;
-    const dy = touch.y - at;
-    if (!touch.dir) {
-      if (Math.abs(dy) < 8) return;
-      const dir = dy > 0 ? 1 : -1;
-      touch.inner = columnFor(dir);
-      touch.dir = touch.inner || busy() || targetFor(dir) !== undefined ? dir : 0;
-      if (!touch.dir) return void (touch = null); // leaving the zone: native scroll
-    }
-    if (touch.inner?.contains(e.target as Node)) return;
-    if (touch.inner) touch.inner.scrollTop += touch.last - at;
-    touch.last = at;
-    if (e.cancelable) e.preventDefault();
-  };
-  const onTouchEnd = (e: TouchEvent) => {
-    if (!touch?.dir || touch.inner) return void (touch = null);
-    const dy = touch.y - e.changedTouches[0].clientY;
-    if (!busy() && Math.abs(dy) > 32) step(touch.dir as 1 | -1);
-    touch = null;
-  };
-
   // Free scroll may not cross a stop: catch it at the first one between here and where it is heading.
   let prev = y();
+  /** Where the page last came to rest: the stop a glide leaves is not caught. */
+  let rest = prev;
   let idle = 0;
-  /** Scrolling stopped between two stops (a scrollbar drag, a resize): settle on the nearer one. */
+  /** Scrolling stopped between two stops (a scrollbar drag, a resize): settle on the nearer stop. */
   const settle = () => {
     if (busy()) return;
     const s = stops();
-    const cur = y();
-    if (!s.length || cur <= s[0] + TOL || cur >= s.at(-1)! - TOL || s.some((v) => Math.abs(v - cur) <= TOL)) return;
+    const cur = (rest = y());
+    if (!s.length || cur <= s[0] + TOL || cur >= s.at(-1)! - TOL || s.some((v) => Math.abs(v - cur) < 0.5)) return;
     goTo(s.reduce((a, b) => (Math.abs(b - cur) < Math.abs(a - cur) ? b : a)), 0.6);
   };
   const onScroll = () => {
@@ -181,22 +154,20 @@ export function stepper(stops: () => number[]) {
     const heading = lenis ? lenis.targetScroll : cur;
     const from = prev;
     prev = cur;
+    if (busy()) return void (rest = cur);
     // A jump (hash landing, scroll restoration) is not a glide: nothing to catch.
-    if (busy() || Math.abs(cur - from) > innerHeight) return;
+    if (Math.abs(cur - from) > innerHeight) return;
     const ahead = heading > from ? Math.max(heading, cur) : Math.min(heading, cur);
-    const crossed = stops().filter((s) => (s - from) * (s - ahead) < 0 && Math.abs(s - from) > TOL);
+    // A stop the glide reaches or passes, other than the one it left (a frame can land exactly on a stop mid-glide).
+    const crossed = stops().filter((s) => (s - from) * (s - ahead) <= 0 && s !== ahead && Math.abs(s - rest) > 0.5);
     if (!crossed.length) return;
     goTo(heading > from ? crossed[0] : crossed.at(-1)!, 0.6);
   };
 
   const ac = new AbortController();
   const { signal } = ac;
-  const opts = { signal, capture: true, passive: false };
-  addEventListener('wheel', onWheel, opts);
+  addEventListener('wheel', onWheel, { signal, capture: true, passive: false });
   addEventListener('keydown', onKey, { signal });
-  addEventListener('touchstart', onTouchStart, { signal, passive: true });
-  addEventListener('touchmove', onTouchMove, opts);
-  addEventListener('touchend', onTouchEnd, { signal });
   addEventListener('scroll', onScroll, { signal, passive: true });
   return () => {
     ac.abort();

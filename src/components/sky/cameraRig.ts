@@ -1,5 +1,8 @@
 export type Vec3 = [number, number, number];
 
+/** Screenshot and test hooks on `window.__rsfSky`: dev builds, or a production build made with NEXT_PUBLIC_SKY_HOOKS=1. */
+export const SKY_HOOKS = process.env.NODE_ENV !== 'production' || process.env.NEXT_PUBLIC_SKY_HOOKS === '1';
+
 /** A star id, a constellation id ('work', 'projects': frame the whole group), the full chart, or an explicit pose. */
 export type CameraTarget = string | 'overview' | { position: Vec3; lookAt: Vec3 };
 

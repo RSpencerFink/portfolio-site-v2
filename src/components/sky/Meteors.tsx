@@ -3,8 +3,9 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
-import { cameraRig } from './cameraRig';
+import { cameraRig, SKY_HOOKS, type Vec3 } from './cameraRig';
 import { heroMask } from './resolve';
+import { doorInput, meteorHead, onMeteor } from './Door';
 import { meteorFrag, meteorVert } from './shaders';
 
 /** Shooting-star tunables (spec §7 ambient table). Ranges are [min, max], drawn uniformly. */
@@ -21,11 +22,15 @@ const METEOR = {
   angle: [200, 250],
   /** Seconds to wait when the sky is busy (or no clear path) at the due time. */
   retry: [2, 5],
+  /** Share of meteors launched from the hidden door (spec §12b), when it is on screen and a clear path out exists. */
+  door: 1 / 3,
+  /** A door meteor's shortest on-screen travel in CSS px (it is cut off at the viewport edge). */
+  doorMin: 90,
 } as const;
 
 const rand = ([a, b]: readonly [number, number]) => a + Math.random() * (b - a);
 
-type Meteor = { x: number; y: number; dx: number; dy: number; len: number; travel: number; life: number; age: number };
+type Meteor = { x: number; y: number; dx: number; dy: number; len: number; travel: number; life: number; age: number; door?: boolean };
 
 /** Nothing behind the path but sky: not the central mark/pole area, and no HTML text or control under it. */
 function clearPath(sky: Element, x0: number, y0: number, dx: number, dy: number, dist: number, w: number, h: number) {
@@ -41,6 +46,23 @@ function clearPath(sky: Element, x0: number, y0: number, dx: number, dy: number,
     if (el && el !== document.documentElement && el !== document.body && !sky.contains(el)) return false;
   }
   return true;
+}
+
+/** The hint (spec §12b): a meteor that starts at the door and falls away from it, so curious eyes notice that spot. */
+function fromDoor(sky: Element, at: [number, number], w: number, h: number): Meteor | null {
+  for (let i = 0; i < 12; i++) {
+    // Any falling heading, 15–90° below the horizon, either side; cut off at the viewport edge.
+    const a = (rand([15, 90]) * Math.PI) / 180;
+    const dx = Math.cos(a) * (Math.random() < 0.5 ? 1 : -1);
+    const dy = Math.sin(a);
+    const x = at[0] + dx * 10;
+    const y = at[1] + dy * 10;
+    const edge = Math.min(dx > 0 ? (w - x) / dx : dx < 0 ? -x / dx : Infinity, (h - y) / dy);
+    const travel = Math.min(rand(METEOR.length) * (w < 640 ? 0.7 : 1) * 1.5, edge * 0.95);
+    if (travel < METEOR.doorMin) continue;
+    if (clearPath(sky, x, y, dx, dy, travel, w, h)) return { x, y, dx, dy, len: travel / 1.5, travel, life: rand(METEOR.life), age: 0, door: true };
+  }
+  return null;
 }
 
 function place(sky: Element, w: number, h: number): Meteor | null {
@@ -61,9 +83,11 @@ function place(sky: Element, w: number, h: number): Meteor | null {
  * Occasional shooting stars: at most one at a time, only on a still sky
  * (no panel, theater, Visual Arts window, hero mask or camera flight).
  * Scene mounts it only outside reduced motion. Time advances with drawn
- * frames, so a hidden tab (frameloop 'never') never queues one up.
+ * frames, so a hidden tab (frameloop 'never') never queues one up. About a
+ * third start at the hidden door; any meteor in flight can be clicked, and
+ * opens the door (Door.tsx hit-tests `meteorHead`).
  */
-export function Meteors({ low, isHome }: { low: boolean; isHome: boolean }) {
+export function Meteors({ low, isHome, door }: { low: boolean; isHome: boolean; door: Vec3 }) {
   const mesh = useRef<THREE.Mesh>(null);
   const geometry = useMemo(() => new THREE.PlaneGeometry(2, 2), []);
   const material = useMemo(
@@ -89,15 +113,28 @@ export function Meteors({ low, isHome }: { low: boolean; isHome: boolean }) {
     [geometry, material],
   );
 
-  const s = useRef({ wait: rand(METEOR.first), m: null as Meteor | null, cam: new THREE.Vector3(), seg: null as unknown, still: 0, count: 0 });
+  const s = useRef({ wait: rand(METEOR.first), m: null as Meteor | null, cam: new THREE.Vector3(), seg: null as unknown, still: 0, count: 0, force: false, over: false });
 
-  // Dev hook: window.__rsfSky.meteor() makes the next one due now (still subject to the busy rules);
-  // window.__rsfSky.meteorStats() reports how many have flown and the live one.
+  // Hook: window.__rsfSky.meteor() makes the next one due now (still subject to the busy rules), meteor('door')
+  // launches it from the door; window.__rsfSky.meteorStats() reports how many have flown and the live one.
   useEffect(() => {
-    if (process.env.NODE_ENV === 'production') return;
+    if (!SKY_HOOKS) return;
     const w = window as unknown as { __rsfSky?: Record<string, unknown> };
-    w.__rsfSky = { ...w.__rsfSky, meteor: () => (s.current.wait = 0), meteorStats: () => ({ count: s.current.count, current: s.current.m }) };
+    const meteor = (from?: 'door') => {
+      s.current.wait = 0;
+      s.current.force = from === 'door';
+    };
+    w.__rsfSky = { ...w.__rsfSky, meteor, meteorStats: () => ({ count: s.current.count, current: s.current.m, head: meteorHead.current }) };
   }, []);
+  // Leaving the sky (unmount) must not leave a stale target or the pointer cursor behind.
+  useEffect(
+    () => () => {
+      meteorHead.current = null;
+      delete document.documentElement.dataset.meteor;
+    },
+    [],
+  );
+  const doorPx = useMemo(() => new THREE.Vector3(), []);
 
   useFrame((state, frameDelta) => {
     const dt = Math.min(frameDelta, 1 / 30);
@@ -121,13 +158,27 @@ export function Meteors({ low, isHome }: { low: boolean; isHome: boolean }) {
       rig.ambient < 1 ||
       (isHome && !rig.target && heroMask(rig.segment.id, rig.segment.progress).opacity > 0);
 
+    // Pointer over the meteor in flight: it is a link to the door (Door.tsx opens it on pointerdown).
+    const over = performance.now() < doorInput.until && onMeteor(doorInput.x, doorInput.y);
+    if (over !== st.over) document.documentElement.toggleAttribute('data-meteor', (st.over = over));
+
     const met = st.m;
     if (!met) {
       m.visible = false;
+      meteorHead.current = null;
       if ((st.wait -= dt) > 0) return;
-      st.m = busy ? null : place(state.gl.domElement.parentElement?.closest('[aria-hidden="true"]') ?? state.gl.domElement, state.size.width, state.size.height);
+      const { width: w, height: h } = state.size;
+      const sky = state.gl.domElement.parentElement?.closest('[aria-hidden="true"]') ?? state.gl.domElement;
+      const p = doorPx.set(...door).project(state.camera);
+      const at: [number, number] = [((p.x + 1) / 2) * w, ((1 - p.y) / 2) * h];
+      const doorOn = p.z < 1 && at[0] > 0 && at[0] < w && at[1] > 0 && at[1] < h;
+      const wantDoor = st.force || Math.random() < METEOR.door;
+      st.m = busy ? null : ((wantDoor && doorOn && fromDoor(sky, at, w, h)) || place(sky, w, h));
       if (!st.m) st.wait = rand(METEOR.retry);
-      else st.count++;
+      else {
+        st.count++;
+        st.force = false;
+      }
       return;
     }
     // Something took over the sky mid-flight: finish it four times faster.
@@ -137,11 +188,14 @@ export function Meteors({ low, isHome }: { low: boolean; isHome: boolean }) {
       st.m = null;
       st.wait = rand(METEOR.gap) * (low ? 2 : 1);
       m.visible = false;
+      meteorHead.current = null;
       return;
     }
     const u = (m.material as THREE.ShaderMaterial).uniforms;
+    const head = { x: met.x + met.dx * met.travel * p, y: met.y + met.dy * met.travel * p, dx: met.dx, dy: met.dy };
+    meteorHead.current = head;
     u.uRes.value.set(state.size.width, state.size.height);
-    u.uHead.value.set(met.x + met.dx * met.travel * p, met.y + met.dy * met.travel * p);
+    u.uHead.value.set(head.x, head.y);
     u.uDir.value.set(met.dx, met.dy);
     u.uLen.value = Math.max(1, met.len * Math.min(1, p / 0.3));
     // Quick rise, then an ease-out fade.

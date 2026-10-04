@@ -21,10 +21,12 @@ export interface Star {
   /** Route the star opens. Origins have none. */
   href?: string;
   spectral: SpectralClass;
-  /** Only the labelled H3 subset has a position; the rest live in A3/A4 layouts. */
+  /** Chart position (spec §5). */
   position?: ChartPoint;
   /** Unlabelled figure-completing star (dimmer, no marker). */
   helper?: boolean;
+  /** A door star (spec §12b): unlabelled, as dim as the background until found; one shared marker. */
+  door?: boolean;
 }
 
 export interface Constellation {

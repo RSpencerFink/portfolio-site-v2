@@ -8,6 +8,7 @@ export function Insignia({ job, size = 44, className }: { job: Job; size?: numbe
       src={job.insignia.src}
       alt=""
       className={className}
+      data-wordmark={job.insignia.aspect ? '' : undefined}
       width={Math.round(size * (job.insignia.aspect ?? 1))}
       height={size}
       style={{

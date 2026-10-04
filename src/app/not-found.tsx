@@ -20,7 +20,6 @@ export default function NotFound() {
       <nav aria-label="Elsewhere" className="label">
         <ul className={styles.links}>
           <li><Link href="/#work">Work</Link></li>
-          <li><Link href="/visual-arts/analog">Visual Arts</Link></li>
           <li><Link href="/about">About</Link></li>
         </ul>
       </nav>

@@ -9,7 +9,7 @@
 
 /*
  * Home in full motion, once the sky draws: the chart presents these lists
- * (Work and Projects index, Observer, Painter, Director, catalogue), so the
+ * (Work and Projects index, Observer), so the
  * mirror leaves the visual layer and stops covering the star markers. Screen
  * readers keep it, and a keyboard visitor tabbing into it brings it back on
  * screen (:focus-visible, so focus handed back after a mouse close leaves the
@@ -67,4 +67,40 @@
   padding: 4px 8px;
   border: 1px solid var(--line);
   border-radius: var(--radius-chip);
+}
+
+/* The door (spec §12b): three faint stars, no text; they brighten and join on hover or focus. */
+.door {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin: var(--space-6) 0 var(--space-9);
+  color: var(--text-mute);
+  border-radius: 50%;
+  transition: color var(--dur-s) var(--ease-sine);
+}
+
+.door svg {
+  overflow: visible;
+}
+
+.door circle {
+  fill: currentColor;
+}
+
+.door path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 0.6;
+  opacity: 0;
+  transition: opacity var(--dur-s) var(--ease-sine);
+}
+
+.door:is(:hover, :focus-visible) {
+  color: var(--text-hi);
+}
+
+.door:is(:hover, :focus-visible) path {
+  opacity: 0.6;
 }

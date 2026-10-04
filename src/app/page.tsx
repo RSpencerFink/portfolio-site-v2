@@ -3,20 +3,19 @@ import { SkyLink } from '@/components/panels/SkyLink';
 import { JourneySections } from '@/components/journey/JourneySections';
 import { HomeJourney } from '@/components/journey/HomeJourney';
 import { ChartExplore } from '@/components/sky/ChartExplore';
+import { DoorLink } from '@/components/sky/Door';
 import { JsonLd } from '@/components/JsonLd';
 import { SITE_URL, person } from '@/content/site';
-import { paintings } from '@/content/paintings';
-import { films } from '@/content/films';
 import { jobs } from '@/content/work';
 import { projects } from '@/content/projects';
-import { constellations } from '@/content/sky';
+import { constellations, door } from '@/content/sky';
 import { pageMeta, personLd, PERSON_ID } from '@/lib/seo';
 import s from './mirror.module.css';
 
 export const metadata: Metadata = {
   ...pageMeta({
     title: `${person.name} | CTO & Co-founder, Brava`,
-    description: `${person.name} is an engineering leader and visual artist, currently CTO & Co-founder of Brava. Previously Hypha and Meta.`,
+    description: `${person.name} is an engineering leader, currently CTO & Co-founder of Brava. Previously Hypha and Meta.`,
     path: '/',
     type: 'profile',
   }),
@@ -83,28 +82,19 @@ export default function Home() {
           </p>
         </section>
 
-        <section className={s.section} aria-labelledby="painter-title">
-          <nav aria-label={c.painter.name}>
-            <SectionHead id="painter" />
-            <ul className={s.chips} style={{ marginTop: 28 }}>
-              {paintings.map((p) => (
-                <li key={p.slug} className="mono-body"><SkyLink href={`/visual-arts/analog/${p.slug}`}>{p.title}</SkyLink></li>
-              ))}
-            </ul>
-          </nav>
-        </section>
-
-        <section className={s.section} aria-labelledby="filmmaker-title">
-          <nav aria-label={c.filmmaker.name}>
-            <SectionHead id="filmmaker" />
-            <ul className={s.chips} style={{ marginTop: 28 }}>
-              {films.map((f) => (
-                <li key={f.slug} className="mono-body"><SkyLink href={`/visual-arts/digital/${f.slug}`}>{f.title}</SkyLink></li>
-              ))}
-            </ul>
-          </nav>
-        </section>
-
+        {/*
+          The door (spec §12b), last in the chart's tab order. Its name is for assistive tech only; on
+          screen it is three faint stars (visible where this mirror is: reduced motion, no JS, focus).
+        */}
+        <DoorLink className={s.door}>
+          <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+            <path d="M5 7 15 12 9 19" />
+            <circle cx="5" cy="7" r="1.5" />
+            <circle cx="15" cy="12" r="1.5" />
+            <circle cx="9" cy="19" r="1.5" />
+          </svg>
+          <span className="visually-hidden">{door.label}</span>
+        </DoorLink>
       </div>
       <ChartExplore />
     </main>

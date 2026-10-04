@@ -8,8 +8,6 @@ import { jobs } from '@/content/work';
 import { featured } from '@/content/projects';
 import { ProjectFacts, ProjectPreview } from '@/components/featured/Featured';
 import { constellations } from '@/content/sky';
-import { paintings } from '@/content/paintings';
-import { films } from '@/content/films';
 import j from './Journey.module.css';
 import { pad } from '@/lib/format';
 
@@ -104,7 +102,7 @@ export function JourneySections() {
                       <span className={j.dates}>{job.dates}</span>
                     </p>
                     {/* A stop taller than the screen: this column scrolls first, then the stepper moves on (stepper.ts). */}
-                    <div className={j.scroll} data-scroll>
+                    <div className={j.scroll} data-scroll tabIndex={0} role="region" aria-label={`${job.company} details`}>
                       {job.description && <p className={`body-l ${j.lede}`}>{job.description}</p>}
                       {dense && (
                         <div className={j.columns}>
@@ -154,8 +152,6 @@ export function JourneySections() {
             <h3 id="sky-index-title" className="label">Sky index</h3>
             <ul className="body-l">
               <li><a href="#projects">{c.projects.name} · {featured.name}</a></li>
-              <li><Link href="/visual-arts/analog">{c.painter.name} · {paintings.length} paintings</Link></li>
-              <li><Link href="/visual-arts/digital">{c.filmmaker.name} · {films.length} films</Link></li>
               <li><a href="#origins">{c.origins.name} · {education.length} schools</a></li>
               <li><Link href="/about">The Observer · About</Link></li>
             </ul>

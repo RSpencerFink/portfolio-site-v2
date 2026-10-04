@@ -155,6 +155,30 @@
   transition: opacity var(--dur-s) var(--ease-sine);
 }
 
+/* The door (spec §12b): an invisible target over its stars, live only at the H3 rest. */
+.door {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  will-change: transform;
+}
+
+:global(html[data-explore]) .door {
+  pointer-events: auto;
+}
+
+.doorHit {
+  position: absolute;
+  left: -32px;
+  top: -32px;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+}
+
 /* Calm sky (labels hidden): the Observer ring and the glint go with the other star marks. */
 .labels[data-level='hidden'] .marker:is([data-observer], [data-lodestar]) .hit::before,
 .labels[data-level='hidden'] .marker[data-observer] .hit::after {
@@ -261,6 +285,28 @@
 /* W3: the journey's HTML Student block replaces The Student's star labels. */
 .labels[data-section='on'] .marker[data-group='origins'] .text {
   opacity: 0;
+}
+
+/*
+ * Phones (T17): the sky is fixed and the journey's text scrolls over it, and the HTML titles carry each stop, so
+ * star labels, names, insignia, glints and their tap targets wait for the H3 rest (data-explore). The "current"
+ * ring waits too (in the pull to H3 it crosses the header); the focal reticle steps aside while text is in the
+ * star's band (data-reading, HomeJourney).
+ */
+:global(html[data-journey='mobile']:not([data-explore])) .labels :is(.text, .cname),
+:global(html[data-journey='mobile']:not([data-explore])) .labels .hit::before,
+:global(html[data-journey='mobile']:not([data-explore])) .labels .hit::after,
+:global(html[data-journey='mobile']:not([data-explore])) .reticle[data-variant='current'],
+:global(html[data-journey='mobile'][data-reading]) .reticle {
+  opacity: 0;
+}
+
+:global(html[data-journey='mobile']:not([data-explore])) .labels .marker {
+  pointer-events: none;
+}
+
+:global(html[data-journey='mobile']) .reticle {
+  transition: opacity var(--dur-s) var(--ease-sine);
 }
 
 /* Mobile sheet: only the open star keeps its label, so nothing reads through the sheet. */
@@ -437,4 +483,9 @@
 :global(html[data-explore='drag']) body {
   cursor: grabbing;
   user-select: none;
+}
+
+/* Over a meteor in flight: it opens the door (Meteors, Door.tsx). */
+:global(html[data-meteor]) * {
+  cursor: pointer !important;
 }

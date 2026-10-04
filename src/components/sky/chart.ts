@@ -1,4 +1,4 @@
-import { constellations, helperStars, POLE_STAR, stars } from '@/content/sky';
+import { constellations, door, helperStars, POLE_STAR, stars } from '@/content/sky';
 import type { Vec3 } from './cameraRig';
 import type { ChartPoint, Star } from './types';
 
@@ -18,24 +18,25 @@ const PLANE = {
 
 // Portrait group placement in mobile-artboard px: [left, top, width] of the group's star bbox.
 const PORTRAIT_GROUPS: Record<string, [number, number, number]> = {
-  work: [30, 90, 200], // Brava's label keeps ≥ 24 px from the right edge (spec §8)
-  projects: [240, 250, 120],
-  origins: [20, 290, 140],
-  painter: [220, 500, 140],
-  filmmaker: [36, 520, 180],
+  // Top left, small enough that the W3 frame (resolve.ts) fits it above the Student text at names-only zoom.
+  work: [50, 80, 105],
+  projects: [250, 190, 100], // top right, across from The Engineer
+  // Below the pole mark on the right, so the Observer's left-hand label has room and the zoom controls stay clear.
+  origins: [220, 478, 110],
+  // The door: the empty left edge between The Engineer and The Student, away from every label.
+  door: [28, 500, 24],
 };
 
-// Portrait constellation-name anchors (top-left of the block) in mobile-artboard px, from R3 · M-H3.
+// Portrait constellation-name anchors (top-left of the block) in mobile-artboard px: under each figure, as on desktop.
 const PORTRAIT_NAMES: Record<string, [number, number]> = {
-  work: [30, 226],
-  projects: [236, 280],
-  origins: [240, 340],
-  painter: [250, 604],
-  filmmaker: [40, 660],
+  work: [40, 240],
+  projects: [250, 240],
+  origins: [60, 660],
 };
 
-const positioned = [...stars.filter((s): s is Star & { position: ChartPoint } => !!s.position), ...helperStars];
-const groupOf = new Map<string, string>();
+const doorStars = Object.entries(door.stars).map(([id, position], i) => ({ id, name: '', spectral: (['A', 'F', 'B'] as const)[i % 3], position, door: true }));
+const positioned = [...stars.filter((s): s is Star & { position: ChartPoint } => !!s.position), ...helperStars, ...doorStars];
+const groupOf = new Map<string, string>(doorStars.map((s) => [s.id, 'door']));
 const lodestars = new Set(constellations.map((c) => c.lodestar));
 for (const c of constellations) for (const id of [...Object.keys(c.stars), ...Object.keys(c.helpers ?? {})]) groupOf.set(id, c.id);
 
@@ -78,6 +79,8 @@ export interface ChartLayout {
   byId: Map<string, ChartStar>;
   names: { id: string; name: string; subline: string; world: Vec3 }[];
   pole: Vec3;
+  /** The door's centre (spec §12b): its marker, proximity test, flight and meteors aim here. */
+  door: Vec3;
   /** Pole star mark size in world units. */
   poleSize: [number, number];
   plane: { w: number; h: number };
@@ -91,6 +94,8 @@ export function chartLayout(layout: Layout): ChartLayout {
     const group = groupOf.get(s.id) ?? '';
     return { ...s, group, world: toWorld(s.position, layout, group), lodestar: lodestars.has(s.id) };
   });
+  const doorWorld = list.filter((s) => s.door).map((s) => s.world);
+  const mean = (k: 0 | 1) => doorWorld.reduce((a, p) => a + p[k], 0) / doorWorld.length;
   const out: ChartLayout = {
     layout,
     stars: list,
@@ -105,6 +110,7 @@ export function chartLayout(layout: Layout): ChartLayout {
           : toWorld(c.namePosition ?? [0.5, 0.5], layout, c.id),
     })),
     pole: layout === 'portrait' ? [0, -0.35, 0] : toWorld(POLE_STAR.position, layout),
+    door: [mean(0), mean(1), 0],
     poleSize: layout === 'portrait' ? [2.2, 1.06] : [POLE_STAR.markSize[0] / 100, POLE_STAR.markSize[1] / 100],
     plane: PLANE[layout],
   };

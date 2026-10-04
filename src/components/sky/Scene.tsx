@@ -3,11 +3,12 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { useFrame, useThree, type RootState } from '@react-three/fiber';
 import * as THREE from 'three';
-import { constellations } from '@/content/sky';
+import { constellations, door } from '@/content/sky';
 import { cameraRig, type Vec3 } from './cameraRig';
 import { chartLayout, lerp, lerpPose, overviewPose, type Layout, type Pose } from './chart';
 import { resolve, type Resolved } from './resolve';
 import { hoverStore } from './hover';
+import { doorStore } from './Door';
 import { Meteors } from './Meteors';
 import { backgroundFrag, backgroundVert, contentFrag, contentVert, nebulaFrag, nebulaVert } from './shaders';
 import { HALO, type SpectralClass } from './types';
@@ -173,7 +174,14 @@ function makeChart(layout: Layout) {
   const fades = ([[solidLines, 0.35, 0], [dashedLines, 0.3, 0], [gridLines, 0.07, 0.035], [eclLine, 0.12, 0.05]] as const).map(
     ([o, on, calm]) => [o.material as THREE.Material, on, calm] as const,
   );
-  return { group, fades };
+  // The door's line (spec §12b): invisible until the door is found, then it fades in with its stars.
+  const doorLine = new THREE.LineSegments(
+    lineGeometry(door.lines.map(([a, b]) => [c.byId.get(a)!.world, c.byId.get(b)!.world])),
+    new THREE.LineBasicMaterial({ color: ink, transparent: true, opacity: 0, depthWrite: false }),
+  );
+  doorLine.renderOrder = 1;
+  group.add(doorLine);
+  return { group, fades, doorLine: doorLine.material as THREE.Material };
 }
 
 function makeContent(layout: Layout) {
@@ -210,6 +218,8 @@ type Ctx = {
   cur: { current: Pose | null };
   curMask: { current: { scale: number; opacity: number; heroGlow: number } | null };
   fps: { current: { t0: number; last: number; frames: number; warm: boolean } };
+  /** The door's glow, 0 (a background star) → 1 (found), eased toward doorStore. */
+  doorGlow: { current: number };
 } & Omit<SceneProps, 'count'>;
 
 const ndc = new THREE.Vector3();
@@ -218,7 +228,7 @@ const ndc = new THREE.Vector3();
 function tick(ctx: Ctx, state: RootState, frameDelta: number) {
   // A long gap (tab switch, a view transition holding frames) must not jump the damped camera.
   const delta = Math.min(frameDelta, 1 / 30);
-  const { bgMat, contentMat, nebulaMat, nebula, content, lines, chart, pointer, cur, curMask, fps, layout, motion, isHome, onFrame, onLowFps } = ctx;
+  const { bgMat, contentMat, nebulaMat, nebula, content, lines, chart, pointer, cur, curMask, fps, doorGlow, layout, motion, isHome, onFrame, onLowFps } = ctx;
   const camera = state.camera as THREE.PerspectiveCamera;
   const { width, height } = state.size;
   const dpr = state.viewport.dpr;
@@ -279,8 +289,17 @@ function tick(ctx: Ctx, state: RootState, frameDelta: number) {
   // Calm sky (off-home backdrop, R3 · RM below the hero): starfield, nebula and a faint grid only.
   // Behind a panel (bare) the lines go too, so nothing but the focal star sits behind the reading column.
   for (const [m, on, calm] of lines.fades) m.opacity += ((r.quiet || r.bare ? calm : on) - m.opacity) * kk;
+  // The door brightens gently when found (instantly under reduced motion) and goes with the content stars on a calm sky.
+  const dg = (doorGlow.current += ((doorStore.get() ? 1 : 0) - doorGlow.current) * (motion === 'reduced' ? 1 : 1 - Math.exp(-delta * 4)));
+  lines.doorLine.opacity = r.quiet || r.bare ? 0 : 0.3 * dg;
   const arr = content.state.array as Float32Array;
   content.stars.forEach((s, i) => {
+    if (s.door) {
+      // At rest a door star matches a mid background star (core ~2 px, faint halo); found, it reads as a content star.
+      arr[i * 4] += ((r.quiet || r.bare ? 0 : 2.6 + 1.8 * dg) - arr[i * 4]) * kk;
+      arr[i * 4 + 1] += ((r.quiet ? 0 : 0.18 + 0.67 * dg) - arr[i * 4 + 1]) * kk;
+      return;
+    }
     const isFocus = s.id === r.focusId;
     // Helpers are dimmer figure stars; the lodestar (featured build) burns brighter than its neighbours.
     const rest = s.helper ? 2.6 : s.lodestar ? 8.5 : 5.5;
@@ -366,7 +385,7 @@ export function Scene({ layout, count, motion, isHome, onFrame, onLowFps }: Scen
   // Outside full motion the loop runs on demand: redraw on rig/hover changes, or at 30 fps in low power.
   useEffect(() => {
     if (motion === 'full') return;
-    const unsubs = [cameraRig.subscribe(() => invalidate()), hoverStore.subscribe(() => invalidate())];
+    const unsubs = [cameraRig.subscribe(() => invalidate()), hoverStore.subscribe(() => invalidate()), doorStore.subscribe(() => invalidate())];
     const id = motion === 'low' ? window.setInterval(() => invalidate(), 1000 / 30) : 0;
     invalidate();
     return () => {
@@ -390,9 +409,10 @@ export function Scene({ layout, count, motion, isHome, onFrame, onLowFps }: Scen
   const cur = useRef<Pose | null>(null);
   const curMask = useRef<{ scale: number; opacity: number; heroGlow: number } | null>(null);
   const fps = useRef({ t0: 0, last: 0, frames: 0, warm: false });
+  const doorGlow = useRef(0);
 
   useFrame((state, delta) =>
-    tick({ bgMat, contentMat, nebulaMat, nebula, content, lines, chart, pointer, cur, curMask, fps, layout, motion, isHome, onFrame, onLowFps }, state, delta),
+    tick({ bgMat, contentMat, nebulaMat, nebula, content, lines, chart, pointer, cur, curMask, fps, doorGlow, layout, motion, isHome, onFrame, onLowFps }, state, delta),
   );
 
   return (
@@ -401,7 +421,7 @@ export function Scene({ layout, count, motion, isHome, onFrame, onLowFps }: Scen
         <planeGeometry args={[1, 1]} />
       </mesh>
       <mesh geometry={bg} material={bgMat} frustumCulled={false} renderOrder={1} />
-      {motion !== 'reduced' && <Meteors low={motion === 'low'} isHome={isHome} />}
+      {motion !== 'reduced' && <Meteors low={motion === 'low'} isHome={isHome} door={chart.door} />}
       <primitive object={lines.group} />
       <mesh geometry={content.geometry} material={contentMat} frustumCulled={false} renderOrder={2} />
     </>

@@ -5,22 +5,21 @@ import { SkyLink } from '@/components/panels/SkyLink';
 import { education } from '@/content/site';
 import { jobs } from '@/content/work';
 import { projects } from '@/content/projects';
-import { paintings } from '@/content/paintings';
 import { cameraRig, type Vec3 } from './cameraRig';
 import { labelLevel, MARK_H, MARK_W, markPath, markShare, overviewPose, pxPerUnit, type ChartLayout, type ChartStar } from './chart';
 import { hoverStore } from './hover';
+import { DoorLink, doorFound, doorStore } from './Door';
 import type { FrameInfo } from './Scene';
 import s from './SkyHost.module.css';
 
-const LEFT = new Set(['hypha', 'meta', 'dr-manhattan', 'marilyn-monroe', 'nightshade', 'spare-key', 'emerson-college', 'georgia-tech']);
+// Every label reads left of its star except Brava (the arrow's tip) and the lodestar.
+const LEFT = new Set(['hypha', 'meta', 'dbox', 'prizm-imagery', 'georgia-tech', 'app-academy', 'emerson-college', 'observer']);
 
 function sublineFor(star: ChartStar): string | undefined {
   const job = jobs.find((j) => j.slug === star.id);
   if (job) return job.dates;
   const project = projects.find((p) => p.slug === star.id);
   if (project) return `${project.kind} · ${project.status}`;
-  const painting = paintings.find((p) => p.slug === star.id);
-  if (painting) return painting.size;
   const school = education.find((e) => e.slug === star.id);
   if (school) return school.dates;
   if (star.id === 'observer') return 'About';
@@ -191,6 +190,9 @@ export function syncLabels(f: FrameInfo, chart: ChartLayout) {
     letterFade(el, place(el, n.world, f, 400), f, fade, frozen);
   }
 
+  // The door: one unlabelled marker at its centre; found when the pointer, a tap, the zoomed view or focus comes near.
+  doorStore.set(doorFound(place(nodes.get('door'), chart.door, f), f.width, f.height));
+
   const pole = nodes.get('pole');
   if (place(pole, chart.pole, f, 400) && pole) pole.style.setProperty('--pole-w', `${(chart.poleSize[0] * ppu).toFixed(1)}px`);
 
@@ -267,7 +269,7 @@ export function StarLabels({ chart }: { chart: ChartLayout }) {
       </div>
 
       {chart.stars.map((star) => {
-        if (star.helper) return null;
+        if (star.helper || star.door) return null;
         const job = jobs.find((j) => j.slug === star.id);
         const sub = sublineFor(star);
         const inner = (
@@ -303,6 +305,11 @@ export function StarLabels({ chart }: { chart: ChartLayout }) {
           </div>
         );
       })}
+
+      {/* No text, ever: a 64 px target over the door's stars (spec §12b). The mirror's DoorLink carries the name. */}
+      <DoorLink ref={reg('door')} tabIndex={-1} className={s.door}>
+        <span className={s.doorHit} />
+      </DoorLink>
 
       <svg ref={reg('reticle')} className={s.reticle} viewBox="-90 -90 180 180" width="180" height="180" aria-hidden="true">
         <circle className={s.ringSmall} r="8" pathLength={1} />
