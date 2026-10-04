@@ -318,18 +318,17 @@ export function HomeJourney() {
           ScrollTrigger.removeEventListener('scrollEnd', fix);
         };
         // Any input of the visitor's own ends the correction window early.
-        const stopOnInput = () => stop();
-        addEventListener('wheel', stopOnInput, { once: true, passive: true });
-        addEventListener('touchstart', stopOnInput, { once: true, passive: true });
-        addEventListener('keydown', stopOnInput, { once: true });
+        addEventListener('wheel', stop, { once: true, passive: true });
+        addEventListener('touchstart', stop, { once: true, passive: true });
+        addEventListener('keydown', stop, { once: true });
         const end = gsap.delayedCall(2, stop);
         cleanups.push(() => {
           call.kill();
           end.kill();
           stop();
-          removeEventListener('wheel', stopOnInput);
-          removeEventListener('touchstart', stopOnInput);
-          removeEventListener('keydown', stopOnInput);
+          removeEventListener('wheel', stop);
+          removeEventListener('touchstart', stop);
+          removeEventListener('keydown', stop);
         });
       }
 

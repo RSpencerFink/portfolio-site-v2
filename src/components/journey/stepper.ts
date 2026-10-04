@@ -189,20 +189,17 @@ export function stepper(stops: () => number[]) {
     goTo(heading > from ? crossed[0] : crossed.at(-1)!, 0.6);
   };
 
-  const opts = { capture: true, passive: false } as const;
+  const ac = new AbortController();
+  const { signal } = ac;
+  const opts = { signal, capture: true, passive: false };
   addEventListener('wheel', onWheel, opts);
-  addEventListener('keydown', onKey);
-  addEventListener('touchstart', onTouchStart, { passive: true });
+  addEventListener('keydown', onKey, { signal });
+  addEventListener('touchstart', onTouchStart, { signal, passive: true });
   addEventListener('touchmove', onTouchMove, opts);
-  addEventListener('touchend', onTouchEnd);
-  addEventListener('scroll', onScroll, { passive: true });
+  addEventListener('touchend', onTouchEnd, { signal });
+  addEventListener('scroll', onScroll, { signal, passive: true });
   return () => {
-    removeEventListener('wheel', onWheel, opts);
-    removeEventListener('keydown', onKey);
-    removeEventListener('touchstart', onTouchStart);
-    removeEventListener('touchmove', onTouchMove, opts);
-    removeEventListener('touchend', onTouchEnd);
-    removeEventListener('scroll', onScroll);
+    ac.abort();
     clearTimeout(idle);
   };
 }

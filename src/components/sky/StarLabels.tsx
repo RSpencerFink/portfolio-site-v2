@@ -7,7 +7,7 @@ import { jobs } from '@/content/work';
 import { projects } from '@/content/projects';
 import { paintings } from '@/content/paintings';
 import { cameraRig, type Vec3 } from './cameraRig';
-import { labelLevel, markShare, overviewPose, pxPerUnit, type ChartLayout, type ChartStar } from './chart';
+import { labelLevel, MARK_H, MARK_W, markPath, markShare, overviewPose, pxPerUnit, type ChartLayout, type ChartStar } from './chart';
 import { hoverStore } from './hover';
 import type { FrameInfo } from './Scene';
 import s from './SkyHost.module.css';
@@ -53,32 +53,26 @@ function place(el: HTMLElement | undefined, world: Vec3, f: FrameInfo, margin = 
  * Labels whose anchor or text ends fall outside the RSF letterforms (rsf-mark.svg at the letterbox's current
  * transform) fade with the letterbox instead. Per-element opacity, never a CSS mask (flicker, item 4).
  */
-const MARK_W = 1519.3;
-const MARK_H = 729.6;
 /** The letters rasterised once at 1 px per viewBox unit (alpha); a lookup is cheap enough to test whole label boxes every frame. */
 let mark: { alpha: Uint8ClampedArray; w: number; h: number } | null = null;
 let markRequested = false;
 function loadMark() {
   if (markRequested) return;
   markRequested = true;
-  fetch('/logo/rsf-mark.svg')
-    .then((r) => r.text())
-    .then((text) => {
-      const d = new DOMParser().parseFromString(text, 'image/svg+xml').querySelector('path')?.getAttribute('d');
-      const canvas = document.createElement('canvas');
-      const [w, h] = [Math.ceil(MARK_W), Math.ceil(MARK_H)];
-      Object.assign(canvas, { width: w, height: h });
-      const ctx = canvas.getContext('2d', { willReadFrequently: true });
-      if (!d || !ctx) return;
-      ctx.fill(new Path2D(d));
-      const rgba = ctx.getImageData(0, 0, w, h).data;
-      const alpha = new Uint8ClampedArray(w * h);
-      for (let i = 0; i < alpha.length; i++) alpha[i] = rgba[i * 4 + 3];
-      mark = { alpha, w, h };
-      // Ask for a frame (the loop runs on demand under reduced motion), so the labels get their first verdict now.
-      cameraRig.setAmbient(cameraRig.getState().ambient);
-    })
-    .catch(() => {});
+  markPath().then((d) => {
+    const canvas = document.createElement('canvas');
+    const [w, h] = [Math.ceil(MARK_W), Math.ceil(MARK_H)];
+    Object.assign(canvas, { width: w, height: h });
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+    if (!d || !ctx) return;
+    ctx.fill(new Path2D(d));
+    const rgba = ctx.getImageData(0, 0, w, h).data;
+    const alpha = new Uint8ClampedArray(w * h);
+    for (let i = 0; i < alpha.length; i++) alpha[i] = rgba[i * 4 + 3];
+    mark = { alpha, w, h };
+    // Ask for a frame (the loop runs on demand under reduced motion), so the labels get their first verdict now.
+    cameraRig.setAmbient(cameraRig.getState().ambient);
+  });
 }
 
 /** Is screen point (x, y) inside the letters? Mirrors `.letterbox` in SkyHost.module.css. */
@@ -132,13 +126,12 @@ function letterFade(el: HTMLElement | undefined, at: readonly [number, number] |
   if (!el) return;
   let inside = true;
   if (fade === null || !at) verdicts.delete(el);
+  else if (!mark) inside = false; // no verdict until the letters have loaded
   else {
     const v = verdicts.get(el);
-    if (!mark) inside = false; // no verdict until the letters have loaded
-    else if (!v) {
-      const now = labelInside(at[0], at[1], el, f);
-      verdicts.set(el, { inside: now, next: now, frames: 0 });
-      inside = now;
+    if (!v) {
+      inside = labelInside(at[0], at[1], el, f);
+      verdicts.set(el, { inside, next: inside, frames: 0 });
     } else {
       if (!frozen) {
         const now = labelInside(at[0], at[1], el, f);

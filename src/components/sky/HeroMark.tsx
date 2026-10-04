@@ -2,12 +2,10 @@
 
 import { useEffect, useRef, useState, type RefObject } from 'react';
 import gsap from 'gsap';
-import { markShare } from './chart';
+import { MARK_H, MARK_W, markPath, markShare } from './chart';
 import s from './SkyHost.module.css';
 
-const VIEWBOX = '0 0 1519.3 729.6';
-const MARK_W = 1519.3;
-const MARK_H = 729.6;
+const VIEWBOX = `0 0 ${MARK_W} ${MARK_H}`;
 
 /*
  * The letterbox (ground with the letters cut out) and the nebula-core glow inside the letters are drawn into two
@@ -122,16 +120,12 @@ export function HeroMark({ hostRef, reduced, markWidth }: { hostRef: RefObject<H
       mark.key = '';
       drawMark(mark.scale);
     };
-    fetch('/logo/rsf-mark.svg')
-      .then((r) => r.text())
-      .then((text) => {
-        const d = new DOMParser().parseFromString(text, 'image/svg+xml').querySelector('path')?.getAttribute('d');
-        if (live && d) {
-          mark.path = new Path2D(d);
-          redraw();
-        }
-      })
-      .catch(() => {});
+    markPath().then((d) => {
+      if (live && d) {
+        mark.path = new Path2D(d);
+        redraw();
+      }
+    });
     window.addEventListener('resize', redraw);
     return () => {
       live = false;
@@ -218,7 +212,7 @@ export function HeroMark({ hostRef, reduced, markWidth }: { hostRef: RefObject<H
   }, [paths, reduced, hostRef]);
 
   // Stroke width is in viewBox units; keep it 1.5 CSS px at scale 1.
-  const stroke = (1.5 * 1519.3) / Math.max(markWidth, 1);
+  const stroke = (1.5 * MARK_W) / Math.max(markWidth, 1);
 
   return (
     <>

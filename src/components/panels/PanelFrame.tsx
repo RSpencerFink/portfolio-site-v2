@@ -47,10 +47,8 @@ const PanelMode = createContext<'sky' | 'direct' | null>(null);
 let stepFocus: string | null = null;
 
 /** False for the server HTML and the hydration pass, true after: with JS, every entity route is a panel. */
+const noop = () => () => {};
 const useHydrated = () => useSyncExternalStore(noop, () => true, () => false);
-function noop() {
-  return () => {};
-}
 
 /** Where Close goes from a panel with no sky page behind it: the painting or film constellation, else the home sky chart. */
 const parentOf = (path: string) => (path.startsWith('/visual-arts/') ? path.slice(0, path.lastIndexOf('/')) : '/#chart');
