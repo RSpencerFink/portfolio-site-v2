@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { usePathname } from 'next/navigation';
 import dynamic from 'next/dynamic';
-import { cameraRig } from './cameraRig';
+import { cameraRig, SKY_HOOKS } from './cameraRig';
 import { chartLayout, layoutFor, markShare } from './chart';
 import { hoverStore } from './hover';
 import { useDoor } from './Door';
@@ -104,8 +104,9 @@ export function SkyHost() {
 
   // Dev hook for screenshots: window.__rsfSky.setTarget('meta') etc.
   useEffect(() => {
-    if (process.env.NODE_ENV === 'production') return;
-    (window as unknown as { __rsfSky: unknown }).__rsfSky = { ...cameraRig, hover: hoverStore.set };
+    if (!SKY_HOOKS) return;
+    const w = window as unknown as { __rsfSky?: Record<string, unknown> };
+    w.__rsfSky = { ...w.__rsfSky, ...cameraRig, hover: hoverStore.set };
   }, []);
 
   const layout = size ? layoutFor(size.w, size.h) : 'landscape';

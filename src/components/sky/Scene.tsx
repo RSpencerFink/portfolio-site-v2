@@ -421,7 +421,7 @@ export function Scene({ layout, count, motion, isHome, onFrame, onLowFps }: Scen
         <planeGeometry args={[1, 1]} />
       </mesh>
       <mesh geometry={bg} material={bgMat} frustumCulled={false} renderOrder={1} />
-      {motion !== 'reduced' && <Meteors low={motion === 'low'} isHome={isHome} />}
+      {motion !== 'reduced' && <Meteors low={motion === 'low'} isHome={isHome} door={chart.door} />}
       <primitive object={lines.group} />
       <mesh geometry={content.geometry} material={contentMat} frustumCulled={false} renderOrder={2} />
     </>

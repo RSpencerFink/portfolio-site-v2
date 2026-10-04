@@ -462,3 +462,8 @@
   cursor: grabbing;
   user-select: none;
 }
+
+/* Over a meteor in flight: it opens the door (Meteors, Door.tsx). */
+:global(html[data-meteor]) * {
+  cursor: pointer !important;
+}

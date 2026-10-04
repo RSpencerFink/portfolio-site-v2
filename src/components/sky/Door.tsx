@@ -51,6 +51,16 @@ export function doorFound(at: readonly [number, number] | null, w: number, h: nu
   return pointer || centred;
 }
 
+/** The meteor in flight, in CSS px (Meteors writes it every frame, null between meteors). */
+export const meteorHead = { current: null as { x: number; y: number; dx: number; dy: number } | null };
+/** Within 32 px of the head or the first 70 px of its tail: a generous target for something that moves. */
+export function onMeteor(x: number, y: number) {
+  const m = meteorHead.current;
+  if (!m) return false;
+  const along = Math.min(Math.max((m.x - x) * m.dx + (m.y - y) * m.dy, 0), 70);
+  return Math.hypot(m.x - m.dx * along - x, m.y - m.dy * along - y) < 32;
+}
+
 /** Fly into the door, then open the visual arts. Reduced motion: straight there, no flight. */
 export function enterDoor(push: (href: string) => void) {
   // Already on the Analog view (a meteor clicked there): nothing to fly to, and no route change would end the flight.
@@ -69,7 +79,8 @@ export function enterDoor(push: (href: string) => void) {
 }
 
 /**
- * SkyHost: tracks the pointer and taps for the door, and hands the camera back once the flight has landed.
+ * SkyHost: tracks the pointer and taps for the door, opens it from a click on a meteor in flight
+ * (capture phase, so the H3 drag never starts), and hands the camera back once the flight has landed.
  */
 export function useDoor(pathname: string) {
   const router = useRouter();
@@ -84,6 +95,7 @@ export function useDoor(pathname: string) {
   useEffect(() => {
     const ac = new AbortController();
     const { signal } = ac;
+    let swallow = false;
     addEventListener(
       'pointermove',
       (e) => {
@@ -95,8 +107,25 @@ export function useDoor(pathname: string) {
       'pointerdown',
       (e) => {
         if (e.pointerType === 'touch') Object.assign(doorInput, { x: e.clientX, y: e.clientY, until: performance.now() + TAP_MS });
+        if (isModified(e) || !onMeteor(e.clientX, e.clientY)) return;
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        // The click that follows lands on whatever is under the meteor (a star label): it must not open that too.
+        swallow = true;
+        setTimeout(() => (swallow = false), 600);
+        enterDoor(router.push);
       },
-      { passive: true, signal },
+      { capture: true, signal },
+    );
+    addEventListener(
+      'click',
+      (e) => {
+        if (!swallow) return;
+        swallow = false;
+        e.preventDefault();
+        e.stopImmediatePropagation();
+      },
+      { capture: true, signal },
     );
     return () => ac.abort();
   }, [router]);
