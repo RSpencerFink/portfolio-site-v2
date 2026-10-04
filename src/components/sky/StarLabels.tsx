@@ -5,22 +5,19 @@ import { SkyLink } from '@/components/panels/SkyLink';
 import { education } from '@/content/site';
 import { jobs } from '@/content/work';
 import { projects } from '@/content/projects';
-import { paintings } from '@/content/paintings';
 import { cameraRig, type Vec3 } from './cameraRig';
 import { labelLevel, MARK_H, MARK_W, markPath, markShare, overviewPose, pxPerUnit, type ChartLayout, type ChartStar } from './chart';
 import { hoverStore } from './hover';
 import type { FrameInfo } from './Scene';
 import s from './SkyHost.module.css';
 
-const LEFT = new Set(['hypha', 'meta', 'dr-manhattan', 'marilyn-monroe', 'nightshade', 'spare-key', 'emerson-college', 'georgia-tech']);
+const LEFT = new Set(['hypha', 'meta', 'emerson-college', 'georgia-tech']);
 
 function sublineFor(star: ChartStar): string | undefined {
   const job = jobs.find((j) => j.slug === star.id);
   if (job) return job.dates;
   const project = projects.find((p) => p.slug === star.id);
   if (project) return `${project.kind} · ${project.status}`;
-  const painting = paintings.find((p) => p.slug === star.id);
-  if (painting) return painting.size;
   const school = education.find((e) => e.slug === star.id);
   if (school) return school.dates;
   if (star.id === 'observer') return 'About';

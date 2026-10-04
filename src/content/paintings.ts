@@ -1,5 +1,3 @@
-import type { SpectralClass } from '@/components/sky/types';
-
 export interface Painting {
   slug: string;
   /** Old CRA route id (`/analog/<legacyId>`). */
@@ -14,7 +12,6 @@ export interface Painting {
   image: string;
   /** Pixel height of the 800 px master, for intrinsic sizing. */
   height800: number;
-  star: { spectral: SpectralClass };
 }
 
 // Content-file order (spec §5). [title, medium, size, height800]
@@ -38,7 +35,7 @@ const rows: [string, string, string, number][] = [
   ['Walter White', 'Acrylic on Collage on Canvas', '36" x 36"', 802],
 ];
 
-export const paintings: Painting[] = rows.map(([title, medium, size, height800], i) => {
+export const paintings: Painting[] = rows.map(([title, medium, size, height800]) => {
   const slug = title.toLowerCase().replace(/\./g, '').replace(/\s+/g, '-');
   const [widthIn, heightIn] = size.match(/\d+/g)!.map(Number);
   return {
@@ -51,7 +48,5 @@ export const paintings: Painting[] = rows.map(([title, medium, size, height800],
     heightIn,
     image: `/images/paintings/${slug}`,
     height800,
-    // Alternate K / G in content-file order, starting K (spec §4).
-    star: { spectral: i % 2 === 0 ? 'K' : 'G' },
   };
 });

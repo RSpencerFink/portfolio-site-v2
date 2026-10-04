@@ -5,8 +5,6 @@ import { HomeJourney } from '@/components/journey/HomeJourney';
 import { ChartExplore } from '@/components/sky/ChartExplore';
 import { JsonLd } from '@/components/JsonLd';
 import { SITE_URL, person } from '@/content/site';
-import { paintings } from '@/content/paintings';
-import { films } from '@/content/films';
 import { jobs } from '@/content/work';
 import { projects } from '@/content/projects';
 import { constellations } from '@/content/sky';
@@ -81,28 +79,6 @@ export default function Home() {
           <p className="body-l">
             <SkyLink href="/about">{person.name}</SkyLink>: {person.identities.join(' · ')}.
           </p>
-        </section>
-
-        <section className={s.section} aria-labelledby="painter-title">
-          <nav aria-label={c.painter.name}>
-            <SectionHead id="painter" />
-            <ul className={s.chips} style={{ marginTop: 28 }}>
-              {paintings.map((p) => (
-                <li key={p.slug} className="mono-body"><SkyLink href={`/visual-arts/analog/${p.slug}`}>{p.title}</SkyLink></li>
-              ))}
-            </ul>
-          </nav>
-        </section>
-
-        <section className={s.section} aria-labelledby="filmmaker-title">
-          <nav aria-label={c.filmmaker.name}>
-            <SectionHead id="filmmaker" />
-            <ul className={s.chips} style={{ marginTop: 28 }}>
-              {films.map((f) => (
-                <li key={f.slug} className="mono-body"><SkyLink href={`/visual-arts/digital/${f.slug}`}>{f.title}</SkyLink></li>
-              ))}
-            </ul>
-          </nav>
         </section>
 
       </div>

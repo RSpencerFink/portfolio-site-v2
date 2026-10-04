@@ -2,16 +2,14 @@ import type { ChartPoint, Constellation, Star } from '@/components/sky/types';
 import { education, person } from './site';
 import { jobs } from './work';
 import { projects } from './projects';
-import { paintings } from './paintings';
-import { films } from './films';
 
 /*
  * The H3 chart as plain data (spec §5): each constellation lists its stars'
  * normalised positions (0–1, origin top-left of the 1440 × 900 chart) and its
  * line segments (Paper "Round 4 — Constellations", the client's picks).
  * Helpers are unlabelled, dimmer stars that complete a figure; lines may use
- * them. Reshaping a constellation is an edit here and nowhere else. Stars not
- * listed (most paintings and films) have no place on the chart.
+ * them. Reshaping a constellation is an edit here and nowhere else. The paintings
+ * and films have no stars on the chart (spec §12b).
  */
 export const constellations: Constellation[] = [
   {
@@ -42,8 +40,9 @@ export const constellations: Constellation[] = [
     id: 'projects',
     name: 'The Builder',
     subline: 'Projects',
-    namePosition: [0.7181, 0.26],
-    stars: { 'section-8-scout': [0.7569, 0.1889] },
+    // Right of the pole at the height of The Engineer's name, so the chart balances across the mark.
+    namePosition: [0.7612, 0.4711],
+    stars: { 'section-8-scout': [0.8, 0.4] },
     lodestar: 'section-8-scout',
     lines: [],
   },
@@ -77,49 +76,6 @@ export const constellations: Constellation[] = [
       ['app-academy', 'origins-leg-right'],
     ],
   },
-  {
-    // R4 option C "Brush": a handle through three paintings, a bristle tip ending on Han Solo.
-    id: 'painter',
-    name: 'The Painter',
-    subline: 'Analog',
-    namePosition: [0.6944, 0.5778],
-    stars: {
-      'walter-white': [0.6771, 0.8889],
-      'dr-manhattan': [0.7521, 0.8049],
-      'marilyn-monroe': [0.8233, 0.7299],
-      'han-solo': [0.9171, 0.6296],
-    },
-    helpers: { 'painter-bristle-low': [0.8693, 0.7392], 'painter-bristle-high': [0.8505, 0.6942] },
-    lines: [
-      ['walter-white', 'dr-manhattan'],
-      ['dr-manhattan', 'marilyn-monroe'],
-      ['marilyn-monroe', 'painter-bristle-low'],
-      ['painter-bristle-low', 'han-solo'],
-      ['marilyn-monroe', 'painter-bristle-high'],
-      ['painter-bristle-high', 'han-solo'],
-    ],
-  },
-  {
-    // R4 option C "Clapperboard": the slate, and its arm hinged open from Nightshade.
-    id: 'filmmaker',
-    name: 'The Director',
-    subline: 'Digital',
-    namePosition: [0.3542, 0.7444],
-    stars: {
-      nightshade: [0.3125, 0.7222],
-      'timeflies-epk': [0.4594, 0.6328],
-      'spare-key': [0.3157, 0.8474],
-      bayonet: [0.5071, 0.8423],
-      montauk: [0.5055, 0.7188],
-    },
-    lines: [
-      ['nightshade', 'montauk'],
-      ['montauk', 'bayonet'],
-      ['bayonet', 'spare-key'],
-      ['spare-key', 'nightshade'],
-      ['nightshade', 'timeflies-epk'],
-    ],
-  },
 ];
 
 const positions = new Map<string, ChartPoint>(constellations.flatMap((c) => Object.entries(c.stars)));
@@ -133,8 +89,6 @@ export const helperStars: (Star & { position: ChartPoint })[] = constellations.f
 export const stars: Star[] = [
   ...jobs.map((j) => ({ id: j.slug, name: j.company, href: `/work/${j.slug}`, ...j.star })),
   ...projects.map((p) => ({ id: p.slug, name: p.name, href: `/projects/${p.slug}`, ...p.star })),
-  ...paintings.map((p) => ({ id: p.slug, name: p.title, href: `/visual-arts/analog/${p.slug}`, ...p.star })),
-  ...films.map((f) => ({ id: f.slug, name: f.title, href: `/visual-arts/digital/${f.slug}`, ...f.star })),
   ...education.map((e) => ({ id: e.slug, name: e.name, ...e.star })),
   { id: 'observer', name: person.name, href: '/about', ...person.star },
 ].map((s) => ({ ...s, position: positions.get(s.id) }));

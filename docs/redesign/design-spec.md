@@ -18,7 +18,7 @@ The site is one continuous night sky. The visitor enters through the RSF mark, f
 | 4 | R3 · W2 · Work scroll — At Meta | W pin, star 3 of 5 | Dense two-column content (Rights Manager / Horizon Creator Economy) on a scrim. | Scroll |
 | 5 | R3 · W3 · Work scroll — Constellation complete | W pin, star 5 of 5 | All five stars joined, "The Engineer", Download Résumé. The Student (Emerson College, App Academy) dim, bottom left. | Scroll → pull 1 (MO-4) |
 | 6 | R4 · P · Featured — Section-8-Scout | `/#projects` (one stop after Work) | Focal star with reticle top-left, "The Builder" kicker, title, "Chrome extension · Live", verbatim description, "Built with", white "Visit live site ↗" pill, framed browser-window preview of the live site. | Gesture → pull 2 (MO-4) |
-| 8 | R3 · H3 · The sky chart (home) | `/` (after journey) | Full chart: five R4 constellation figures (§5) around the RSF pole mark, faint grid (no RA/Dec labels), zoom, "Drag to explore · Click a star". | Click any star |
+| 8 | R3 · H3 · The sky chart (home) | `/` (after journey) | Full chart: three R4 constellation figures (§5; The Engineer, The Builder, The Student with the Observer) around the RSF pole mark, plus the hidden door (§12b), faint grid (no RA/Dec labels), zoom, "Drag to explore · Click a star". | Click any star |
 | 9 | R5 · Job panel (Meta) | `/work/meta` | The camera centres Meta's star in the upper middle; the sky dims and drops labels and lines; the content reads in a centred 680 px column below. Close ✕, "← Back to sky", Esc; ← → in a quiet footer row. | Close / Esc / step |
 | 10 | R5 · Project panel (Section-8-Scout) | `/projects/section-8-scout` | The featured stop's content in the centred column, with a larger preview. | Close |
 | 11 | R3 · AB · About panel (The Observer) | `/about` | Centred panel: headshot, name, "Engineering Leader", verbatim bio, Currently — CTO & Co-founder, Brava; Education (Georgia Tech in progress, App Academy, Emerson); Reach: LinkedIn, Github, Instagram, Download Résumé. | Close |
@@ -157,8 +157,6 @@ Thin white ring: 1 px `rgba(255,255,255,0.7)`, radius 34 px around a focal star 
 | DBOX | K | `#FFD2A1` |
 | Prizm Imagery | M | `#FFB56C` |
 | Section-8-Scout | A, drawn as the lodestar: core 8.5 px (vs 5.5), halo ×1.3, four-point glint | `#CAD7FF` |
-| Paintings | alternate K / G in content-file order starting K (Lewis Hamilton K, Aaron Judge G, Andy Warhol K … Walter White K) | |
-| Films | alternate B / A in content-file order starting B (Montauk B, Spare Key A, Zero Suds Commercial B … Graffiti6 A) | |
 | Emerson College, App Academy | G | `#FFF4EA` |
 | Georgia Institute of Technology | B | `#9BB0FF` |
 | Helper stars (unlabelled, complete a figure) | F, core 2.6 px, halo ×0.45 | `#F8F7FF` |
@@ -186,7 +184,7 @@ The Engineer — option C "Arrow": the shaft runs through the past roles and the
 
 Lines: Prizm → DBOX → Meta → Hypha → Brava; Brava → each barb.
 
-The Builder — option B "Lodestar": Section-8-Scout alone at 0.7569, 0.1889, extra bright with a four-point glint, no lines. Name "The Builder / Projects" at 0.7181, 0.26.
+The Builder — option B "Lodestar": Section-8-Scout alone at 0.8, 0.4, extra bright with a four-point glint, no lines. Name "The Builder / Projects" at 0.7612, 0.4711: right of the pole, level with The Engineer's name, so the chart balances across the mark (Round 6, after The Painter and The Director left the chart).
 
 The Student — option A "Telescope": the Observer at the eyepiece, the schools along the tube (newest nearest the objective), a flared objective end and a two-leg mount. Name at 0.0417, 0.875 (below the Spare Key label since the rename).
 | Star | x | y |
@@ -200,35 +198,13 @@ The Student — option A "Telescope": the Observer at the eyepiece, the schools 
 
 Lines: Observer → Emerson → App Academy → Georgia Tech; Georgia Tech → both objective stars, which join; App Academy → both legs.
 
-The Painter — option C "Brush": a handle through three paintings, a bristle tip ending on Han Solo. Name at 0.6944, 0.5778.
-| Star | x | y |
-|------|---|---|
-| Walter White | 0.6771 | 0.8889 |
-| Dr. Manhattan (label left) | 0.7521 | 0.8049 |
-| Marilyn Monroe (label left) | 0.8233 | 0.7299 |
-| Han Solo | 0.9171 | 0.6296 |
-| h · bristle low / high | 0.8693, 0.7392 / 0.8505, 0.6942 | |
-
-Lines: Walter White → Dr. Manhattan → Marilyn Monroe → each bristle → Han Solo.
-
-The Director — option C "Clapperboard": the slate, its arm hinged open from Nightshade. Name inside the slate at 0.3542, 0.7444.
-| Star | x | y |
-|------|---|---|
-| Nightshade (label left) | 0.3125 | 0.7222 |
-| Timeflies EPK | 0.4594 | 0.6328 |
-| The Republic of Wolves - Spare Key (label left) | 0.3157 | 0.8474 |
-| American Gospel - Bayonet | 0.5071 | 0.8423 |
-| Montauk | 0.5055 | 0.7188 |
-
-Lines: Nightshade → Montauk → Bayonet → Spare Key → Nightshade; Nightshade → Timeflies EPK.
-
 Pole star (plain white RSF mark with soft glow — decision: no painting collage on the home sky; the collage treatment is not used): centre 0.5, 0.4778, mark 324 × 156 px. No cartouche and no star catalogue (removed). While the pole mark shows, the header hides its own mark. Zoom + / − and "Drag to explore · Click a star" bottom-right. No RA / Dec labels (removed); the faint grid stays.
 
-Display order for paintings and films is the content-file order (Lewis Hamilton … Walter White is 17 / 17; Montauk … Graffiti6, Nightshade is 08 / 12). The five paintings and five films shown on H3 are the first-labelled subset; A3/A4 show all.
+Display order for paintings and films (A3/A4) is the content-file order (Lewis Hamilton … Walter White is 17 / 17; Montauk … Graffiti6, Nightshade is 08 / 12). Neither has stars on H3 since Round 6 (§12b).
 
 Label detail by zoom: on H3 Work stars show name + dates only; in a panel-zoomed sky (A2, PP, AB) the current star may show the full role line ("CTO & Co-founder · 2026 — Present") because the camera is closer.
 
-Mobile H3 stacks the same figures (Work top-left, The Builder top-right, The Student mid-left, pole mark centre, Painter and Director below) with only constellation names, the Observer and the current star labelled at 1×; full labels appear at ≥ 1.6× zoom. Group boxes are `PORTRAIT_GROUPS` / `PORTRAIT_NAMES` in `chart.ts`.
+Mobile H3 stacks the same figures (Work top-left, The Builder right above the pole mark, pole mark centre, The Student below it) with only constellation names, the Observer and the current star labelled at 1×; full labels appear at ≥ 1.6× zoom. Group boxes are `PORTRAIT_GROUPS` / `PORTRAIT_NAMES` in `chart.ts`.
 
 ---
 
@@ -356,7 +332,7 @@ ViewTransition names in use: `star-panel`, `va-toggle`, `va-title`, `va-works`, 
 
 ## 8. Responsive rules
 
-Breakpoints: `sm` < 640 (mobile), `md` 640–1023 (tablet, uses mobile layouts with 48 px margins and 800 stars), `lg` 1024–1439, `xl` ≥ 1440 (design size). The sky scales to the viewport; constellation positions are normalised (section 5) and clamped so labels keep ≥ 24 px from edges; at `lg` the The Builder and Painter shift inward by 4% to avoid the HUD.
+Breakpoints: `sm` < 640 (mobile), `md` 640–1023 (tablet, uses mobile layouts with 48 px margins and 800 stars), `lg` 1024–1439, `xl` ≥ 1440 (design size). The sky scales to the viewport; constellation positions are normalised (section 5) and clamped so labels keep ≥ 24 px from edges; at `lg` The Builder shifts inward by 4% to avoid the HUD.
 
 Mobile specifics (R3 · M-*). HUD at 24 / 64 under the status bar; the hero mask is 348 × 167 at y 340 (no name block since Round 5, §12a item 11). Work and the featured build are 100 svh slides with a dot rail; one swipe moves one slide (T21). Panels are the same centred view, full screen; theater uses the native fullscreen API in landscape. Minimum tap target 44 px.
 
@@ -364,7 +340,7 @@ Mobile specifics (R3 · M-*). HUD at 24 / 64 under the status bar; the hero mask
 
 ## 9. Accessibility
 
-- The canvas is `aria-hidden`. Every content star has an HTML `StarMarker` (`<a>`), positioned over it, with the full label as text and `aria-describedby` to its sub-line; constellations are `<nav aria-label="The Engineer">` lists. Tab order: HUD → constellations in reading order (Work, The Builder, Observer/The Student, Painter, Director) → controls. Arrow keys inside a constellation move between its stars; Enter opens; Esc closes.
+- The canvas is `aria-hidden`. Every content star has an HTML `StarMarker` (`<a>`), positioned over it, with the full label as text and `aria-describedby` to its sub-line; constellations are `<nav aria-label="The Engineer">` lists. Tab order: HUD → constellations in reading order (Work, The Builder, Observer/The Student) → the door (§12b) → controls. Arrow keys inside a constellation move between its stars; Enter opens; Esc closes.
 - Focus ring: 2 px `#FFFFFF` at 2 px offset on labels, pills, toggle tabs and rail ticks; never removed.
 - Panels are `role="dialog"` (non-modal since Round 5 so the header stays usable; nothing else on the page is interactive behind them), `aria-labelledby` the title, returning focus to the StarMarker on close. ← → are announced via the footer buttons (they are real buttons).
 - Reduced motion as section 7. Also honour `prefers-contrast: more` by raising `--text-dim` to `#B7BDCB` and scrims to 90%.
@@ -436,6 +412,7 @@ The site reads as an engineering leader's site. The paintings and films stay, bu
 1. No promotion: Visual Arts is gone from the header (desktop row and mobile menu), the 404 links and the R3 · RM sky index. The footer already had no link (§12a item 7).
 2. About subtitle and the identity line everywhere it appears (About subline and meta description, the home mirror's Observer line, `/llms.txt`): "Engineering Leader".
 3. `/visual-arts/*` stay live and indexed: sitemap, `/llms.txt`, their own metadata and JSON-LD are unchanged, and so are the legacy `/analog`, `/digital` redirects, the Analog | Digital toggle and the window (T22). "← Back to sky" on the two constellation views opens `/#chart` (the H3 rest; the top of the home page under reduced motion).
+4. The Painter and The Director leave the chart: their stars, lines, names, labels, mirror sections and portrait boxes are gone, and the paintings and films no longer carry a spectral class. The H3 chart rebalances around the three that stay (§5): The Builder moves to the right of the pole, level with The Engineer's name; on mobile The Builder sits above the pole mark and The Student below it. The hero framing reads only Brava, so H1 is unchanged.
 
 ## 13. Decisions and open questions
 

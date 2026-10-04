@@ -1,5 +1,3 @@
-import type { SpectralClass } from '@/components/sky/types';
-
 export interface Film {
   slug: string;
   /** Old CRA route id (`/digital/<legacyId>`). */
@@ -11,13 +9,12 @@ export interface Film {
   vimeoId: string;
   /** Montauk has no still: typographic card. */
   still?: string;
-  star: { spectral: SpectralClass };
 }
 
 const DCE = ['Director', 'Cinematographer', 'Editor'];
 
 // Content-file order (spec §5). Descriptions and Vimeo IDs from the old src/data/digital.js.
-const rows: Omit<Film, 'star' | 'still'>[] = [
+const rows: Omit<Film, 'still'>[] = [
   { slug: 'montauk', legacyId: 'montauk', title: 'Montauk', roles: DCE, description: '', vimeoId: '244541780' },
   {
     slug: 'spare-key',
@@ -112,11 +109,9 @@ const rows: Omit<Film, 'star' | 'still'>[] = [
   },
 ];
 
-export const films: Film[] = rows.map((f, i) => ({
+export const films: Film[] = rows.map((f) => ({
   ...f,
   still: f.slug === 'montauk' ? undefined : `/images/film-stills/${f.slug}.jpg`,
-  // Alternate B / A in content-file order, starting B (spec §4).
-  star: { spectral: i % 2 === 0 ? 'B' : 'A' },
 }));
 
 export const vimeoUrl = (f: Film) => `https://vimeo.com/${f.vimeoId}`;
