@@ -1,0 +1,258 @@
+/* Full page (no JS, crawlers): the same centred column, on the calm sky. */
+.page {
+  position: relative;
+  z-index: var(--z-content);
+  padding: var(--space-9) var(--page-margin) var(--space-8);
+}
+
+.pageWide .column {
+  max-width: 1000px;
+}
+
+/*
+ * Panel (R5): the content reads in a centred column and the camera puts the
+ * entity's star --star-gap above its kicker (PanelFrame measures the kicker,
+ * cameraRig.setFocalY). Full viewport, transparent: the dimmed sky is the backdrop.
+ * --star-clear: where a long panel's kicker starts (top-aligned, scrolls).
+ * --star-room: the star and its reticle ticks (±73 px) above a fitting panel's kicker.
+ */
+.panel {
+  --star-clear: 30vh;
+  --star-gap: 84px;
+  --star-room: calc(var(--star-gap) + 74px);
+  --fit-pad: 8px;
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-panel);
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  color: var(--text);
+  background: none;
+  border: 0;
+}
+
+.panel:focus {
+  outline: none;
+}
+
+/* Back to sky (left) and Close (right), under the site header. */
+.bar {
+  position: absolute;
+  top: 72px;
+  left: 0;
+  right: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--page-margin);
+  pointer-events: none;
+}
+
+.bar > * {
+  pointer-events: auto;
+}
+
+.back {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.close {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  font-size: 18px;
+  line-height: 1;
+  color: var(--text);
+  background: rgb(4 5 10 / 0.6);
+  border: 1px solid var(--line-strong);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: border-color var(--dur-xs) var(--ease-out);
+}
+
+.close:hover {
+  border-color: rgb(255 255 255 / 0.7);
+}
+
+/*
+ * The scroller. Its top fades out (mask) so text never scrolls over the
+ * focal star, and a ground scrim under the column keeps every line legible.
+ */
+.body {
+  position: absolute;
+  inset: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  display: flex;
+  flex-direction: column;
+  padding: calc(var(--star-clear) + 8px) var(--page-margin) var(--space-9);
+  background: linear-gradient(transparent calc(var(--clear, var(--star-clear)) - 80px), rgb(4 5 10 / 0.62) calc(var(--clear, var(--star-clear)) + 120px));
+  background-attachment: fixed;
+  mask: linear-gradient(transparent calc(var(--clear, var(--star-clear)) - 44px), #000 calc(var(--clear, var(--star-clear)) + 4px));
+}
+
+/* Auto margins centre a unit that fits and fall to 0 (top-aligned) when it overflows. */
+.unit {
+  margin-block: auto;
+}
+
+/* Fits the viewport: star + content as one unit, vertically centred, no scroll. */
+.panel[data-fit] .body {
+  padding-block: var(--fit-pad);
+}
+
+.panel[data-fit] .unit {
+  padding-top: var(--star-room);
+}
+
+.body:focus {
+  outline: none;
+}
+
+.body:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: -4px;
+}
+
+.column {
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+.kicker {
+  margin: 0 0 var(--space-2);
+  text-align: center;
+}
+
+.titleRow {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-5);
+  text-align: center;
+}
+
+.titleRow h1 {
+  overflow-wrap: anywhere;
+}
+
+/* Paintings: the work first, centred and as large as the viewport allows; title and caption below. */
+.media,
+.cinema {
+  --star-clear: 128px;
+  --star-room: 0px;
+  --fit-pad: 120px 16px;
+}
+
+.media .column {
+  max-width: 1000px;
+}
+
+.media .titleRow {
+  margin: var(--space-6) 0 0;
+}
+
+/* The painting, its title, caption and the step row fit the viewport under the bar together. */
+.media figure img {
+  width: auto;
+  max-height: calc(100svh - 344px);
+  margin: 0 auto;
+}
+
+/* The player fits the viewport height too (16:9 plus its control row). */
+.cinema .column {
+  max-width: min(1000px, (100svh - var(--star-clear) - 120px) * 16 / 9);
+}
+
+.footer {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: var(--space-4);
+  max-width: 680px;
+  margin: var(--space-5) auto 0;
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--line);
+  color: var(--text-2);
+}
+
+.footer a {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 44px;
+  text-decoration: none;
+}
+
+.footer a[rel='next'] {
+  justify-self: end;
+  text-align: right;
+}
+
+.counter {
+  white-space: nowrap;
+  color: var(--text-dim);
+}
+
+@media (max-width: 639px) {
+  /* Full-screen sheet: the star a little higher, the column at the page margins. */
+  .panel {
+    --star-clear: 28vh;
+  }
+
+  .bar {
+    top: 64px;
+  }
+
+  .media,
+  .cinema {
+    --star-clear: 116px;
+    --fit-pad: 108px 16px;
+  }
+
+  .stepName {
+    overflow: hidden;
+    max-width: 32vw;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+}
+
+/* With JS the server's full page gives way to the panel at hydration: hide it until then
+   (shown after 3 s anyway, in case the scripts never run). T20: the panel then fades in. */
+@media (scripting: enabled) {
+  .page {
+    opacity: 0;
+    animation: page-fallback 0s 3s forwards;
+  }
+}
+
+@keyframes page-fallback {
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .panel[data-landing] .body {
+    animation: panel-landing 420ms var(--ease-out) 120ms both;
+  }
+}
+
+@keyframes panel-landing {
+  from {
+    opacity: 0;
+    translate: 0 12px;
+  }
+}

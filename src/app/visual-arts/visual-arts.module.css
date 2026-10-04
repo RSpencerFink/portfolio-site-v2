@@ -1,0 +1,279 @@
+/* R3 · A3 The Painter, R3 · A4 The Director. */
+.main {
+  position: relative;
+  z-index: var(--z-content);
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: var(--space-8);
+  padding: var(--space-6) var(--page-margin) var(--space-9);
+}
+
+.head {
+  position: sticky;
+  top: var(--space-6);
+  align-self: start;
+  display: grid;
+  justify-items: start;
+  gap: var(--space-4);
+}
+
+.head p {
+  margin: 0;
+}
+
+.head a {
+  text-decoration: none;
+}
+
+.head h1 {
+  margin-bottom: var(--space-1);
+}
+
+/*
+ * Works float at star positions (R3 · A3/A4): three slots per row, each work
+ * sized and placed by starSlot() (field.ts), joined by constellation lines.
+ */
+.field {
+  position: relative;
+}
+
+.lines {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+  stroke: var(--constellation-line, rgb(237 239 245 / 0.35));
+  stroke-width: 1;
+}
+
+.paintings,
+.films {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 120px var(--space-8);
+  padding-top: 56px;
+}
+
+.paintings li,
+.films li {
+  width: calc(var(--w) * 100%);
+  margin-top: var(--dy);
+}
+
+.work {
+  position: relative;
+  display: grid;
+  gap: var(--space-3);
+  text-decoration: none;
+  transition: filter var(--dur-s) var(--ease-out);
+}
+
+/* The selected work's overlays (logline, "Enter to open") sit above its neighbours. */
+.work:is(:hover, :focus-visible) {
+  z-index: 1;
+}
+
+/* Others dim to 50 % while one is selected (spec §3), staying opaque: the sky never shows through a work. */
+.paintings:has(.work:is(:hover, :focus-visible)) .work:not(:hover, :focus-visible),
+.films:has(.work:is(:hover, :focus-visible)) .work:not(:hover, :focus-visible) {
+  filter: brightness(0.5);
+}
+
+.frame,
+.still {
+  position: relative;
+  display: block;
+}
+
+.frame img,
+.still img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.still {
+  aspect-ratio: 16 / 9;
+  border: 1px solid var(--line-strong);
+  /* Opaque (--panel is 88 %): no star shows through Montauk's title card. */
+  background: #0a0c14;
+}
+
+.still img {
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(0.85);
+  transition: filter var(--dur-xs) var(--ease-out);
+}
+
+/* Corner-bracket reticle: 24 px legs, 1 px, 80 %, two centre ticks (spec §4). */
+.frame::after,
+.still::after {
+  --c: rgb(255 255 255 / 0.8);
+  content: '';
+  position: absolute;
+  inset: -16px;
+  opacity: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(var(--c), var(--c)) top left / 24px 1px,
+    linear-gradient(var(--c), var(--c)) top left / 1px 24px,
+    linear-gradient(var(--c), var(--c)) top right / 24px 1px,
+    linear-gradient(var(--c), var(--c)) top right / 1px 24px,
+    linear-gradient(var(--c), var(--c)) bottom left / 24px 1px,
+    linear-gradient(var(--c), var(--c)) bottom left / 1px 24px,
+    linear-gradient(var(--c), var(--c)) bottom right / 24px 1px,
+    linear-gradient(var(--c), var(--c)) bottom right / 1px 24px,
+    linear-gradient(var(--c), var(--c)) top center / 1px 10px,
+    linear-gradient(var(--c), var(--c)) bottom center / 1px 10px;
+  background-repeat: no-repeat;
+  transition: opacity var(--dur-s) var(--ease-out), inset var(--dur-m) var(--ease-out-3);
+}
+
+.work:is(:hover, :focus-visible) .frame::after,
+.work:is(:hover, :focus-visible) .still::after {
+  inset: -12px;
+  opacity: 1;
+}
+
+.work:is(:hover, :focus-visible) .still {
+  border-color: #fff;
+}
+
+.work:is(:hover, :focus-visible) .still img {
+  filter: none;
+}
+
+.selected {
+  position: absolute;
+  bottom: calc(100% + 20px);
+  left: -12px;
+  right: -12px;
+  display: none;
+  color: var(--text);
+}
+
+.work:is(:hover, :focus-visible) .selected {
+  display: block;
+}
+
+.caption {
+  position: relative;
+  display: grid;
+  gap: 2px;
+}
+
+.name {
+  justify-self: start;
+  color: var(--text);
+}
+
+.work:is(:hover, :focus-visible) .name {
+  color: var(--text-hi);
+}
+
+/* The brackets mark the card; the 2 px focus ring moves to the label (spec §9). */
+.work:focus-visible {
+  outline: none;
+}
+
+.work:focus-visible .name {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+/* Films. */
+.titleCard {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  font-size: 32px;
+  font-weight: 300;
+  letter-spacing: -0.03em;
+  color: var(--text-hi);
+}
+
+.play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 44px;
+  height: 44px;
+  margin: -22px 0 0 -22px;
+  border: 1px solid #fff;
+  border-radius: 50%;
+  background: rgb(4 5 10 / 0.4);
+  opacity: 0;
+  transition: opacity var(--dur-xs) var(--ease-out);
+}
+
+.play::after {
+  content: '';
+  position: absolute;
+  top: 14px;
+  left: 17px;
+  border-left: 12px solid #fff;
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+}
+
+.work:is(:hover, :focus-visible) .play {
+  opacity: 1;
+}
+
+/* An overlay under the caption: showing it never moves another work. */
+.logline {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  visibility: hidden;
+  margin-top: var(--space-2);
+  font-size: 17px;
+  line-height: 24px;
+  font-weight: 300;
+  color: var(--text-2);
+}
+
+.work:is(:hover, :focus-visible) .logline {
+  visibility: visible;
+}
+
+@media (max-width: 1023px) {
+  .main {
+    grid-template-columns: 1fr;
+  }
+
+  .head {
+    position: static;
+  }
+}
+
+/* Mobile: a vertical constellation, works alternating left and right. */
+@media (max-width: 639px) {
+  .paintings,
+  .films {
+    grid-template-columns: 1fr;
+    gap: var(--space-8);
+    padding-top: var(--space-5);
+  }
+
+  .paintings li,
+  .films li {
+    width: calc(45% + var(--w) * 35%);
+    margin-top: 0;
+    justify-self: start !important;
+  }
+
+  .paintings li:nth-child(even),
+  .films li:nth-child(even) {
+    justify-self: end !important;
+  }
+
+  .selected {
+    display: none !important;
+  }
+}

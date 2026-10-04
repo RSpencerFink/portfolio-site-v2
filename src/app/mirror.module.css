@@ -1,0 +1,70 @@
+/* Shared layout for the HTML mirror pages. Visual polish belongs to later tracks. */
+.main {
+  position: relative;
+  z-index: var(--z-content);
+  max-width: 960px;
+  margin: 0 auto;
+  padding: var(--space-9) var(--page-margin) 0;
+}
+
+/*
+ * Home in full motion, once the sky draws: the chart presents these lists
+ * (Work and Projects index, Observer, Painter, Director, catalogue), so the
+ * mirror leaves the visual layer and stops covering the star markers. Screen
+ * readers keep it, and a keyboard visitor tabbing into it brings it back on
+ * screen (:focus-visible, so focus handed back after a mouse close leaves the
+ * chart alone). No-JS and reduced motion never set data-journey, so there it
+ * stays the page.
+ */
+:global(html[data-journey][data-sky='live']) .main:not(:has(:focus-visible)) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Shown only in the desktop pinned journey (see page.tsx). */
+/* Revealed over the live chart: a scrim (spec §3) keeps the index legible over stars and labels. */
+:global(html[data-journey][data-sky='live']) .main:has(:focus-visible) {
+  background: rgb(4 5 10 / 0.9);
+  border-radius: var(--radius-panel);
+}
+
+:global(html:not([data-journey='pinned'])) .pinnedOnly {
+  display: none;
+}
+
+.sub {
+  color: var(--text-dim);
+}
+
+.section {
+  display: grid;
+  gap: var(--space-6);
+  padding: var(--space-9) 0;
+  border-top: 1px solid var(--line);
+  scroll-margin-top: var(--space-8);
+}
+
+.sectionHead {
+  display: grid;
+  gap: var(--space-2);
+}
+
+
+
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.chips li {
+  padding: 4px 8px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-chip);
+}

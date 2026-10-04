@@ -1,0 +1,147 @@
+/* Visual Arts entry: works seen through the RSF letterforms (Paper B1). */
+.window {
+  --mark-w: min(89vw, 139vh - 150px);
+  position: relative;
+  grid-column: 1 / -1;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: var(--space-6);
+  padding: var(--space-6) var(--page-margin) var(--space-8);
+}
+
+/* Full motion with JS: a fixed layer over the constellation until the visitor flies through it. */
+@media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+  .window {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    padding-top: 72px;
+    background: var(--sky-ground);
+    /* If the scripts never run, the works are still reachable. */
+    animation: window-fallback 0s 8s forwards;
+  }
+}
+
+@keyframes window-fallback {
+  to {
+    visibility: hidden;
+  }
+}
+
+.stage {
+  display: grid;
+  gap: var(--space-4);
+  width: var(--mark-w);
+}
+
+/* With JS the works are a random pick: hidden until it has loaded, so the server's set never swaps on screen. */
+@media (scripting: enabled) {
+  .stage {
+    opacity: 0;
+    transition: opacity var(--dur-s) var(--ease-out);
+  }
+
+  .stage[data-ready] {
+    opacity: 1;
+  }
+}
+
+/* Three layers over the mark's full box, each masked by its own letter (rsf-r/s/f.svg share the mark's
+   viewBox, so the letters stay registered and the channels between them stay dark). One work per letter. */
+.montage {
+  position: relative;
+  aspect-ratio: 1519.3 / 729.6;
+  transform-origin: 52% 50%;
+  will-change: scale;
+}
+
+.pane {
+  position: absolute;
+  inset: 0;
+  mask: var(--letter) center / 100% 100% no-repeat;
+}
+
+/* The work covers its letter's bounding box (viewBox units as percentages of the mark). */
+.art {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: var(--w);
+  height: var(--h);
+}
+
+.pane[data-letter='R'] {
+  --letter: url('/logo/rsf-r.svg');
+  --x: 0.86%;
+  --y: 3.5%;
+  --w: 39.31%;
+  --h: 93.33%;
+}
+
+.pane[data-letter='S'] {
+  --letter: url('/logo/rsf-s.svg');
+  --x: 34.34%;
+  --y: 1.6%;
+  --w: 35.62%;
+  --h: 96.93%;
+}
+
+.pane[data-letter='F'] {
+  --letter: url('/logo/rsf-f.svg');
+  --x: 65.8%;
+  --y: 3.45%;
+  --w: 33.73%;
+  --h: 93.38%;
+}
+
+.art img {
+  object-fit: cover;
+  /* Portrait paintings keep their faces in the letters; stills fill the height, so this only trims their sides. */
+  object-position: 50% 30%;
+}
+
+.captions {
+  display: grid;
+  grid-template-columns: 40fr 28fr 32fr;
+  color: var(--text-dim);
+}
+
+.captions li {
+  padding-left: 2%;
+}
+
+.foot {
+  display: flex;
+  justify-content: flex-end;
+  width: var(--mark-w);
+}
+
+.hint {
+  min-height: 44px;
+  padding: 0;
+  color: var(--text);
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+@media (scripting: none) {
+  .hint {
+    display: none;
+  }
+}
+
+@media (max-width: 639px) {
+  .captions li {
+    padding-left: 0;
+    font-size: 9px;
+  }
+}
+
+/* Without JS the window always shows: the header mark stays hidden on these pages (one mark at a time). */
+@media (scripting: none) {
+  :global(body):has(.window) > :global(header) > :global(a[href='/']) {
+    visibility: hidden;
+  }
+}

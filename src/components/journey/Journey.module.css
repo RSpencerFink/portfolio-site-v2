@@ -1,0 +1,941 @@
+/*
+ * Home journey (spec §1, §7, §8). Three layouts from one DOM:
+ * - static (no JS, reduced motion, R3 · RM): sections stack, plain lists.
+ * - [data-journey='pinned'] (desktop, set by HomeJourney): each stage is a
+ *   100vh pinned frame; its [data-slide] layers stack and are scrubbed.
+ * - [data-journey='mobile'] (≤ 768 px): one 100svh snap slide per star (T17, MO-9).
+ */
+.journey {
+  position: relative;
+  overflow-x: clip;
+}
+
+/*
+ * Full motion: the sky's star markers sit under #main (z 0 vs 9). Only content
+ * and controls take the pointer; empty frame areas let it through to the sky.
+ */
+:global(html[data-journey]) :global(#main) {
+  pointer-events: none;
+}
+
+:global(html[data-journey]) :global(#main) :is(a, button, p, h1, h2, h3, h4, ul, [tabindex='0']) {
+  pointer-events: auto;
+}
+
+.motionOnly {
+  display: none !important;
+}
+
+:global(html[data-journey]) .motionOnly {
+  display: revert !important;
+}
+
+/*
+ * The canvas stand-ins are for visitors without JS. With JS the sky host draws
+ * the mark and the stars from the first frame, so the stand-ins never show:
+ * swapping them out mid-intro was a visible flash (item 4).
+ */
+@media (scripting: enabled) {
+  .fallback {
+    display: none !important;
+  }
+}
+
+:global(html[data-sky='live']) .focal {
+  display: none !important;
+}
+
+/* ---------- Hero (H1 → H2, T2) ---------- */
+
+.hero {
+  position: relative;
+  height: 100vh;
+  height: 100svh;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+}
+
+/* Ground with the RSF letterforms cut out: the sky shows only through the mark. */
+.mask {
+  position: absolute;
+  inset: 0;
+  background: var(--sky-ground);
+  --mark-w: min(90vw, 180vh);
+  -webkit-mask:
+    url('/logo/rsf-mark.svg') center / var(--mark-w) auto no-repeat,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    url('/logo/rsf-mark.svg') center / var(--mark-w) auto no-repeat exclude,
+    linear-gradient(#000 0 0);
+  transform-origin: 52% 46%;
+  will-change: transform, opacity;
+}
+
+/* Stand-in for the canvas inside the mark: the nebula core (spec §3 --sky-nebula-core). */
+.heroSky {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 55% 60% at 50% 50%, #2e3384, #1e2260 55%, #0b0d24 100%);
+}
+
+.heroText {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 18vh;
+  display: grid;
+  gap: var(--space-2);
+  justify-items: center;
+  text-align: center;
+}
+
+.heroText p {
+  margin: 0;
+  color: var(--text-3);
+}
+
+.enter {
+  position: absolute;
+  right: var(--page-margin);
+  bottom: 28px;
+  margin: 0;
+  color: var(--text);
+  animation: pulse 4s var(--ease-sine) infinite;
+}
+
+@keyframes pulse {
+  0%, 80%, 100% { opacity: 1; }
+  90% { opacity: 0.6; }
+}
+
+@media (min-width: 769px) {
+  /* Desktop H1 has no name under the mark (spec §8); keep it for AT and crawlers. */
+  .heroText {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 768px) {
+  .mask {
+    --mark-w: min(348px, 89vw);
+    transform-origin: 52% 39%;
+    -webkit-mask-position: center 40%, 0 0;
+    mask-position: center 40%, 0 0;
+  }
+  .heroText {
+    bottom: auto;
+    top: calc(40% + 110px);
+  }
+
+  /* Once the sky draws, its mark sits at the viewport centre (89.2vw wide, 2.082:1): the name goes beneath it. */
+  :global(html[data-sky='live']) .heroText {
+    top: calc(50% + 21.4vw + 24px);
+  }
+}
+
+/* ---------- Static layout (R3 · RM): the base for every mode ---------- */
+
+.section {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: var(--space-9) var(--page-margin);
+  scroll-margin-top: var(--space-8);
+}
+
+.stage {
+  position: relative;
+  display: grid;
+  gap: var(--space-8);
+}
+
+.layer p {
+  margin: 0;
+}
+
+.complete {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.complete p:last-child {
+  margin-top: var(--space-5);
+}
+
+.slides {
+  display: grid;
+}
+
+.slide {
+  padding: var(--space-7) 0;
+  border-top: 1px solid var(--line);
+}
+
+.slide:focus {
+  outline: none;
+}
+
+.content {
+  position: relative;
+  display: grid;
+  gap: var(--space-3);
+  align-content: start;
+}
+
+.title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+  font-size: 44px;
+  line-height: 46px;
+}
+
+.title a {
+  text-decoration: none;
+}
+
+.kicker {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  color: var(--text);
+}
+
+.kicker::before {
+  content: '';
+  width: 22px;
+  height: 1px;
+  background: currentColor;
+}
+
+.lede {
+  max-width: 62ch;
+  margin-top: var(--space-2) !important;
+}
+
+.columns {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--space-5) var(--space-8);
+  margin-top: var(--space-4);
+}
+
+.colHead {
+  padding-bottom: var(--space-3);
+  margin-bottom: var(--space-4);
+  border-bottom: 1px solid var(--line);
+}
+
+.bullets {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.bullets :global(.body-l) {
+  font-size: 15px;
+  line-height: 21px;
+}
+
+/*
+ * The text under a stop's title. When the stop is taller than the screen it
+ * scrolls on its own (stepper.ts scrolls it before moving on), fading out at
+ * the top once scrolled and at the bottom while there is more ("More ↓").
+ * HomeJourney sets data-scrolled / data-more.
+ */
+.scroll {
+  display: grid;
+  gap: var(--space-3);
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: none;
+  --fade-top: 0px;
+  --fade-bottom: 0px;
+  -webkit-mask: linear-gradient(transparent, #000 var(--fade-top), #000 calc(100% - var(--fade-bottom)), transparent);
+  mask: linear-gradient(transparent, #000 var(--fade-top), #000 calc(100% - var(--fade-bottom)), transparent);
+}
+
+.scroll[data-scrolled] {
+  --fade-top: 32px;
+}
+
+/* Only a column with something to scroll keeps a swipe from chaining to the page (Brava's swipe up still leaves for the hero). */
+.scroll:is([data-scrolled], [data-more]) {
+  overscroll-behavior: contain;
+}
+
+.scroll[data-more] {
+  --fade-bottom: 64px;
+}
+
+.more {
+  color: var(--text-2);
+  opacity: 0;
+  transition: opacity var(--dur-s) var(--ease-out);
+}
+
+.scroll[data-more] + .more {
+  opacity: 1;
+}
+
+.stack {
+  display: grid;
+  gap: var(--space-5);
+  align-content: start;
+}
+
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 0 var(--space-4);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-pill);
+  color: var(--text);
+  text-decoration: none;
+  transition: border-color var(--dur-xs) var(--ease-out), color var(--dur-xs) var(--ease-out);
+}
+
+.pill:hover {
+  border-color: rgb(255 255 255 / 0.7);
+  color: var(--text-hi);
+}
+
+/* The featured build (Paper R4 · P · Featured): facts, then the framed live-site preview. */
+.featured {
+  display: grid;
+  gap: var(--space-7);
+}
+
+@media (min-width: 1024px) {
+  :global(html:not([data-journey])) .featured {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: center;
+  }
+}
+
+.origins {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.origins ul {
+  display: grid;
+  gap: var(--space-4);
+  margin-top: var(--space-3);
+}
+
+.handoff {
+  height: 200vh;
+  pointer-events: none;
+}
+
+/* ---------- Static Work list (R3 · RM): rows with insignia, role and years, plus the sky index ---------- */
+
+:global(html[data-journey]) .staticOnly,
+:global(html[data-journey]) .rowOnly,
+:global(html:not([data-journey])) .focalOnly {
+  display: none !important;
+}
+
+:global(html:not([data-journey])) .workSection .slide {
+  padding: 18px 0;
+}
+
+:global(html:not([data-journey])) .workSection .slides {
+  border-bottom: 1px solid var(--line);
+}
+
+:global(html:not([data-journey])) .workSection .content {
+  grid-template-columns: 36px minmax(0, 1fr);
+  grid-template-areas: 'ins name' 'ins role' '. dates';
+  align-items: center;
+  gap: 2px var(--space-4);
+}
+
+:global(html:not([data-journey])) .workSection .content > img {
+  grid-area: ins;
+  width: 36px !important;
+  height: 36px !important;
+  border-radius: 8px !important;
+}
+
+:global(html:not([data-journey])) .workSection :is(.kicker, .lede, .columns, .sep, .scroll, .more) {
+  display: none;
+}
+
+:global(html:not([data-journey])) .workSection .title {
+  grid-area: name;
+  font-size: 22px;
+  line-height: 26px;
+}
+
+:global(html:not([data-journey])) .workSection .roleLine {
+  display: contents;
+}
+
+:global(html:not([data-journey])) .workSection .role {
+  grid-area: role;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 20px;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--text-2);
+}
+
+:global(html:not([data-journey])) .workSection .dates {
+  grid-area: dates;
+  font-size: 10px;
+  line-height: 12px;
+  color: var(--text-dim);
+}
+
+:global(html:not([data-journey])) .workSection .slide[data-current] .dates {
+  color: var(--text-hi);
+}
+
+.skyIndex h3 {
+  margin: 0 0 var(--space-3);
+  color: var(--text-dim);
+}
+
+.skyIndex ul {
+  display: grid;
+  gap: 2px;
+}
+
+.skyIndex a {
+  color: var(--text);
+  text-decoration: none;
+}
+
+.skyIndex a:hover {
+  color: var(--text-hi);
+  text-decoration: underline;
+}
+
+@media (min-width: 1024px) {
+  :global(html:not([data-journey])) .workSection {
+    max-width: 1376px;
+  }
+
+  :global(html:not([data-journey])) .workSection .stage {
+    grid-template-columns: minmax(0, 720px) minmax(0, 1fr);
+    column-gap: var(--space-10);
+  }
+
+  :global(html:not([data-journey])) .workSection .stage > * {
+    grid-column: 1;
+  }
+
+  :global(html:not([data-journey])) .workSection .skyIndex {
+    grid-column: 2;
+    grid-row: 1 / span 3;
+    align-self: center;
+  }
+
+  :global(html:not([data-journey])) .workSection .content {
+    grid-template-columns: 36px minmax(0, 1fr) minmax(0, 1.2fr) 132px;
+    grid-template-areas: 'ins name role dates';
+    gap: var(--space-4);
+  }
+}
+
+/* ---------- Focal star stand-in (spec §4) ---------- */
+
+.focal {
+  display: none;
+  position: absolute;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.focal::before {
+  content: '';
+  position: absolute;
+  width: 560px;
+  height: 560px;
+  left: -280px;
+  top: -280px;
+  border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--tint) 30%, transparent), transparent 60%);
+}
+
+.core {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  left: -7px;
+  top: -7px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow:
+    0 0 6px 2px #fff,
+    0 0 16px 6px color-mix(in srgb, var(--tint) 80%, transparent),
+    0 0 40px 14px color-mix(in srgb, var(--tint) 30%, transparent);
+}
+
+.reticle {
+  position: absolute;
+  width: 68px;
+  height: 68px;
+  left: -34px;
+  top: -34px;
+  border-radius: 50%;
+  border: 1px solid rgb(255 255 255 / 0.7);
+  box-shadow: 0 0 0 15px transparent, 0 0 0 16px rgb(255 255 255 / 0.12);
+}
+
+/* N/E/S/W ticks */
+.reticle::before,
+.reticle::after {
+  content: '';
+  position: absolute;
+  background: rgb(255 255 255 / 0.5);
+}
+
+.reticle::before {
+  left: 33px;
+  top: -22px;
+  width: 1px;
+  height: 110px;
+  -webkit-mask: linear-gradient(#000 0 10px, transparent 10px 100px, #000 100px);
+  mask: linear-gradient(#000 0 10px, transparent 10px 100px, #000 100px);
+}
+
+.reticle::after {
+  top: 33px;
+  left: -22px;
+  height: 1px;
+  width: 110px;
+  -webkit-mask: linear-gradient(90deg, #000 0 10px, transparent 10px 100px, #000 100px);
+  mask: linear-gradient(90deg, #000 0 10px, transparent 10px 100px, #000 100px);
+}
+
+/* ---------- Rail (spec §6 ProgressRail) ---------- */
+
+.rail ol {
+  display: grid;
+}
+
+.tick {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-4);
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--text-dim);
+  cursor: pointer;
+}
+
+/* Only the current tick is white with a filled dot; hover lifts the label one step, never to "current". */
+.tick:hover {
+  color: var(--text-2);
+}
+
+.tick[aria-current] {
+  color: var(--text-hi);
+}
+
+.mark {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 9px;
+  height: 9px;
+}
+
+.mark::before {
+  content: '';
+  width: 9px;
+  height: 1px;
+  background: currentColor;
+  transition: all var(--dur-s) var(--ease-out);
+}
+
+.tick[aria-current] .mark::before {
+  height: 9px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 8px 2px rgb(255 255 255 / 0.35);
+}
+
+.counter {
+  color: var(--text-dim);
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.hint {
+  margin: 0;
+  color: var(--text);
+}
+
+/* ======================= Desktop: pinned ======================= */
+
+:global(html[data-journey='pinned']) .section {
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  scroll-margin-top: 0; /* anchors land on the pin start; the snap carries on to the first dwell */
+}
+
+:global(html[data-journey='pinned']) .stage {
+  display: grid;
+  height: 100vh;
+  gap: 0;
+  overflow: hidden;
+}
+
+/* All layers occupy the same frame; HomeJourney scrubs their opacity. */
+:global(html[data-journey='pinned']) .slides {
+  display: contents;
+}
+
+:global(html[data-journey='pinned']) .layer {
+  grid-area: 1 / 1;
+  position: relative;
+  visibility: hidden;
+}
+
+:global(html[data-journey='pinned']) .slide {
+  padding: 0;
+  border: 0;
+}
+
+:global(html[data-journey='pinned']) .focal {
+  display: block;
+  left: 40%;
+  top: 47%;
+}
+
+:global(html[data-journey='pinned']) .content {
+  position: absolute;
+  left: 48.6%;
+  top: 50%;
+  transform: translateY(-45%);
+  width: min(520px, 40vw);
+}
+
+/* Legibility scrim (spec §3): content can land on the nebula core. */
+:global(html[data-journey='pinned']) .content::before {
+  content: '';
+  position: absolute;
+  inset: -64px -96px -64px -64px;
+  z-index: -1;
+  background: radial-gradient(closest-side, rgb(4 5 10 / 0.72), rgb(4 5 10 / 0.5) 60%, transparent);
+  pointer-events: none;
+}
+
+:global(html[data-journey='pinned']) .title {
+  font-size: 96px;
+  line-height: 96px;
+}
+
+:global(html[data-journey='pinned']) .title[data-long] {
+  font-size: 72px;
+  line-height: 76px;
+}
+
+/* Dense frames (W2 Meta) and the featured build: star top-left, content beside it. */
+:global(html[data-journey='pinned']) :is(.slide[data-dense], .featured) .focal {
+  left: 19.4%;
+  top: 27.8%;
+}
+
+:global(html[data-journey='pinned']) :is(.slide[data-dense], .featured) .content {
+  left: 29.2%;
+  top: 22%;
+  transform: none;
+  width: min(760px, 58vw);
+}
+
+/* A long stop's column ends 96 px above the bottom, clear of "Scroll to travel"; its text scrolls inside. */
+:global(html[data-journey='pinned']) .slide[data-dense] .content {
+  display: flex;
+  flex-direction: column;
+  max-height: calc(78vh - 96px);
+}
+
+/* Doubled class: must outrank the shared :is(.slide[data-dense], .featured) rule above, or the text runs under the preview. */
+:global(html[data-journey='pinned']) .featured.featured .content {
+  width: min(470px, 32vw);
+}
+
+/* Paper: the featured title is 64 px so it clears the preview column. */
+:global(html[data-journey='pinned']) .featured .title {
+  font-size: min(64px, 4.4vw);
+  line-height: 1;
+}
+
+/* The preview column (Paper: x 900–1380 of 1440, y 168). */
+:global(html[data-journey='pinned']) .previewCol {
+  position: absolute;
+  left: 62.5%;
+  top: 18.7%;
+  width: min(520px, 33.4vw);
+}
+
+:global(html[data-journey='pinned']) :is(.slide[data-dense], .featured) .content::before {
+  background: linear-gradient(90deg, transparent, rgb(4 5 10 / 0.72) 12%, rgb(4 5 10 / 0.72) 80%, transparent);
+  mask: linear-gradient(transparent, #000 64px, #000 calc(100% - 64px), transparent);
+}
+
+:global(html[data-journey='pinned']) .columns {
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-5) 56px;
+}
+
+:global(html[data-journey='pinned']) .complete {
+  align-self: center;
+  justify-self: start;
+  margin: 18vh 0 0 41.7%;
+}
+
+:global(html[data-journey='pinned']) .complete h2 {
+  font-size: 64px;
+}
+
+:global(html[data-journey='pinned']) .origins {
+  align-self: end;
+  justify-self: start;
+  margin: 0 0 96px var(--page-margin);
+  max-width: 360px;
+}
+
+:global(html[data-journey='pinned']) .rail {
+  grid-area: 1 / 1;
+  position: relative;
+  z-index: 1;
+  pointer-events: none;
+}
+
+:global(html[data-journey='pinned']) .stage:not([data-live]) :is(.rail, .hint, .counter) {
+  visibility: hidden;
+}
+
+:global(html[data-journey='pinned']) .rail nav {
+  position: absolute;
+  right: 32px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: auto;
+}
+
+:global(html[data-journey='pinned']) .rail ol {
+  gap: 52px;
+  padding-right: 4px;
+  background: linear-gradient(var(--line-strong), var(--line-strong)) no-repeat calc(100% - 8px) 6px / 1px calc(100% - 12px);
+}
+
+:global(html[data-journey='pinned']) .tick {
+  width: 100%;
+  min-height: 24px;
+}
+
+:global(html[data-journey='pinned']) .counter,
+:global(html[data-journey='pinned']) .hint {
+  position: absolute;
+  bottom: 28px;
+  z-index: 1;
+}
+
+:global(html[data-journey='pinned']) .counter {
+  right: var(--page-margin);
+}
+
+:global(html[data-journey='pinned']) .hint {
+  left: var(--page-margin);
+}
+
+/* Pull 2: sticky frame while the camera dollies out (T6). */
+:global(html[data-journey]) .handoffInner {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: var(--space-6);
+}
+
+.pole {
+  width: 324px;
+  height: auto;
+  filter: drop-shadow(0 0 24px rgb(202 215 255 / 0.35));
+}
+
+/* ======================= Mobile (≤ 768 px) ======================= */
+
+:global(html[data-journey='mobile']) .section {
+  padding: 0 var(--page-margin);
+}
+
+:global(html[data-journey='mobile']) .stage {
+  gap: 0;
+}
+
+:global(html[data-journey='mobile']) .layer {
+  min-height: 100svh;
+  padding: 120px 0 96px;
+  border: 0;
+  position: relative;
+}
+
+:global(html[data-journey='mobile']) .complete,
+:global(html[data-journey='mobile']) .origins {
+  align-content: center;
+}
+
+/* Stops in travel order: the five stars, "The Engineer", The Student (the stepper follows layout order). */
+:global(html[data-journey='mobile']) .complete {
+  order: 1;
+}
+
+:global(html[data-journey='mobile']) .origins {
+  order: 2;
+}
+
+:global(html[data-journey='mobile']) .rail {
+  order: 3;
+}
+
+:global(html[data-journey='mobile']) .featured .previewCol {
+  position: relative;
+}
+
+:global(html[data-journey='mobile']) .focal {
+  display: block;
+  left: 25%;
+  top: 200px;
+}
+
+:global(html[data-journey='mobile']) .slide .content {
+  padding-top: 220px;
+}
+
+/* Each job is exactly one screen; a long one's text scrolls in its column, above the rail (the layer's 96 px bottom padding). */
+:global(html[data-journey='mobile']) .workSection .slide {
+  height: 100svh;
+  display: flex;
+  flex-direction: column;
+}
+
+:global(html[data-journey='mobile']) .workSection .content {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+:global(html[data-journey='mobile']) .featured {
+  align-content: start;
+}
+
+:global(html[data-journey='mobile']) .stage > :is(.hint, .counter) {
+  display: none !important;
+}
+
+/* Vertical scrim (spec §3) */
+:global(html[data-journey='mobile']) .slide .content::before {
+  content: '';
+  position: absolute;
+  inset: 180px calc(-1 * var(--page-margin)) -32px;
+  z-index: -1;
+  background: linear-gradient(transparent, rgb(4 5 10 / 0.72) 60px);
+  pointer-events: none;
+}
+
+/* Content enter, 240 ms (T17). */
+:global(html[data-journey='mobile']) .layer > * {
+  transition: opacity 240ms var(--ease-out), translate 240ms var(--ease-out);
+}
+
+:global(html[data-journey='mobile']) .layer:not([data-active]) > * {
+  opacity: 0;
+  translate: 0 16px;
+}
+
+:global(html[data-journey='mobile']) .title {
+  font-size: 64px;
+  line-height: 64px;
+}
+
+:global(html[data-journey='mobile']) .title[data-long] {
+  font-size: 44px;
+  line-height: 46px;
+}
+
+:global(html[data-journey='mobile']) .rail {
+  position: sticky;
+  bottom: 0;
+  z-index: 1;
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin: 0 calc(-1 * var(--page-margin));
+  padding: 24px var(--page-margin) 8px;
+  white-space: nowrap;
+  background: linear-gradient(transparent, var(--sky-ground) 24px);
+}
+
+:global(html[data-journey='mobile']) .rail nav {
+  margin-left: auto;
+}
+
+:global(html[data-journey='mobile']) .rail ol {
+  display: flex;
+}
+
+:global(html[data-journey='mobile']) .tick {
+  width: 24px;
+  height: 44px;
+  justify-content: center;
+}
+
+:global(html[data-journey='mobile']) .tickLabel {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+:global(html[data-journey='mobile']) .mark::before {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--text-dim);
+}
+
+:global(html[data-journey='mobile']) .tick[aria-current] .mark::before {
+  width: 7px;
+  height: 7px;
+}
+
+:global(html[data-journey='mobile']) .handoff {
+  height: 160vh;
+}
+
+:global(html[data-journey='mobile']) .pole {
+  width: 220px;
+}
+
+@media (prefers-contrast: more) {
+  :global(html[data-journey]) .content::before {
+    opacity: 1;
+    background: rgb(4 5 10 / 0.9) !important;
+  }
+}
+

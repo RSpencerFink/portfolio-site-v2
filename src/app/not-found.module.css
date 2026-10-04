@@ -1,0 +1,51 @@
+.main {
+  position: relative;
+  z-index: var(--z-content);
+  display: grid;
+  flex: 1;
+  place-content: center;
+  justify-items: center;
+  gap: var(--space-4);
+  padding: var(--space-10) var(--page-margin);
+  text-align: center;
+  /* A soft ground under the message: no star sits on the words. */
+  background: radial-gradient(ellipse 420px 260px at 50% 50%, rgb(4 5 10 / 0.7), transparent);
+}
+
+.main p {
+  margin: 0;
+}
+
+.home {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 44px;
+  margin-top: var(--space-4);
+  padding: 0 var(--space-5);
+  color: var(--text);
+  text-decoration: none;
+  border: 1px solid rgb(255 255 255 / 0.7);
+  border-radius: var(--radius-pill);
+}
+
+.links {
+  display: flex;
+  gap: var(--space-6);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--text-2);
+  text-decoration: none;
+}
+
+.home:hover,
+.links a:hover {
+  color: var(--text-hi);
+}

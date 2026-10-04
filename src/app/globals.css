@@ -1,0 +1,181 @@
+/* Design tokens: docs/redesign/design-spec.md §3 and §7. */
+:root {
+  --sky-ground: #04050a;
+  --sky-nebula: rgb(42 47 107 / 0.45);
+  --panel: rgb(10 12 20 / 0.88);
+  --line: rgb(237 239 245 / 0.1);
+  --line-strong: rgb(237 239 245 / 0.18);
+  --grid: rgb(237 239 245 / 0.07);
+  --constellation-line: rgb(237 239 245 / 0.35);
+  --text-hi: #ffffff;
+  --text: #edeff5;
+  --text-2: #c9cdd8;
+  --text-3: #a3a9ba;
+  --text-dim: #8c93a8;
+  --text-mute: #5a6075;
+  --scrim: linear-gradient(90deg, #04050a 0%, #04050ab8 60%, transparent);
+
+  --font-sans: var(--font-inter-tight), system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 22px;
+  --space-6: 28px;
+  --space-7: 32px;
+  --space-8: 48px;
+  --space-9: 64px;
+  --space-10: 96px;
+  --page-margin: 32px;
+
+  --radius-panel: 6px;
+  --radius-chip: 6px;
+  --radius-pill: 999px;
+
+  --dur-xs: 160ms;
+  --dur-s: 200ms;
+  --dur-m: 320ms;
+  --dur-l: 480ms;
+  --dur-xl: 520ms;
+  --dur-intro: 2600ms;
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-out-3: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-sine: cubic-bezier(0.37, 0, 0.63, 1);
+  --ease-pop: cubic-bezier(0.34, 1.2, 0.64, 1);
+
+  --z-sky: 0;
+  --z-content: 9;
+  --z-hud: 10;
+  --z-panel: 20;
+  --z-theater: 30;
+
+  color-scheme: dark;
+}
+
+@media (max-width: 639px) {
+  :root {
+    --page-margin: 24px;
+  }
+}
+
+@media (prefers-contrast: more) {
+  :root {
+    --text-dim: #b7bdcb;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--sky-ground);
+  color: var(--text);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* A column at least the viewport tall: on short pages the footer sits at the bottom, never mid-page. */
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100svh;
+  margin: 0;
+  font-size: 17px;
+  line-height: 26px;
+}
+
+body > main {
+  flex-grow: 1;
+}
+
+a {
+  color: inherit;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--line-strong);
+}
+
+a:hover {
+  color: var(--text-hi);
+  text-decoration-color: currentColor;
+}
+
+:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  font-weight: 300;
+  letter-spacing: -0.03em;
+}
+
+ul,
+ol {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Type scale (spec §3). No italics anywhere. */
+.display-xl { font-size: 96px; line-height: 96px; font-weight: 300; letter-spacing: -0.03em; }
+.display-l { font-size: 64px; line-height: 64px; font-weight: 300; letter-spacing: -0.03em; }
+.display-m { font-size: 56px; line-height: 56px; font-weight: 300; letter-spacing: -0.03em; }
+.display-s { font-size: 46px; line-height: 46px; font-weight: 300; letter-spacing: -0.03em; }
+.heading { font-size: 24px; line-height: 28px; font-weight: 300; letter-spacing: -0.03em; }
+.body-l { font-size: 17px; line-height: 26px; color: var(--text-2); }
+.body { font-size: 13px; line-height: 19px; color: var(--text-3); }
+.body-strong { font-size: 14px; line-height: 20px; font-weight: 600; color: var(--text); }
+.label,
+.label-s {
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text-dim);
+}
+.label { font-size: 11px; line-height: 14px; }
+.label-s { font-size: 10px; line-height: 12px; }
+.mono-body { font-family: var(--font-mono); font-size: 12px; line-height: 16px; letter-spacing: 0.05em; color: var(--text-2); }
+
+@media (max-width: 639px) {
+  .display-xl, .display-l { font-size: 56px; line-height: 56px; }
+  .display-m, .display-s { font-size: 44px; line-height: 46px; }
+  .body { font-size: 14px; line-height: 20px; }
+  .label { font-size: 10px; line-height: 12px; }
+}
+
+i, em { font-style: normal; }
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

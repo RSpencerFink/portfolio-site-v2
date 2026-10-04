@@ -1,0 +1,148 @@
+/* Entity bodies inside PanelFrame: job (A2), project (PP), About (AB), painting. */
+.stack {
+  display: grid;
+  gap: 20px;
+}
+
+.stack p {
+  margin: 0;
+}
+
+.role {
+  margin: calc(var(--space-2) * -1) 0 0;
+  font-size: 15px;
+  line-height: 22px;
+  font-weight: 300;
+  color: var(--text-2);
+}
+
+.roles {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.roles li {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid var(--line);
+}
+
+.roles li span:first-child {
+  color: var(--text);
+}
+
+.section {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.section h2 {
+  padding-bottom: var(--space-4);
+  border-bottom: 1px solid var(--line);
+  color: var(--text);
+}
+
+.items {
+  display: grid;
+  gap: var(--space-5);
+}
+
+.items li {
+  display: grid;
+  grid-template-columns: 40px 1fr;
+}
+
+.num {
+  padding-top: 3px;
+  color: var(--text-dim);
+}
+
+.items p {
+  margin: 0;
+}
+
+.items .body {
+  margin-top: var(--space-1);
+  font-size: 14px;
+  line-height: 19px;
+  color: var(--text-3);
+}
+
+.pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 44px;
+  padding: 0 var(--space-4);
+  color: var(--text);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-pill);
+  text-decoration: none;
+}
+
+.pill:hover {
+  border-color: rgb(255 255 255 / 0.6);
+}
+
+/* Download Résumé: the one primary action, white hairline (AB). */
+.pillStrong {
+  border-color: rgb(255 255 255 / 0.7);
+}
+
+
+
+.headshot {
+  flex-shrink: 0;
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: 50% 20%;
+  border: 1px solid var(--line-strong);
+}
+
+/* About: the portrait beside the name and role, so the panel fits one desktop screen. */
+@media (min-width: 640px) {
+  :has(> .headshot) {
+    grid-template-columns: auto auto;
+    justify-content: center;
+    justify-items: start;
+    align-items: center;
+    column-gap: var(--space-5);
+    row-gap: var(--space-1);
+    text-align: left;
+  }
+
+  .headshot {
+    grid-row: span 2;
+    width: 80px;
+    height: 80px;
+  }
+}
+
+.currently {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  color: var(--text);
+}
+
+.figure {
+  display: grid;
+  gap: var(--space-3);
+  margin: 0;
+}
+
+.figure img {
+  width: 100%;
+  border-radius: var(--radius-panel);
+  border: 1px solid var(--line);
+}
