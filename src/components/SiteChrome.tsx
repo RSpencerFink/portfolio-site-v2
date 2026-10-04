@@ -32,10 +32,10 @@ export function SiteFooter() {
       <ul className={`label ${styles.links}`}>
         {socials.map((s) => (
           <li key={s.label}>
-            <a href={s.url} rel="me noopener">{s.label}</a>
+            <a href={s.url} target="_blank" rel="me noopener noreferrer">{s.label}</a>
           </li>
         ))}
-        <li><a href={resume.href}>{resume.label}</a></li>
+        <li><a href={resume.href} target="_blank" rel="noopener noreferrer">{resume.label}</a></li>
       </ul>
     </footer>
   );

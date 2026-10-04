@@ -80,7 +80,7 @@ export function JourneySections() {
             <h2 id="work-title" className="display-l">{c.work.name}</h2>
             <p className="label">{c.work.subline}</p>
             <p>
-              <a className={`label ${j.pill}`} href={resume.href}>{resume.label} ↓</a>
+              <a className={`label ${j.pill}`} href={resume.href} target="_blank" rel="noopener noreferrer">{resume.label} ↓</a>
             </p>
           </header>
 

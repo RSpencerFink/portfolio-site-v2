@@ -73,13 +73,13 @@ export default function AboutPage() {
           <ul className={e.pills}>
             {socials.map((x) => (
               <li key={x.label}>
-                <a className={`label ${e.pill}`} href={x.url} rel="me noopener">
+                <a className={`label ${e.pill}`} href={x.url} target="_blank" rel="me noopener noreferrer">
                   {x.label} <span aria-hidden="true">↗</span>
                 </a>
               </li>
             ))}
             <li>
-              <a className={`label ${e.pill} ${e.pillStrong}`} href={resume.href}>
+              <a className={`label ${e.pill} ${e.pillStrong}`} href={resume.href} target="_blank" rel="noopener noreferrer">
                 {resume.label} <span aria-hidden="true">↓</span>
               </a>
             </li>

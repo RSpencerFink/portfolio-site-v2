@@ -144,6 +144,8 @@ export function FilmView({ slug, title, roles, vimeoId, vimeoUrl, still, counter
               {/* Without JS this is a plain link to Vimeo. */}
               <a
                 href={vimeoUrl}
+                target="_blank"
+                rel="noopener noreferrer"
                 className={styles.bigPlay}
                 aria-label={`Play ${title}`}
                 onClick={(e) => {
@@ -164,7 +166,7 @@ export function FilmView({ slug, title, roles, vimeoId, vimeoUrl, still, counter
                 <span className="label">{roles.join(', ')}</span>
               </span>
             )}
-            <a href={vimeoUrl} className={styles.vimeo}>
+            <a href={vimeoUrl} target="_blank" rel="noopener noreferrer" className={styles.vimeo}>
               Watch on Vimeo <span aria-hidden="true">↗</span>
             </a>
             <button
@@ -196,7 +198,7 @@ export function FilmView({ slug, title, roles, vimeoId, vimeoUrl, still, counter
         </div>
         {theater && (
           <div className={`label ${styles.drawerFoot}`}>
-            <a href={vimeoUrl}>
+            <a href={vimeoUrl} target="_blank" rel="noopener noreferrer">
               Watch on Vimeo <span aria-hidden="true">↗</span>
             </a>
             <span>{counter}</span>
