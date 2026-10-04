@@ -102,7 +102,7 @@ export function JourneySections() {
                       <span className={j.dates}>{job.dates}</span>
                     </p>
                     {/* A stop taller than the screen: this column scrolls first, then the stepper moves on (stepper.ts). */}
-                    <div className={j.scroll} data-scroll>
+                    <div className={j.scroll} data-scroll tabIndex={0} role="region" aria-label={`${job.company} details`}>
                       {job.description && <p className={`body-l ${j.lede}`}>{job.description}</p>}
                       {dense && (
                         <div className={j.columns}>
