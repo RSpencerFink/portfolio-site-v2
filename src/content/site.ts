@@ -8,7 +8,7 @@ export const absoluteUrl = (path: string) => new URL(path, SITE_URL).toString();
 export const person = {
   name: 'R. Spencer Fink',
   jobTitle: 'CTO & Co-founder',
-  identities: ['Software Engineer', 'Visual Artist'],
+  identities: ['Engineering Leader', 'Visual Artist'],
   currently: 'CTO & Co-founder, Brava',
   bio: 'I’m a Software Engineer with a strong background in building scalable, user-focused solutions. I specialize in developing tools that empower users, designing and optimizing algorithms, and creating efficient systems that drive business outcomes. With experience in both full-stack development and entrepreneurship, I’m passionate about solving complex problems and delivering impactful results. I enjoy collaborating with teams to bring creative and technical visions to life.',
   headshot: { base: '/images/headshot/rsf-headshot-2', width: 800, height: 1200 },

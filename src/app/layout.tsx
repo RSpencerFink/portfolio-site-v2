@@ -24,7 +24,7 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: { default: `${person.name} | CTO & Co-founder, Brava`, template: `%s | ${person.name}` },
-  description: `${person.name}: software engineer and visual artist. ${person.currently}.`,
+  description: `${person.name}: engineering leader and visual artist. ${person.currently}.`,
   authors: [{ name: person.name, url: SITE_URL }],
   manifest: '/site.webmanifest',
   icons: {
