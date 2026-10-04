@@ -40,7 +40,6 @@ export default function AboutPage() {
       }
       subline={<p className="label" style={{ margin: 0 }}>{person.identities.join(' · ')}</p>}
       next={{ href: `/work/${brava.slug}`, name: 'The Engineer' }}
-      counter="/about"
       stepLabel="The Observer"
     >
       <JsonLd data={{ '@type': 'ProfilePage', url: `${SITE_URL}/about`, mainEntity: personLd() }} />
