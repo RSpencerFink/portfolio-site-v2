@@ -12,7 +12,8 @@ import { DoorLink, doorFound, doorStore } from './Door';
 import type { FrameInfo } from './Scene';
 import s from './SkyHost.module.css';
 
-const LEFT = new Set(['hypha', 'meta', 'emerson-college', 'georgia-tech']);
+// Every label reads left of its star except Brava (the arrow's tip) and the lodestar.
+const LEFT = new Set(['hypha', 'meta', 'dbox', 'prizm-imagery', 'georgia-tech', 'app-academy', 'emerson-college', 'observer']);
 
 function sublineFor(star: ChartStar): string | undefined {
   const job = jobs.find((j) => j.slug === star.id);

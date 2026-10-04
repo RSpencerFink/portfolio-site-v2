@@ -18,19 +18,20 @@ const PLANE = {
 
 // Portrait group placement in mobile-artboard px: [left, top, width] of the group's star bbox.
 const PORTRAIT_GROUPS: Record<string, [number, number, number]> = {
-  work: [30, 90, 200], // Brava's label keeps ≥ 24 px from the right edge (spec §8)
-  projects: [250, 280, 100],
-  // Below the pole mark, so the column balances above and below it.
-  origins: [40, 520, 150],
-  // The door: top right, clear of Brava's label, where a meteor can fall from it along the edge.
-  door: [330, 140, 28],
+  // Top left, small enough that the W3 frame (resolve.ts) fits it above the Student text at names-only zoom.
+  work: [50, 80, 105],
+  projects: [250, 190, 100], // top right, across from The Engineer
+  // Below the pole mark on the right, so the Observer's left-hand label has room and the zoom controls stay clear.
+  origins: [220, 478, 110],
+  // The door: the empty left edge between The Engineer and The Student, away from every label.
+  door: [28, 500, 24],
 };
 
-// Portrait constellation-name anchors (top-left of the block) in mobile-artboard px, from R3 · M-H3.
+// Portrait constellation-name anchors (top-left of the block) in mobile-artboard px: under each figure, as on desktop.
 const PORTRAIT_NAMES: Record<string, [number, number]> = {
-  work: [30, 226],
-  projects: [236, 310],
-  origins: [220, 545],
+  work: [40, 240],
+  projects: [250, 240],
+  origins: [60, 660],
 };
 
 const doorStars = Object.entries(door.stars).map(([id, position], i) => ({ id, name: '', spectral: (['A', 'F', 'B'] as const)[i % 3], position, door: true }));

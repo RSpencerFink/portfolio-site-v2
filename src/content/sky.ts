@@ -14,18 +14,19 @@ import { projects } from './projects';
 export const constellations: Constellation[] = [
   {
     // R4 option C "Arrow": the shaft runs through the past roles, the head lands on Brava.
+    // Upper left; the shaft is steep enough (> 45°) that every label clears it on the left.
     id: 'work',
     name: 'The Engineer',
     subline: '2016 — Present',
-    namePosition: [0.0556, 0.4667],
+    namePosition: [0.0771, 0.4966],
     stars: {
-      'prizm-imagery': [0.0764, 0.4111],
-      dbox: [0.1497, 0.3431],
-      meta: [0.218, 0.2653],
-      hypha: [0.2942, 0.1952],
-      brava: [0.3875, 0.0982],
+      'prizm-imagery': [0.1869, 0.4513],
+      dbox: [0.228, 0.3629],
+      meta: [0.2691, 0.2745],
+      hypha: [0.3102, 0.1861],
+      brava: [0.3513, 0.0977],
     },
-    helpers: { 'work-barb-low': [0.3497, 0.2031], 'work-barb-high': [0.3164, 0.1089] },
+    helpers: { 'work-barb-low': [0.3442, 0.1702], 'work-barb-high': [0.3095, 0.1294] },
     lines: [
       ['prizm-imagery', 'dbox'],
       ['dbox', 'meta'],
@@ -40,30 +41,31 @@ export const constellations: Constellation[] = [
     id: 'projects',
     name: 'The Builder',
     subline: 'Projects',
-    // Right of the pole at the height of The Engineer's name, so the chart balances across the mark.
-    namePosition: [0.7612, 0.4711],
-    stars: { 'section-8-scout': [0.8, 0.4] },
+    // Upper right, across the pole from The Engineer; its name sits under the star like the other two.
+    namePosition: [0.7408, 0.2802],
+    stars: { 'section-8-scout': [0.755, 0.219] },
     lodestar: 'section-8-scout',
     lines: [],
   },
   {
     // R4 option A "Telescope": the Observer at the eyepiece, the schools along the tube
     // (newest nearest the objective), a flared objective end and a two-leg mount.
+    // Lower right of the pole, tube raised past 45° so the left-hand labels clear it.
     id: 'origins',
     name: 'The Student',
     subline: 'Education',
-    namePosition: [0.0417, 0.875],
+    namePosition: [0.5333, 0.9057],
     stars: {
-      observer: [0.0583, 0.7111],
-      'emerson-college': [0.1088, 0.6696],
-      'app-academy': [0.1592, 0.6302],
-      'georgia-tech': [0.2096, 0.5864],
+      observer: [0.6275, 0.8626],
+      'emerson-college': [0.6594, 0.7833],
+      'app-academy': [0.6912, 0.704],
+      'georgia-tech': [0.7231, 0.6247],
     },
     helpers: {
-      'origins-objective-top': [0.2539, 0.518],
-      'origins-objective-low': [0.2707, 0.5644],
-      'origins-leg-left': [0.1419, 0.7453],
-      'origins-leg-right': [0.1939, 0.7502],
+      'origins-objective-top': [0.7245, 0.5657],
+      'origins-objective-low': [0.7557, 0.5975],
+      'origins-leg-left': [0.6735, 0.8626],
+      'origins-leg-right': [0.7337, 0.8604],
     },
     lines: [
       ['observer', 'emerson-college'],
@@ -102,7 +104,7 @@ export const door: { href: string; label: string; stars: Record<string, ChartPoi
   href: '/visual-arts/analog',
   /** Accessible name only: the door never shows text. */
   label: 'The other half: paintings and films',
-  stars: { 'door-a': [0.872, 0.7], 'door-b': [0.889, 0.716], 'door-c': [0.879, 0.738] },
+  stars: { 'door-a': [0.075, 0.8513], 'door-b': [0.092, 0.8774], 'door-c': [0.0821, 0.9102] },
   lines: [
     ['door-a', 'door-b'],
     ['door-b', 'door-c'],

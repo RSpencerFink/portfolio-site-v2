@@ -172,40 +172,42 @@ Rounded square, 22% radius, 1 px hairline `rgba(255,255,255,0.14)`, no shadow. 2
 
 Round 4 shapes (Paper "Round 4 — Constellations", the client's picks from the Options sheet). The source of truth is `src/content/sky.ts`; the tables below are a snapshot. Helper stars (h) are unlabelled and dimmer. Label side is in `StarLabels.tsx` (`LEFT`).
 
-The Engineer — option C "Arrow": the shaft runs through the past roles and the head lands on Brava. Name at 0.0556, 0.4667.
+Composition (Round 6 rebalance): The Engineer upper left, The Builder upper right, The Student lower right of the pole, the door at the empty lower-left edge. Each name sits under its figure, left-aligned with the figure's leftmost label. The Engineer's shaft and The Student's tube rise steeper than 45°, so their labels, all on the left, clear the lines; only Brava (the arrow's tip) and the lodestar read right.
+
+The Engineer — option C "Arrow": the shaft runs through the past roles and the head lands on Brava. Name at 0.0771, 0.4966.
 | Star | x | y |
 |------|---|---|
-| Prizm Imagery | 0.0764 | 0.4111 |
-| DBOX | 0.1497 | 0.3431 |
-| Meta (label left) | 0.2180 | 0.2653 |
-| Hypha (label left) | 0.2942 | 0.1952 |
-| Brava | 0.3875 | 0.0982 |
-| h · barb low / high | 0.3497, 0.2031 / 0.3164, 0.1089 | |
+| Prizm Imagery (label left) | 0.1869 | 0.4513 |
+| DBOX (label left) | 0.228 | 0.3629 |
+| Meta (label left) | 0.2691 | 0.2745 |
+| Hypha (label left) | 0.3102 | 0.1861 |
+| Brava | 0.3513 | 0.0977 |
+| h · barb low / high | 0.3442, 0.1702 / 0.3095, 0.1294 | |
 
-Lines: Prizm → DBOX → Meta → Hypha → Brava; Brava → each barb.
+Lines: Prizm → DBOX → Meta → Hypha → Brava; Brava → each barb. The arrow is under 3.5 units tall so the W3 "constellation complete" frame (`resolve.ts`) stays above 1.3× the H3 scale, where the pole mark is off.
 
-The Builder — option B "Lodestar": Section-8-Scout alone at 0.8, 0.4, extra bright with a four-point glint, no lines. Name "The Builder / Projects" at 0.7612, 0.4711: right of the pole, level with The Engineer's name, so the chart balances across the mark (Round 6, after The Painter and The Director left the chart).
+The Builder — option B "Lodestar": Section-8-Scout alone at 0.755, 0.219, extra bright with a four-point glint, no lines. Name "The Builder / Projects" at 0.7408, 0.2802, under the star.
 
-The Student — option A "Telescope": the Observer at the eyepiece, the schools along the tube (newest nearest the objective), a flared objective end and a two-leg mount. Name at 0.0417, 0.875 (below the Spare Key label since the rename).
+The Student — option A "Telescope": the Observer at the eyepiece, the schools along the tube (newest nearest the objective), a flared objective end and a two-leg mount. Name at 0.5333, 0.9057.
 | Star | x | y |
 |------|---|---|
-| The Observer ("R. Spencer Fink / You are here · About") | 0.0583 | 0.7111 |
-| Emerson College (label left) | 0.1088 | 0.6696 |
-| App Academy | 0.1592 | 0.6302 |
-| Georgia Institute of Technology (label left) | 0.2096 | 0.5864 |
-| h · objective top / low | 0.2539, 0.5180 / 0.2707, 0.5644 | |
-| h · leg left / right | 0.1419, 0.7453 / 0.1939, 0.7502 | |
+| The Observer ("R. Spencer Fink / About", label left) | 0.6275 | 0.8626 |
+| Emerson College (label left) | 0.6594 | 0.7833 |
+| App Academy (label left) | 0.6912 | 0.704 |
+| Georgia Institute of Technology (label left) | 0.7231 | 0.6247 |
+| h · objective top / low | 0.7245, 0.5657 / 0.7557, 0.5975 | |
+| h · leg left / right | 0.6735, 0.8626 / 0.7337, 0.8604 | |
 
 Lines: Observer → Emerson → App Academy → Georgia Tech; Georgia Tech → both objective stars, which join; App Academy → both legs.
 
-The door (Round 6, §12b): three unlabelled stars near the lower-right edge, where The Painter was. No name, no label, no lines at rest.
+The door (Round 6, §12b): three unlabelled stars near the lower-left edge, the one corner with no figure. No name, no label, no lines at rest.
 | Star | x | y |
 |------|---|---|
-| door-a (class A) | 0.872 | 0.7 |
-| door-b (class F) | 0.889 | 0.716 |
-| door-c (class B) | 0.879 | 0.738 |
+| door-a (class A) | 0.075 | 0.8513 |
+| door-b (class F) | 0.092 | 0.8774 |
+| door-c (class B) | 0.0821 | 0.9102 |
 
-Lines (shown only once found): door-a → door-b → door-c. Mobile: top right, clear of Brava's label (`PORTRAIT_GROUPS.door`).
+Lines (shown only once found): door-a → door-b → door-c. Mobile: the left edge between The Engineer and The Student, below the pole mark's left end (`PORTRAIT_GROUPS.door`).
 
 Pole star (plain white RSF mark with soft glow — decision: no painting collage on the home sky; the collage treatment is not used): centre 0.5, 0.4778, mark 324 × 156 px. No cartouche and no star catalogue (removed). While the pole mark shows, the header hides its own mark. Zoom + / − and "Drag to explore · Click a star" bottom-right. No RA / Dec labels (removed); the faint grid stays.
 
@@ -213,7 +215,7 @@ Display order for paintings and films (A3/A4) is the content-file order (Lewis H
 
 Label detail by zoom: on H3 Work stars show name + dates only; in a panel-zoomed sky (A2, PP, AB) the current star may show the full role line ("CTO & Co-founder · 2026 — Present") because the camera is closer.
 
-Mobile H3 stacks the same figures (Work top-left, The Builder right above the pole mark, pole mark centre, The Student below it) with only constellation names, the Observer and the current star labelled at 1×; full labels appear at ≥ 1.6× zoom. Group boxes are `PORTRAIT_GROUPS` / `PORTRAIT_NAMES` in `chart.ts`.
+Mobile H3 stacks the same figures (The Engineer top left and The Builder top right, names on one row under them; pole mark centre; The Student below it on the right, its name under the Observer; the door on the left edge) with only constellation names, the Observer and the current star labelled at 1×; full labels appear at ≥ 1.6× zoom. The Engineer is small (105 px wide) so the W3 frame fits it above the Student text at names-only zoom. Group boxes are `PORTRAIT_GROUPS` / `PORTRAIT_NAMES` in `chart.ts`.
 
 ---
 
