@@ -16,7 +16,7 @@ import s from './mirror.module.css';
 export const metadata: Metadata = {
   ...pageMeta({
     title: `${person.name} | CTO & Co-founder, Brava`,
-    description: `${person.name} is an engineering leader and visual artist, currently CTO & Co-founder of Brava. Previously Hypha and Meta.`,
+    description: `${person.name} is an engineering leader, currently CTO & Co-founder of Brava. Previously Hypha and Meta.`,
     path: '/',
     type: 'profile',
   }),

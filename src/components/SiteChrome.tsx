@@ -18,7 +18,6 @@ export function SiteHeader() {
         <ul id="primary-links" className={`label ${styles.links}`}>
           <li><Link href="/#work">Work</Link></li>
           <li><Link href="/#projects">Projects</Link></li>
-          <li><Link href="/visual-arts/analog">Visual Arts</Link></li>
           <li><Link href="/about">About</Link></li>
         </ul>
       </nav>

@@ -32,7 +32,7 @@ export default function DigitalPage() {
         <ViewTransition name="va-title" share="vt-fade" default="none">
           <h1 className="display-s">The Director</h1>
         </ViewTransition>
-        <Link href="/" className="label">
+        <Link href="/#chart" className="label">
           <span aria-hidden="true">← </span>Back to sky
         </Link>
         <VisualArtsToggle current="digital" />

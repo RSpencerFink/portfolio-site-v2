@@ -2,7 +2,7 @@
 
 Source of truth for engineering. Frames referenced by their Paper names on page "Round 3 — Refined" (`R3 · <id> · <name>`), file "Portfolio Refresh — RSF". Copy is verbatim from `/tmp/rsf-content.md` (the later "EXPERIENCE UPDATE", "FINAL DATES", "Company icons" and "Brava description" sections win over earlier ones).
 
-Implementation target: Next.js App Router, statically generated pages on Vercel. Sky in React Three Fiber. Scroll with Lenis + GSAP ScrollTrigger. Discrete state changes with React `<ViewTransition>` inside `startTransition`. Every entity has a URL. Clicking a star and loading the URL directly both open the same centred, camera-led panel over the dimmed sky (§6 `StarPanel`); only visitors without JS and crawlers get the full page (the same column on a calm sky). Round 5 changes are listed in §12a; where an older line below conflicts with §12a, §12a wins.
+Implementation target: Next.js App Router, statically generated pages on Vercel. Sky in React Three Fiber. Scroll with Lenis + GSAP ScrollTrigger. Discrete state changes with React `<ViewTransition>` inside `startTransition`. Every entity has a URL. Clicking a star and loading the URL directly both open the same centred, camera-led panel over the dimmed sky (§6 `StarPanel`); only visitors without JS and crawlers get the full page (the same column on a calm sky). Round 5 changes are listed in §12a and Round 6 changes in §12b; where an older line below conflicts with them, the later section wins.
 
 ---
 
@@ -12,7 +12,7 @@ The site is one continuous night sky. The visitor enters through the RSF mark, f
 
 | # | Frame | Route | What the visitor sees | Trigger to next |
 |---|-------|-------|-----------------------|-----------------|
-| 1 | R3 · H1 · Sky through the mark | `/` (scroll 0) | Night sky visible only through the RSF letterforms. Centred menu "Work · Projects · Visual Arts · About". "Scroll to enter ↓" bottom right. | Scroll (MO-2) or menu click |
+| 1 | R3 · H1 · Sky through the mark | `/` (scroll 0) | Night sky visible only through the RSF letterforms. Centred menu "Work · Projects · About". "Scroll to enter ↓" bottom right. | Scroll (MO-2) or menu click |
 | 2 | R3 · H2 · Flying in through the S | `/` (scroll 60–220 vh) | Mask scales to 6.4×; the S counters become soft black corners, then dissolve. Chart HUD fades in. | Scroll continues; pin releases |
 | 3 | R3 · W1 · Work scroll — Arriving at Brava | `/#work` (W pin, star 1 of 5) | Brava star with reticle, insignia, "Now", title, role line, description. Rail on the right. | Scroll 100 vh per star |
 | 4 | R3 · W2 · Work scroll — At Meta | W pin, star 3 of 5 | Dense two-column content (Rights Manager / Horizon Creator Economy) on a scrim. | Scroll |
@@ -21,7 +21,7 @@ The site is one continuous night sky. The visitor enters through the RSF mark, f
 | 8 | R3 · H3 · The sky chart (home) | `/` (after journey) | Full chart: five R4 constellation figures (§5) around the RSF pole mark, faint grid (no RA/Dec labels), zoom, "Drag to explore · Click a star". | Click any star |
 | 9 | R5 · Job panel (Meta) | `/work/meta` | The camera centres Meta's star in the upper middle; the sky dims and drops labels and lines; the content reads in a centred 680 px column below. Close ✕, "← Back to sky", Esc; ← → in a quiet footer row. | Close / Esc / step |
 | 10 | R5 · Project panel (Section-8-Scout) | `/projects/section-8-scout` | The featured stop's content in the centred column, with a larger preview. | Close |
-| 11 | R3 · AB · About panel (The Observer) | `/about` | Centred panel: headshot, name, "Software Engineer · Visual Artist", verbatim bio, Currently — CTO & Co-founder, Brava; Education (Georgia Tech in progress, App Academy, Emerson); Reach: LinkedIn, Github, Instagram, Download Résumé. | Close |
+| 11 | R3 · AB · About panel (The Observer) | `/about` | Centred panel: headshot, name, "Engineering Leader", verbatim bio, Currently — CTO & Co-founder, Brava; Education (Georgia Tech in progress, App Academy, Emerson); Reach: LinkedIn, Github, Instagram, Download Résumé. | Close |
 | 12 | R2 · B1 window, then R3 · A3 · The Painter (Analog) | `/visual-arts/analog` | Opens on the RSF letterforms as a window: Dr. Manhattan, Marilyn Monroe and Walter White through the R, S and F. A scroll or a 1.5 s dwell flies through the S into the constellation: paintings as stars; selected painting has corner-bracket reticle and white label; others at 50%. Analog/Digital toggle (also on the window). | Scroll / dwell / toggle (MO-6) / click painting |
 | 13 | R2 · B1 window, then R3 · A4 · The Director (Digital) | `/visual-arts/digital` | The same window with three film stills, then film stills with timecode chips; hover shows description + Play on Vimeo. No index list. | Click still (MO-7) |
 | 14 | R5 · Film selected (Nightshade) | `/visual-arts/digital/nightshade` | Centred cinema panel, media first: 16:9 player sized to the viewport, then title, roles, description, credits, then Up next. | ⤢ → theater |
@@ -249,7 +249,7 @@ Mobile H3 stacks the same figures (Work top-left, The Builder top-right, The Stu
 | `FilmPlayer` | Poster (still) until first play; Vimeo iframe lazy; custom scrub (1 px line, white progress), time, mute, Watch on Vimeo, ⤢ theater. |
 | `CreditsDrawer` | 336 × 563, header "● Credits", description, credit pairs (mono label + Inter name), footer "Watch on Vimeo ↗ · 02 / 12". |
 | `Toggle` (Analog / Digital) | `role="tablist"`, pill with sliding white thumb; the thumb carries `view-transition-name: va-toggle`. |
-| `HUD` | Top: the RSF mark (left; hidden while another RSF mark is on screen) and Work · Projects · Visual Arts · About (right). At H3 the footer links (LinkedIn · Github · Instagram · Download Résumé) join it. Bottom: hint (left), counter or state (right). H1 uses the centred menu instead. The footer has no mark and no Visual Arts link, and sits at the bottom of the viewport on short pages. |
+| `HUD` | Top: the RSF mark (left; hidden while another RSF mark is on screen) and Work · Projects · About (right). At H3 the footer links (LinkedIn · Github · Instagram · Download Résumé) join it. Bottom: hint (left), counter or state (right). H1 uses the centred menu instead. The footer has no mark and no Visual Arts link, and sits at the bottom of the viewport on short pages. |
 | `ScrollHint` | "Scroll to enter ↓" / "Scroll to travel ↓" / "Continue to the sky ↓"; pulses every 4 s. |
 | `Scrim` | Horizontal (desktop content columns) or vertical (mobile) ground gradient; always behind text that would land on the nebula core. |
 | `CursorRing` | 10 px ring, magnetises 6 px within 24 px of a star; hidden on touch and in reduced motion. |
@@ -310,7 +310,7 @@ Lenis config: `{ lerp: 0.09, wheelMultiplier: 1, touchMultiplier: 1.4, smoothWhe
 | T15 | Label LOD | camera distance thresholds | full ↔ dim ↔ hidden: opacity crossfade only | 200 ms | sine | CSS | yes | MO-4 |
 | T17 | Mobile star travel | one touch swipe = one stop (T21), no CSS scroll-snap | camera from the active slide; content enter 240 ms | 100 svh per star | in-out | ScrollTrigger (no pin) | yes | MO-9 |
 | T18 | Sky pinch/drag (H3) | gestures / wheel / drag | zoom 1–2.5×, inertia decay 0.94, rubber band 40 px; double-tap constellation → zoom to it | 480 ms (programmatic) | in-out | @use-gesture + R3F | yes | MO-9 |
-| T19 | Header link (any page or panel) | click Work / Projects / Visual Arts / About | one move: an open panel is dismissed instantly (no exit animation); the page jumps to the stop (Work → Brava, Projects → the featured build) and the camera flies there; About opens its panel; Visual Arts opens `/visual-arts/analog` | camera damping | in-out | — | yes | MO-2 |
+| T19 | Header link (any page or panel) | click Work / Projects / About | one move: an open panel is dismissed instantly (no exit animation); the page jumps to the stop (Work → Brava, Projects → the featured build) and the camera flies there; About opens its panel | camera damping | in-out | — | yes | MO-2 |
 | T20 | Direct load of a panel route | navigation | the same centred panel as T7: camera flies to the star, sky dims; the column fades and rises 12 px | 420 ms | ease-out | CSS | n/a | MO-5 |
 | T21 | One gesture = one stop | wheel flick, trackpad swipe, touch swipe, ↑ ↓ PageUp PageDown Space, inside Work + the featured build | exactly one stop, then hold: further input is swallowed until the flight lands; a trackpad's inertia counts as the same gesture (new gesture after a 180 ms gap, or a 2.5× rise once landed). At the first/last stop the next gesture scrolls on natively (hero above, chart below). Free scroll is caught at the first stop it would cross. | 800 ms | in-out | Lenis `scrollTo` + `stepper.ts` | input held | MO-3 |
 | T22 | Visual Arts fly-through | scroll down, ↓ / Space / Enter, swipe, or a 1.5 s dwell on the window | the windowed mark scales ×7 toward the S and fades into the constellation | 1000 ms | in-out | WAAPI | n/a | B1 |
@@ -358,7 +358,7 @@ ViewTransition names in use: `star-panel`, `va-toggle`, `va-title`, `va-works`, 
 
 Breakpoints: `sm` < 640 (mobile), `md` 640–1023 (tablet, uses mobile layouts with 48 px margins and 800 stars), `lg` 1024–1439, `xl` ≥ 1440 (design size). The sky scales to the viewport; constellation positions are normalised (section 5) and clamped so labels keep ≥ 24 px from edges; at `lg` the The Builder and Painter shift inward by 4% to avoid the HUD.
 
-Mobile specifics (R3 · M-*). HUD at 24 / 64 under the status bar; the hero mask is 348 × 167 at y 340 with the name + "Software Engineer · Visual Artist" beneath (desktop has no name on H1; mobile needs it because the mark is small). Work and the featured build are 100 svh slides with a dot rail; one swipe moves one slide (T21). Panels are the same centred view, full screen; theater uses the native fullscreen API in landscape. Minimum tap target 44 px.
+Mobile specifics (R3 · M-*). HUD at 24 / 64 under the status bar; the hero mask is 348 × 167 at y 340 (no name block since Round 5, §12a item 11). Work and the featured build are 100 svh slides with a dot rail; one swipe moves one slide (T21). Panels are the same centred view, full screen; theater uses the native fullscreen API in landscape. Minimum tap target 44 px.
 
 ---
 
@@ -429,12 +429,20 @@ Mobile specifics (R3 · M-*). HUD at 24 / 64 under the status bar; the hero mask
 10. Education adds Georgia Institute of Technology, MS Computer Science, Jan 2026 – Present, shown as in progress.
 11. Removed: cartouche, star catalogue, the hero name block.
 
+## 12b. Round 6 changes (Visual Arts becomes an easter egg)
+
+The site reads as an engineering leader's site. The paintings and films stay, but the visitor finds them instead of being sent to them. Where an older line conflicts with this section, this section wins.
+
+1. No promotion: Visual Arts is gone from the header (desktop row and mobile menu), the 404 links and the R3 · RM sky index. The footer already had no link (§12a item 7).
+2. About subtitle and the identity line everywhere it appears (About subline and meta description, the home mirror's Observer line, `/llms.txt`): "Engineering Leader".
+3. `/visual-arts/*` stay live and indexed: sitemap, `/llms.txt`, their own metadata and JSON-LD are unchanged, and so are the legacy `/analog`, `/digital` redirects, the Analog | Digital toggle and the window (T22). "← Back to sky" on the two constellation views opens `/#chart` (the H3 rest; the top of the home page under reduced motion).
+
 ## 13. Decisions and open questions
 
 Resolved (2026-10-03):
 1. Brava: display "2026 — Present" (started Sep 2026); panels may show months from the LinkedIn dates in `assets/content-reference.md` (FINAL DATES).
 2. Logo: approved. The rebuild with the S overlapping the F (`rsf-letters-sf-overlap.svg`) ships as `public/logo/rsf.svg`.
-3. "Visual Arts Portfolio" link star: removed. The footer link went in Round 5 (the header's Visual Arts covers it).
+3. "Visual Arts Portfolio" link star: removed. The footer link went in Round 5 and the header link in Round 6 (§12b); the hidden door on H3 is the way in.
 4. H3 pole star: plain white RSF mark (no painting collage).
 5. Project links and Vimeo IDs: in the repo's `src/data/development.js` and `src/data/digital.js`.
 6. Verbatim copy source: `assets/content-reference.md` (later sections supersede earlier ones).
