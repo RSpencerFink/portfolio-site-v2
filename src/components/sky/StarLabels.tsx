@@ -23,7 +23,7 @@ function sublineFor(star: ChartStar): string | undefined {
   if (painting) return painting.size;
   const school = education.find((e) => e.slug === star.id);
   if (school) return school.dates;
-  if (star.id === 'observer') return 'You are here · About';
+  if (star.id === 'observer') return 'About';
 }
 
 /* ------------------------------------------------------------------------ */

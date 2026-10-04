@@ -79,7 +79,7 @@ export default function Home() {
         <section className={s.section} aria-labelledby="observer-title">
           <h2 id="observer-title" className="display-l">The Observer</h2>
           <p className="body-l">
-            <SkyLink href="/about">{person.name}</SkyLink>: {person.identities.join(' · ')}. You are here.
+            <SkyLink href="/about">{person.name}</SkyLink>: {person.identities.join(' · ')}.
           </p>
         </section>
 

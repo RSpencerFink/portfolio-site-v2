@@ -26,7 +26,7 @@ export default function AboutPage() {
     <PanelFrame
       slug="observer"
       title={person.name}
-      kicker="The Observer / You are here"
+      kicker="The Observer"
       lead={
         <Image
           className={e.headshot}
