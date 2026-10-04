@@ -10,7 +10,7 @@ export const person = {
   jobTitle: 'CTO & Co-founder',
   identities: ['Engineering Leader', 'Visual Artist'],
   currently: 'CTO & Co-founder, Brava',
-  bio: "I'm the CTO and co-founder of Brava. We're replacing annual performance reviews with continuous, example-based feedback. Before Brava, I led engineering at Hypha and spent five years at Meta on rights management and the creator economy. I started in film, studying production at Emerson and running a photography and cinematography business. I'm also working on an MS in Computer Science at Georgia Tech.",
+  bio: 'I’m the CTO and co-founder of Brava, where we’re replacing annual performance reviews with continuous, example-based feedback. Before that I led engineering at Hypha and spent five years at Meta building rights-management and creator-economy systems. Before software, I studied film production at Emerson and ran a photography and cinematography business. I’m currently working on an MS in Computer Science at Georgia Tech.',
   headshot: { base: '/images/headshot/rsf-headshot-2', width: 800, height: 1200 },
   /** The Observer star (About). */
   star: { spectral: 'G' as SpectralClass },
