@@ -3,7 +3,7 @@
  * - static (no JS, reduced motion, R3 · RM): sections stack, plain lists.
  * - [data-journey='pinned'] (desktop, set by HomeJourney): each stage is a
  *   100vh pinned frame; its [data-slide] layers stack and are scrubbed.
- * - [data-journey='mobile'] (≤ 768 px): one 100svh snap slide per star (T17, MO-9).
+ * - [data-journey='mobile'] (≤ 768 px): one 100svh slide per star (T17, MO-9), paged by stepper.ts.
  */
 .journey {
   position: relative;
