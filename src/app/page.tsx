@@ -3,11 +3,12 @@ import { SkyLink } from '@/components/panels/SkyLink';
 import { JourneySections } from '@/components/journey/JourneySections';
 import { HomeJourney } from '@/components/journey/HomeJourney';
 import { ChartExplore } from '@/components/sky/ChartExplore';
+import { DoorLink } from '@/components/sky/Door';
 import { JsonLd } from '@/components/JsonLd';
 import { SITE_URL, person } from '@/content/site';
 import { jobs } from '@/content/work';
 import { projects } from '@/content/projects';
-import { constellations } from '@/content/sky';
+import { constellations, door } from '@/content/sky';
 import { pageMeta, personLd, PERSON_ID } from '@/lib/seo';
 import s from './mirror.module.css';
 
@@ -81,6 +82,19 @@ export default function Home() {
           </p>
         </section>
 
+        {/*
+          The door (spec §12b), last in the chart's tab order. Its name is for assistive tech only; on
+          screen it is three faint stars (visible where this mirror is: reduced motion, no JS, focus).
+        */}
+        <DoorLink className={s.door}>
+          <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+            <path d="M5 7 15 12 9 19" />
+            <circle cx="5" cy="7" r="1.5" />
+            <circle cx="15" cy="12" r="1.5" />
+            <circle cx="9" cy="19" r="1.5" />
+          </svg>
+          <span className="visually-hidden">{door.label}</span>
+        </DoorLink>
       </div>
       <ChartExplore />
     </main>

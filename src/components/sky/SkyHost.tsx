@@ -6,6 +6,7 @@ import dynamic from 'next/dynamic';
 import { cameraRig } from './cameraRig';
 import { chartLayout, layoutFor, markShare } from './chart';
 import { hoverStore } from './hover';
+import { useDoor } from './Door';
 import { drawMark, HeroMark, skipIntro } from './HeroMark';
 import type { FrameInfo, Motion } from './Scene';
 import { resetLabels, StarLabels, syncLabels } from './StarLabels';
@@ -43,6 +44,7 @@ export function SkyHost() {
   const [lowPower, setLowPower] = useState(false);
   const [visible, setVisible] = useState(true);
   const [heroGone, setHeroGone] = useState(false);
+  useDoor(pathname);
 
   useEffect(() => {
     const read = () => setSize({ w: window.innerWidth, h: window.innerHeight });

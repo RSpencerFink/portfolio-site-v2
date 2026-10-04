@@ -198,6 +198,15 @@ The Student — option A "Telescope": the Observer at the eyepiece, the schools 
 
 Lines: Observer → Emerson → App Academy → Georgia Tech; Georgia Tech → both objective stars, which join; App Academy → both legs.
 
+The door (Round 6, §12b): three unlabelled stars near the lower-right edge, where The Painter was. No name, no label, no lines at rest.
+| Star | x | y |
+|------|---|---|
+| door-a (class A) | 0.872 | 0.7 |
+| door-b (class F) | 0.889 | 0.716 |
+| door-c (class B) | 0.879 | 0.738 |
+
+Lines (shown only once found): door-a → door-b → door-c. Mobile: top right, clear of Brava's label (`PORTRAIT_GROUPS.door`).
+
 Pole star (plain white RSF mark with soft glow — decision: no painting collage on the home sky; the collage treatment is not used): centre 0.5, 0.4778, mark 324 × 156 px. No cartouche and no star catalogue (removed). While the pole mark shows, the header hides its own mark. Zoom + / − and "Drag to explore · Click a star" bottom-right. No RA / Dec labels (removed); the faint grid stays.
 
 Display order for paintings and films (A3/A4) is the content-file order (Lewis Hamilton … Walter White is 17 / 17; Montauk … Graffiti6, Nightshade is 08 / 12). Neither has stars on H3 since Round 6 (§12b).
@@ -304,7 +313,7 @@ ViewTransition names in use: `star-panel`, `va-toggle`, `va-title`, `va-works`, 
 | Nebula | scale 1 → 1.03 + opacity ±6% @ 14 s; centre drift 12 px @ 40 s; 0.35× camera parallax | opacity only @ 20 s | static |
 | Scroll hint pulse | every 4 s, opacity 1 → 0.6 → 1 | same | none |
 | Motion streaks during travel | opacity ≤ 0.35 at speed > 0.4 | off | off |
-| Shooting stars | one at a time, 8–20 s apart (first after 6–12 s); thin white-headed streak, tail 120–260 px fading to transparent with a faint blue-white tint, life 0.6–1.1 s, quick rise then ease-out fade; heading 200°–250° or mirrored, starting in the upper 60 %, clear of the central mark area and of any HTML text or control. None during the hero mask, a camera flight, a panel, theater, the Visual Arts window or a hidden tab | same, gap doubled in low power; tails ×0.7 below 640 px | none |
+| Shooting stars | one at a time, 8–20 s apart (first after 6–12 s); thin white-headed streak, tail 120–260 px fading to transparent with a faint blue-white tint, life 0.6–1.1 s, quick rise then ease-out fade; heading 200°–250° or mirrored, starting in the upper 60 %, clear of the central mark area and of any HTML text or control. None during the hero mask, a camera flight, a panel, theater, the Visual Arts window or a hidden tab. | same, gap doubled in low power; tails ×0.7 below 640 px | none |
 
 ### Performance budget
 
@@ -413,6 +422,7 @@ The site reads as an engineering leader's site. The paintings and films stay, bu
 2. About subtitle and the identity line everywhere it appears (About subline and meta description, the home mirror's Observer line, `/llms.txt`): "Engineering Leader".
 3. `/visual-arts/*` stay live and indexed: sitemap, `/llms.txt`, their own metadata and JSON-LD are unchanged, and so are the legacy `/analog`, `/digital` redirects, the Analog | Digital toggle and the window (T22). "← Back to sky" on the two constellation views opens `/#chart` (the H3 rest; the top of the home page under reduced motion).
 4. The Painter and The Director leave the chart: their stars, lines, names, labels, mirror sections and portrait boxes are gone, and the paintings and films no longer carry a spectral class. The H3 chart rebalances around the three that stay (§5): The Builder moves to the right of the pole, level with The Engineer's name; on mobile The Builder sits above the pole mark and The Student below it. The hero framing reads only Brava, so H1 is unchanged.
+5. The door: three faint, unlabelled stars near the chart's outer edge (§5) that read as ordinary background stars (core 2.6 px, halo ×0.18). No visible text at any time. At the H3 rest they are found when the pointer comes within 120 px, a tap lands within 120 px (lit for 4 s), the view is zoomed past 1.15× with them within 30 % of the shorter side of the centre, or the door link has focus; then they brighten over ~0.5 s (core 4.4 px, halo ×0.85) and their line fades in (to 30 % ink). A click, a tap or Enter on the door dives the camera into it (600 ms) while the sky fades out, then opens `/visual-arts/analog`, which starts on the window (T22); under reduced motion the brighten is instant and the link opens the page directly. The target is 64 px (≥ 44 px) over the tiny stars. Accessibility: the HTML mirror ends with the door link, after the Observer and before the chart controls, named for assistive tech only ("The other half: paintings and films"); on screen it is a 44 px three-star glyph, faint at rest, which shows where the mirror shows (reduced motion, no JS, keyboard focus).
 
 ## 13. Decisions and open questions
 

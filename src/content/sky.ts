@@ -9,7 +9,7 @@ import { projects } from './projects';
  * line segments (Paper "Round 4 — Constellations", the client's picks).
  * Helpers are unlabelled, dimmer stars that complete a figure; lines may use
  * them. Reshaping a constellation is an edit here and nowhere else. The paintings
- * and films have no stars on the chart (spec §12b).
+ * and films have no stars on the chart: the door below leads to them (spec §12b).
  */
 export const constellations: Constellation[] = [
   {
@@ -92,6 +92,22 @@ export const stars: Star[] = [
   ...education.map((e) => ({ id: e.slug, name: e.name, ...e.star })),
   { id: 'observer', name: person.name, href: '/about', ...person.star },
 ].map((s) => ({ ...s, position: positions.get(s.id) }));
+
+/**
+ * The door (spec §12b): a faint, unlabelled cluster near the chart's edge that reads as background
+ * stars until the visitor finds it (pointer near, zoomed onto it, tapped, focused). It opens the
+ * visual arts. Moving it is an edit here (portrait: `PORTRAIT_GROUPS.door` in chart.ts).
+ */
+export const door: { href: string; label: string; stars: Record<string, ChartPoint>; lines: [string, string][] } = {
+  href: '/visual-arts/analog',
+  /** Accessible name only: the door never shows text. */
+  label: 'The other half: paintings and films',
+  stars: { 'door-a': [0.872, 0.7], 'door-b': [0.889, 0.716], 'door-c': [0.879, 0.738] },
+  lines: [
+    ['door-a', 'door-b'],
+    ['door-b', 'door-c'],
+  ],
+};
 
 /** Pole star: plain RSF mark at chart centre (spec §5, decision 4). */
 export const POLE_STAR = { position: [0.5, 0.4778] as const, markSize: [324, 156] as const };

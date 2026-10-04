@@ -8,6 +8,7 @@ import { projects } from '@/content/projects';
 import { cameraRig, type Vec3 } from './cameraRig';
 import { labelLevel, MARK_H, MARK_W, markPath, markShare, overviewPose, pxPerUnit, type ChartLayout, type ChartStar } from './chart';
 import { hoverStore } from './hover';
+import { DoorLink, doorFound, doorStore } from './Door';
 import type { FrameInfo } from './Scene';
 import s from './SkyHost.module.css';
 
@@ -188,6 +189,9 @@ export function syncLabels(f: FrameInfo, chart: ChartLayout) {
     letterFade(el, place(el, n.world, f, 400), f, fade, frozen);
   }
 
+  // The door: one unlabelled marker at its centre; found when the pointer, a tap, the zoomed view or focus comes near.
+  doorStore.set(doorFound(place(nodes.get('door'), chart.door, f), f.width, f.height));
+
   const pole = nodes.get('pole');
   if (place(pole, chart.pole, f, 400) && pole) pole.style.setProperty('--pole-w', `${(chart.poleSize[0] * ppu).toFixed(1)}px`);
 
@@ -264,7 +268,7 @@ export function StarLabels({ chart }: { chart: ChartLayout }) {
       </div>
 
       {chart.stars.map((star) => {
-        if (star.helper) return null;
+        if (star.helper || star.door) return null;
         const job = jobs.find((j) => j.slug === star.id);
         const sub = sublineFor(star);
         const inner = (
@@ -300,6 +304,11 @@ export function StarLabels({ chart }: { chart: ChartLayout }) {
           </div>
         );
       })}
+
+      {/* No text, ever: a 64 px target over the door's stars (spec §12b). The mirror's DoorLink carries the name. */}
+      <DoorLink ref={reg('door')} tabIndex={-1} className={s.door}>
+        <span className={s.doorHit} />
+      </DoorLink>
 
       <svg ref={reg('reticle')} className={s.reticle} viewBox="-90 -90 180 180" width="180" height="180" aria-hidden="true">
         <circle className={s.ringSmall} r="8" pathLength={1} />

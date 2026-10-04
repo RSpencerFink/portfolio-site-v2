@@ -25,6 +25,8 @@ export interface Star {
   position?: ChartPoint;
   /** Unlabelled figure-completing star (dimmer, no marker). */
   helper?: boolean;
+  /** A door star (spec §12b): unlabelled, as dim as the background until found; one shared marker. */
+  door?: boolean;
 }
 
 export interface Constellation {

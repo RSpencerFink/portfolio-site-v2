@@ -1,4 +1,4 @@
-import { constellations, helperStars, POLE_STAR, stars } from '@/content/sky';
+import { constellations, door, helperStars, POLE_STAR, stars } from '@/content/sky';
 import type { Vec3 } from './cameraRig';
 import type { ChartPoint, Star } from './types';
 
@@ -22,6 +22,8 @@ const PORTRAIT_GROUPS: Record<string, [number, number, number]> = {
   projects: [250, 280, 100],
   // Below the pole mark, so the column balances above and below it.
   origins: [40, 520, 150],
+  // The door: top right, clear of Brava's label, where a meteor can fall from it along the edge.
+  door: [330, 140, 28],
 };
 
 // Portrait constellation-name anchors (top-left of the block) in mobile-artboard px, from R3 · M-H3.
@@ -31,8 +33,9 @@ const PORTRAIT_NAMES: Record<string, [number, number]> = {
   origins: [220, 545],
 };
 
-const positioned = [...stars.filter((s): s is Star & { position: ChartPoint } => !!s.position), ...helperStars];
-const groupOf = new Map<string, string>();
+const doorStars = Object.entries(door.stars).map(([id, position], i) => ({ id, name: '', spectral: (['A', 'F', 'B'] as const)[i % 3], position, door: true }));
+const positioned = [...stars.filter((s): s is Star & { position: ChartPoint } => !!s.position), ...helperStars, ...doorStars];
+const groupOf = new Map<string, string>(doorStars.map((s) => [s.id, 'door']));
 const lodestars = new Set(constellations.map((c) => c.lodestar));
 for (const c of constellations) for (const id of [...Object.keys(c.stars), ...Object.keys(c.helpers ?? {})]) groupOf.set(id, c.id);
 
@@ -75,6 +78,8 @@ export interface ChartLayout {
   byId: Map<string, ChartStar>;
   names: { id: string; name: string; subline: string; world: Vec3 }[];
   pole: Vec3;
+  /** The door's centre (spec §12b): its marker, proximity test, flight and meteors aim here. */
+  door: Vec3;
   /** Pole star mark size in world units. */
   poleSize: [number, number];
   plane: { w: number; h: number };
@@ -88,6 +93,8 @@ export function chartLayout(layout: Layout): ChartLayout {
     const group = groupOf.get(s.id) ?? '';
     return { ...s, group, world: toWorld(s.position, layout, group), lodestar: lodestars.has(s.id) };
   });
+  const doorWorld = list.filter((s) => s.door).map((s) => s.world);
+  const mean = (k: 0 | 1) => doorWorld.reduce((a, p) => a + p[k], 0) / doorWorld.length;
   const out: ChartLayout = {
     layout,
     stars: list,
@@ -102,6 +109,7 @@ export function chartLayout(layout: Layout): ChartLayout {
           : toWorld(c.namePosition ?? [0.5, 0.5], layout, c.id),
     })),
     pole: layout === 'portrait' ? [0, -0.35, 0] : toWorld(POLE_STAR.position, layout),
+    door: [mean(0), mean(1), 0],
     poleSize: layout === 'portrait' ? [2.2, 1.06] : [POLE_STAR.markSize[0] / 100, POLE_STAR.markSize[1] / 100],
     plane: PLANE[layout],
   };

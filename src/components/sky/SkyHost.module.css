@@ -155,6 +155,30 @@
   transition: opacity var(--dur-s) var(--ease-sine);
 }
 
+/* The door (spec §12b): an invisible target over its stars, live only at the H3 rest. */
+.door {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  will-change: transform;
+}
+
+:global(html[data-explore]) .door {
+  pointer-events: auto;
+}
+
+.doorHit {
+  position: absolute;
+  left: -32px;
+  top: -32px;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+}
+
 /* Calm sky (labels hidden): the Observer ring and the glint go with the other star marks. */
 .labels[data-level='hidden'] .marker:is([data-observer], [data-lodestar]) .hit::before,
 .labels[data-level='hidden'] .marker[data-observer] .hit::after {
