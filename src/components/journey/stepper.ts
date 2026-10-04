@@ -10,7 +10,6 @@ const TOL = 3;
 
 let busyUntil = 0;
 const busy = () => performance.now() < busyUntil;
-const easeOut = (t: number) => 1 - (1 - t) ** 3;
 
 /** The scrolling text column of the stop on screen (JourneySections `[data-scroll]`), if it overflows. */
 function column() {
@@ -28,7 +27,7 @@ const canScroll = (el: HTMLElement | undefined, dir: number): el is HTMLElement 
  * the hero snap) goes through here, so the stepper knows to hold.
  * `duration` 0 jumps.
  */
-export function goTo(y: number, duration = FLIGHT, easing = easeInOut) {
+export function goTo(y: number, duration = FLIGHT) {
   const lenis = getLenis();
   busyUntil = performance.now() + duration * 1000 + 80;
   // Every stop is entered at the top of its text; the one being left keeps its place until it has faded.
@@ -36,14 +35,15 @@ export function goTo(y: number, duration = FLIGHT, easing = easeInOut) {
   document.querySelectorAll<HTMLElement>('#journey [data-scroll]').forEach((el) => el !== leaving && (el.scrollTop = 0));
   if (!lenis) return window.scrollTo(0, y);
   if (!duration) return lenis.scrollTo(y, { immediate: true, force: true });
-  lenis.scrollTo(y, { duration, easing, force: true, lock: true });
+  lenis.scrollTo(y, { duration, easing: easeInOut, force: true, lock: true });
 }
 
 const typing = (t: EventTarget | null) => !!(t as Element | null)?.closest?.('input, textarea, select, [contenteditable], dialog, [role="group"]');
 
 /**
- * One gesture = one stop (item 3). Inside the stepping zone (the Work stops
- * and the featured build) a wheel flick, a trackpad swipe, a touch swipe or
+ * One gesture = one stop (item 3), desktop only (the phone journey is native
+ * scroll). Inside the stepping zone (the Work stops and the featured build) a
+ * wheel flick, a trackpad swipe or
  * ↑ ↓ PageUp PageDown Space moves exactly one stop and then holds: input is
  * swallowed until the flight lands, and a trackpad's inertia tail counts as
  * the same gesture. At the first and last stop the next gesture is let
@@ -56,8 +56,6 @@ const typing = (t: EventTarget | null) => !!(t as Element | null)?.closest?.('in
  */
 export function stepper(stops: () => number[]) {
   const y = () => window.scrollY;
-  /** The last input was touch (its native momentum may still be running). */
-  let touched = false;
   /** The stop one step from here, or undefined when the gesture should leave the zone (or we're outside it). */
   const inZone = (s = stops()) => !!s.length && y() > s[0] - innerHeight * 0.6 && y() < s.at(-1)! + innerHeight * 0.6;
   const targetFor = (dir: 1 | -1) => {
@@ -86,7 +84,6 @@ export function stepper(stops: () => number[]) {
   /** The current wheel gesture scrolls this stop's column (to its end at most; it never steps). */
   let inner: HTMLElement | undefined;
   const onWheel = (e: WheelEvent) => {
-    touched = false;
     if (e.ctrlKey || e.metaKey || Math.abs(e.deltaY) < Math.abs(e.deltaX) || typing(e.target)) return;
     const abs = Math.abs(e.deltaY);
     // A fresh gesture: a pause, or (once the flight has landed) a new swipe rising out of the old one's inertia.
@@ -111,7 +108,6 @@ export function stepper(stops: () => number[]) {
   };
 
   const onKey = (e: KeyboardEvent) => {
-    touched = false;
     if (e.altKey || e.metaKey || e.ctrlKey || typing(e.target)) return;
     // Space activates a button; on a link it is a page scroll like anywhere else.
     const onControl = !!(e.target as Element | null)?.closest?.('button');
@@ -137,81 +133,17 @@ export function stepper(stops: () => number[]) {
     if (step(dir as 1 | -1)) e.preventDefault();
   };
 
-  // Touch is a pager (mobile). A swipe is decided on its first move, before the page can start a native scroll
-  // (preventDefault only works on a touchmove that hasn't scrolled yet): it scrolls the stop's column if that can
-  // still scroll that way (natively, with momentum, when the finger is on the column; by hand otherwise; either
-  // way it ends at the column's edge, overscroll-behavior: contain), it drags the page toward the next stop, or,
-  // at the first and last stop going out, it is let through to native scroll. A drag follows the finger 1:1 and
-  // never past the next stop; on release a flick or a drag past a quarter of the screen commits, anything less
-  // springs back. A swipe that starts mid-flight is swallowed whole, so it can't add a second stop.
-  type Swipe = { y0: number; last: number; dir: 1 | -1; base: number; to?: number; inner?: HTMLElement; swallow?: boolean; trail: [number, number][] };
-  let touch: { y0: number; t0: number } | Swipe | null = null;
-  const isSwipe = (t: typeof touch): t is Swipe => !!t && 'dir' in t;
-  const onTouchStart = (e: TouchEvent) => {
-    touched = true;
-    if (isSwipe(touch) && touch.to !== undefined) release(touch, false); // a second finger: spring back
-    touch = e.touches.length === 1 && !typing(e.target) ? { y0: e.touches[0].clientY, t0: e.timeStamp } : null;
-  };
-  const onTouchMove = (e: TouchEvent) => {
-    if (!touch) return;
-    const at = e.touches[0].clientY;
-    const dy = touch.y0 - at;
-    if (!isSwipe(touch)) {
-      if (!dy) return;
-      const dir = dy > 0 ? 1 : -1;
-      const s: Swipe = { y0: touch.y0, last: touch.y0, dir, base: y(), trail: [[touch.t0, touch.y0]] };
-      if (busy()) s.swallow = true;
-      else if (!(s.inner = columnFor(dir)) && (s.to = targetFor(dir)) === undefined) return void (touch = null); // leaving the zone: native scroll
-      if (s.to !== undefined) busyUntil = Infinity; // held until release: no catching or settling mid-drag
-      touch = s;
-    }
-    const s = touch;
-    if (s.inner?.contains(e.target as Node)) return;
-    if (e.cancelable) e.preventDefault();
-    if (s.inner) s.inner.scrollTop += s.last - at;
-    else if (s.to !== undefined) {
-      const off = Math.min(Math.max(s.dir * dy, 0), Math.abs(s.to - s.base));
-      const lenis = getLenis();
-      if (lenis) lenis.scrollTo(s.base + s.dir * off, { immediate: true, force: true });
-      else window.scrollTo(0, s.base + s.dir * off);
-    }
-    s.last = at;
-    s.trail.push([e.timeStamp, at]);
-    while (s.trail.length > 2 && e.timeStamp - s.trail[0][0] > 100) s.trail.shift();
-  };
-  /** Lands a drag: on the next stop if it committed, else back where it started. A short ease-out, no momentum. */
-  const release = (s: Swipe, commit: boolean) => {
-    busyUntil = 0;
-    const dest = commit ? s.to! : s.base;
-    const left = Math.abs(dest - y());
-    if (left <= 1) return void goTo(dest, 0);
-    goTo(dest, Math.min(0.6, 0.3 + (0.3 * left) / innerHeight), easeOut);
-  };
-  const onTouchEnd = (e: TouchEvent) => {
-    const s = touch;
-    touch = null;
-    if (!isSwipe(s) || s.to === undefined) return;
-    const at = e.changedTouches[0]?.clientY ?? s.last;
-    const moved = s.dir * (s.y0 - at);
-    const [t0, y0] = s.trail[0];
-    const v = (s.dir * (y0 - at)) / Math.max(1, e.timeStamp - t0); // px/ms over the last ~100 ms
-    release(s, e.type === 'touchend' && (moved > Math.min(innerHeight * 0.25, Math.abs(s.to - s.base) / 2) || (v > 0.4 && moved > 16)));
-  };
-
   // Free scroll may not cross a stop: catch it at the first one between here and where it is heading.
   let prev = y();
   /** Where the page last came to rest: the stop a glide leaves is not caught. */
   let rest = prev;
   let idle = 0;
-  /**
-   * Scrolling stopped between two stops (a scrollbar drag, a resize), or, on touch, in the lead-in just above
-   * the first (a fling from the hero that ran out short of it): settle on the nearer stop.
-   */
+  /** Scrolling stopped between two stops (a scrollbar drag, a resize): settle on the nearer stop. */
   const settle = () => {
     if (busy()) return;
     const s = stops();
     const cur = (rest = y());
-    if (!s.length || (touched ? !inZone(s) : cur <= s[0] + TOL) || cur >= s.at(-1)! - TOL || s.some((v) => Math.abs(v - cur) < 0.5)) return;
+    if (!s.length || cur <= s[0] + TOL || cur >= s.at(-1)! - TOL || s.some((v) => Math.abs(v - cur) < 0.5)) return;
     goTo(s.reduce((a, b) => (Math.abs(b - cur) < Math.abs(a - cur) ? b : a)), 0.6);
   };
   const onScroll = () => {
@@ -230,24 +162,12 @@ export function stepper(stops: () => number[]) {
     const crossed = stops().filter((s) => (s - from) * (s - ahead) <= 0 && s !== ahead && Math.abs(s - rest) > 0.5);
     if (!crossed.length) return;
     goTo(heading > from ? crossed[0] : crossed.at(-1)!, 0.6);
-    // A native touch fling (into the zone from the hero, or back up from below the last stop) would carry on under
-    // the flight and push it off the stop: the root is not user-scrollable until the flight lands, which ends it.
-    if (touched) {
-      const html = document.documentElement;
-      html.style.overflow = 'hidden';
-      setTimeout(() => (html.style.overflow = ''), busyUntil - performance.now());
-    }
   };
 
   const ac = new AbortController();
   const { signal } = ac;
-  const opts = { signal, capture: true, passive: false };
-  addEventListener('wheel', onWheel, opts);
+  addEventListener('wheel', onWheel, { signal, capture: true, passive: false });
   addEventListener('keydown', onKey, { signal });
-  addEventListener('touchstart', onTouchStart, { signal, passive: true });
-  addEventListener('touchmove', onTouchMove, opts);
-  addEventListener('touchend', onTouchEnd, { signal });
-  addEventListener('touchcancel', onTouchEnd, { signal });
   addEventListener('scroll', onScroll, { signal, passive: true });
   return () => {
     ac.abort();

@@ -8,7 +8,7 @@ Implementation target: Next.js App Router, statically generated pages on Vercel.
 
 ## 1. Purpose and flow map
 
-The site is one continuous night sky. The visitor enters through the RSF mark, flies through the S, travels star to star through the The Engineer (one gesture, one stop), stops at the featured build (Section-8-Scout), and pulls back to the full chart. The chart is home base. Everything else is a star that opens.
+The site is one continuous night sky. The visitor enters through the RSF mark, flies through the S, travels star to star through The Engineer (one gesture, one stop on desktop; a natural scroll on phones), stops at the featured build (Section-8-Scout), and pulls back to the full chart. The chart is home base. Everything else is a star that opens.
 
 | # | Frame | Route | What the visitor sees | Trigger to next |
 |---|-------|-------|-----------------------|-----------------|
@@ -295,11 +295,11 @@ Lenis config: `{ lerp: 0.09, wheelMultiplier: 1, touchMultiplier: 1.4, smoothWhe
 | T13 | Hover star | pointer within 24 px / focus | halo 1 → 1.4, label → white (160); reticle draw (320); magnet 6 px | 160 / 320 ms | ease-out / power3.out | CSS + GSAP | leave undraws in 200 | MO-8 |
 | T14 | Reticle draw | arrive / hover / select | stroke-dashoffset full → 0 clockwise | 320 ms | power3.out | GSAP | yes | MO-3, MO-8 |
 | T15 | Label LOD | camera distance thresholds | full ↔ dim ↔ hidden: opacity crossfade only | 200 ms | sine | CSS | yes | MO-4 |
-| T17 | Mobile star travel | one touch swipe = one stop (T21), no CSS scroll-snap | camera from the active slide; content enter 240 ms | 100 svh per star | in-out | ScrollTrigger (no pin) | yes | MO-9 |
+| T17 | Mobile star travel | native touch scroll with momentum (no stepper, no snap, no pin); each job is a section in normal flow | the section under the 35 % line is current: the camera eases to its star, which sits in the 40 svh of empty sky above the title; the dot rail marks it (tap = smooth scroll to the section) | 900 ms camera | power2.inOut | ScrollTrigger (no pin) | yes | MO-9 |
 | T18 | Sky pinch/drag (H3) | gestures / wheel / drag | zoom 1–2.5×, inertia decay 0.94, rubber band 40 px; double-tap constellation → zoom to it | 480 ms (programmatic) | in-out | @use-gesture + R3F | yes | MO-9 |
 | T19 | Header link (any page or panel) | click Work / Projects / About | one move: an open panel is dismissed instantly (no exit animation); the page jumps to the stop (Work → Brava, Projects → the featured build) and the camera flies there; About opens its panel | camera damping | in-out | — | yes | MO-2 |
 | T20 | Direct load of a panel route | navigation | the same centred panel as T7: camera flies to the star, sky dims; the column fades and rises 12 px | 420 ms | ease-out | CSS | n/a | MO-5 |
-| T21 | One gesture = one stop | wheel flick, trackpad swipe, touch swipe, ↑ ↓ PageUp PageDown Space, inside Work + the featured build | exactly one stop, then hold: further input is swallowed until the flight lands; a trackpad's inertia counts as the same gesture (new gesture after a 180 ms gap, or a 2.5× rise once landed). At the first/last stop the next gesture scrolls on natively (hero above, chart below). Free scroll is caught at the first stop it would cross. | 800 ms | in-out | Lenis `scrollTo` + `stepper.ts` | input held | MO-3 |
+| T21 | One gesture = one stop (desktop) | wheel flick, trackpad swipe, ↑ ↓ PageUp PageDown Space, inside Work + the featured build; phones scroll natively (T17) | exactly one stop, then hold: further input is swallowed until the flight lands; a trackpad's inertia counts as the same gesture (new gesture after a 180 ms gap, or a 2.5× rise once landed). At the first/last stop the next gesture scrolls on natively (hero above, chart below). Free scroll is caught at the first stop it would cross. | 800 ms | in-out | Lenis `scrollTo` + `stepper.ts` | input held | MO-3 |
 | T22 | Visual Arts fly-through | scroll down, ↓ / Space / Enter, swipe, or a 1.5 s dwell on the window | the windowed mark scales ×7 toward the S and fades into the constellation | 1000 ms | in-out | WAAPI | n/a | B1 |
 
 ViewTransition names in use: `star-panel`, `va-toggle`, `va-title`, `va-works`, `film-still-<slug>`. ViewTransition classes: `vt-panel` (slide + fade), `vt-fade` (opacity only, used for everything in reduced motion).
@@ -345,7 +345,7 @@ ViewTransition names in use: `star-panel`, `va-toggle`, `va-title`, `va-works`, 
 
 Breakpoints: `sm` < 640 (mobile), `md` 640–1023 (tablet, uses mobile layouts with 48 px margins and 800 stars), `lg` 1024–1439, `xl` ≥ 1440 (design size). The sky scales to the viewport; constellation positions are normalised (section 5) and clamped so labels keep ≥ 24 px from edges; at `lg` The Builder shifts inward by 4% to avoid the HUD.
 
-Mobile specifics (R3 · M-*). HUD at 24 / 64 under the status bar; the hero mask is 348 × 167 at y 340 (no name block since Round 5, §12a item 11). Work and the featured build are 100 svh slides with a dot rail; one swipe moves one slide (T21). Panels are the same centred view, full screen; theater uses the native fullscreen API in landscape. Minimum tap target 44 px.
+Mobile specifics (R3 · M-*). HUD at 24 / 64 under the status bar; the hero mask is 348 × 167 at y 340 (no name block since Round 5, §12a item 11). Work and the featured build scroll natively (T17): each job is a section with 40 svh of sky for its star on top, then the insignia (44 px, directly above the title; the Dbox wordmark 70 × 32), the title (`clamp(40px, 12.5vw, 56px)`, one line at 360–393 px; the featured title `clamp(34px, 11vw, 44px)`), role · dates and the full text with every bullet. No inner scroll columns, nothing clipped. A dot rail and counter sit at the bottom as a passive indicator. Panels are the same centred view, full screen; theater uses the native fullscreen API in landscape. Minimum tap target 44 px.
 
 ---
 
@@ -407,7 +407,7 @@ Mobile specifics (R3 · M-*). HUD at 24 / 64 under the status bar; the hero mask
 1. Panels are centred and camera-led everywhere (jobs, projects, About, paintings, films; from the sky and on direct loads): the star centred in the upper middle, a centred reading column below, no labels or lines behind it. The right-side panel, the mobile bottom sheet and the star → dot morph are retired.
 2. Every panel has Close ✕ (44 px), "← Back to sky" and Esc; ← → in a quiet footer row.
 3. Projects are Section-8-Scout only. One featured stop after Work (Paper R4 · P · Featured); retired project URLs 308 to it.
-4. One gesture = one stop through Work and the featured build (T21).
+4. One gesture = one stop through Work and the featured build on desktop (T21). Phones scroll natively (T17).
 5. Intro: one continuous eased timeline, fast-forwarded (never jumped) by input; the scroll-in flash is fixed (no-JS stand-ins no longer swap out mid-intro, no per-frame CSS mask on the H1 labels, no footer fade-out on journey start).
 6. `/visual-arts` 308 → `/visual-arts/analog`; the Director's index list is gone; Visual Arts opens through the windowed RSF mark (Paper B1, T22).
 7. Footer: no mark, no Visual Arts link, pinned to the viewport bottom on short pages. One RSF mark on screen at a time.

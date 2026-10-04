@@ -142,44 +142,47 @@ function pinnedStage(stage: HTMLElement, segment: Segment, rangeVh: number, segs
   return stops;
 }
 
-/** T17 / MO-9: no pin; each dwell is a 100svh slide that activates as it crosses the middle. */
+/**
+ * T17 / MO-9: no pin, no stepper. Each dwell is a section in normal document flow (native touch scroll and
+ * momentum); the one under the 35 % line is current. The camera eases to its star (0.9 s along the travel
+ * path) and the rail follows as a passive indicator.
+ */
 function mobileStage(stage: HTMLElement, segment: Segment, segs: CameraSegment[], cleanups: Cleanup[]) {
   const groups = dwellsOf(stage);
   const update = railUpdater(stage);
-  // The camera moves to a dwell as its slide activates (its text enters at the same moment).
-  let active = 0;
+  const last = Math.max(1, groups.length - 1);
+  const cam = { t: 0 };
   groups.forEach((els, d) =>
     els.forEach((el) =>
       ScrollTrigger.create({
         trigger: el,
-        start: 'top 60%',
-        end: 'bottom 40%',
+        start: 'top 35%',
+        end: 'bottom 35%',
         onToggle: (self) => {
-          if (self.isActive) {
-            el.dataset.active = '';
-            active = d;
-            update(d);
-          } else delete el.dataset.active;
+          if (!self.isActive) return;
+          update(d);
+          gsap.to(cam, { t: d / last, duration: 0.9, ease: 'power2.inOut', overwrite: true });
         },
       }),
     ),
   );
   const st = ScrollTrigger.create({ trigger: stage, start: 'top 60%', end: 'bottom 40%' });
-  segs.push({ id: segment, st, t: () => active / Math.max(1, groups.length - 1) });
-  const layers = [...stage.querySelectorAll<HTMLElement>('[data-slide]')];
-  const stops = () => layers.map((el) => el.getBoundingClientRect().top + window.scrollY);
+  segs.push({ id: segment, st, t: () => cam.t });
+  const top = (el: HTMLElement) => el.getBoundingClientRect().top + window.scrollY;
+  const stops = () => groups.map((els) => top(els[0]));
 
+  // Rail ticks scroll to their section (the camera follows the scroll), then focus it.
   const onClick = (e: MouseEvent) => {
     const tick = (e.target as HTMLElement).closest<HTMLElement>('[data-dwell]');
     if (!tick) return;
     const el = groups[Number(tick.dataset.dwell)][0];
-    goTo(el.getBoundingClientRect().top + window.scrollY);
+    goTo(top(el));
     focusLater(el);
   };
   stage.addEventListener('click', onClick);
   cleanups.push(() => {
     stage.removeEventListener('click', onClick);
-    stage.querySelectorAll<HTMLElement>('[data-active]').forEach((el) => delete el.dataset.active);
+    gsap.killTweensOf(cam);
   });
   return stops;
 }
@@ -223,8 +226,8 @@ function pulls(segs: CameraSegment[]) {
 }
 
 /**
- * Builds the home journey's ScrollTriggers (spec §7 T2–T6, T17) and the
- * one-gesture-one-stop stepper over the Work stops and the featured build.
+ * Builds the home journey's ScrollTriggers (spec §7 T2–T6, T17) and, on
+ * desktop, the one-gesture-one-stop stepper over the Work stops and the featured build.
  * Mounted by the home page so it rebuilds after soft navigation. Nothing is
  * built under reduced motion: the static R3 · RM layout stays.
  */
@@ -249,7 +252,8 @@ export function HomeJourney() {
       });
       pulls(segs);
       const stops = () => [...(stageStops.work?.() ?? []), ...(stageStops.projects?.() ?? [])].sort((a, b) => a - b);
-      cleanups.push(stepper(stops), columnEdges());
+      // Desktop: one gesture = one stop, long stops scroll their column. Phones scroll natively.
+      if (desktop) cleanups.push(stepper(stops), columnEdges());
 
       // Hash targets: /#work the first Work stop (Brava), /#projects the featured build,
       // /#chart (a direct-loaded panel's Close) the H3 rest at the end of the document.

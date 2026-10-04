@@ -3,7 +3,7 @@
  * - static (no JS, reduced motion, R3 · RM): sections stack, plain lists.
  * - [data-journey='pinned'] (desktop, set by HomeJourney): each stage is a
  *   100vh pinned frame; its [data-slide] layers stack and are scrubbed.
- * - [data-journey='mobile'] (≤ 768 px): one 100svh slide per star (T17, MO-9), paged by stepper.ts.
+ * - [data-journey='mobile'] (≤ 768 px): one section per star in normal flow, native scroll (T17, MO-9).
  */
 .journey {
   position: relative;
@@ -777,6 +777,12 @@
 
 /* ======================= Mobile (≤ 768 px) ======================= */
 
+/*
+ * Normal document flow with native scroll: each stop is a section with an
+ * empty-sky visual area on top (the camera puts its star there, HomeJourney
+ * mobileStage), then the title and every word of its text. No pin, no inner
+ * scroll columns, nothing clipped.
+ */
 :global(html[data-journey='mobile']) .section {
   padding: 0 var(--page-margin);
 }
@@ -786,24 +792,20 @@
 }
 
 :global(html[data-journey='mobile']) .layer {
-  min-height: 100svh;
-  padding: 120px 0 96px;
-  border: 0;
   position: relative;
+  padding: 40svh 0 var(--space-9);
+  border: 0;
 }
 
-:global(html[data-journey='mobile']) .complete,
-:global(html[data-journey='mobile']) .origins {
-  align-content: center;
-}
-
-/* Stops in travel order: the five stars, "The Engineer", The Student (the stepper follows layout order). */
+/* Stops in travel order: the five stars, "The Engineer", The Student. */
 :global(html[data-journey='mobile']) .complete {
   order: 1;
 }
 
+/* The Student follows "The Engineer" on the same star frame: no second visual area. */
 :global(html[data-journey='mobile']) .origins {
   order: 2;
+  padding-top: 0;
 }
 
 :global(html[data-journey='mobile']) .rail {
@@ -814,65 +816,63 @@
   position: relative;
 }
 
+/* Stand-in for visitors whose sky has not drawn: the star in the middle of the visual area. */
 :global(html[data-journey='mobile']) .focal {
   display: block;
   left: 25%;
-  top: 200px;
+  top: 20svh;
 }
 
-:global(html[data-journey='mobile']) .slide .content {
-  padding-top: 220px;
+:global(html[data-journey='mobile']) .scroll {
+  overflow: visible;
+  -webkit-mask: none;
+  mask: none;
 }
 
-/* Each job is exactly one screen; a long one's text scrolls in its column, above the rail (the layer's 96 px bottom padding). */
-:global(html[data-journey='mobile']) .workSection .slide {
-  height: 100svh;
-  display: flex;
-  flex-direction: column;
-}
-
-:global(html[data-journey='mobile']) .workSection .content {
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-}
-
-:global(html[data-journey='mobile']) .featured {
-  align-content: start;
-}
-
+:global(html[data-journey='mobile']) .more,
 :global(html[data-journey='mobile']) .stage > :is(.hint, .counter) {
   display: none !important;
 }
 
-/* Vertical scrim (spec §3) */
+/* Vertical scrim (spec §3), from just above the title to the end of the text. */
 :global(html[data-journey='mobile']) .slide .content::before {
   content: '';
   position: absolute;
-  inset: 180px calc(-1 * var(--page-margin)) -32px;
+  inset: -40px calc(-1 * var(--page-margin)) -32px;
   z-index: -1;
-  background: linear-gradient(transparent, rgb(4 5 10 / 0.72) 60px);
+  background: linear-gradient(transparent, rgb(4 5 10 / 0.72) 60px, rgb(4 5 10 / 0.72) calc(100% - 32px), transparent);
   pointer-events: none;
 }
 
-/* Content enter, 240 ms (T17). */
-:global(html[data-journey='mobile']) .layer > * {
-  transition: opacity 240ms var(--ease-out), translate 240ms var(--ease-out);
-}
-
-:global(html[data-journey='mobile']) .layer:not([data-active]) > * {
-  opacity: 0;
-  translate: 0 16px;
-}
-
+/*
+ * Phone titles fit one line at 360–393 px (Prizm Imagery included). Every job's insignia sits directly above its
+ * title, 44 px tall: the dense frames' beside-the-title tile (.focalOnly) drifted to the far edge of a wrapped name.
+ */
 :global(html[data-journey='mobile']) .title {
-  font-size: 64px;
-  line-height: 64px;
+  font-size: clamp(40px, 12.5vw, 56px);
+  line-height: 1;
 }
 
 :global(html[data-journey='mobile']) .title[data-long] {
-  font-size: 44px;
-  line-height: 46px;
+  font-size: clamp(34px, 11vw, 44px);
+  line-height: 1.05;
+}
+
+:global(html[data-journey='mobile']) .content > .rowOnly {
+  display: block !important;
+}
+
+:global(html[data-journey='mobile']) .focalOnly {
+  display: none !important;
+}
+
+/* Scales the whole 64 px tile (size, inset, radius). A wordmark (Dbox) is drawn smaller so it doesn't outweigh the name. */
+:global(html[data-journey='mobile']) .content > img {
+  zoom: 0.6875;
+}
+
+:global(html[data-journey='mobile']) .content > img[data-wordmark] {
+  zoom: 0.5;
 }
 
 :global(html[data-journey='mobile']) .rail {
